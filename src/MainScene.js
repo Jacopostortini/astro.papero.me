@@ -12,7 +12,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image("ship", "./asteroids_ship.png");
+        this.load.image("ship", "https://papero.me/astro/asteroids_ship.png");
     }
 
     create(){
