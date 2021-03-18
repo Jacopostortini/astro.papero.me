@@ -5,7 +5,10 @@ export default class MainScene extends Phaser.Scene {
 
     constructor() {
         super({key: "Main"});
-        this.socket = io("https://papero.me/server/astro", {autoConnect: true});
+        this.socket = io("https://papero.me", {
+            path: "/server/astro/socket.io",
+            autoConnect: true
+        });
         this.socket.on("connect", ()=>{
             console.log("connected");
         });
