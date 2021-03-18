@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "phaser": "^3.53.1",
+    "socket.io-client": "^2.4.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
