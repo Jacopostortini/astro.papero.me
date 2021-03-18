@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: "/",
+    publicPath: "/astro/",
     /*css: {
         loaderOptions: {
             sass: {
