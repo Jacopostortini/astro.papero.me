@@ -22,15 +22,15 @@ export default class MainScene extends Phaser.Scene {
         this.ship = this.physics.add.image(400, 300, "ship");
         this.ship.setCollideWorldBounds(true);
         this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.socket.on("move", ()=>{
-           this.ship.rotation += Math.PI/90;
+        this.socket.on("move", (data)=>{
+           this.ship.rotation = data;
         });
     }
 
     update(){
         if(this.keyA.isDown) {
             this.ship.rotation += Math.PI/90;
-            this.socket.emit("move");
+            this.socket.emit("move", this.ship.rotation);
         }
     }
 }
