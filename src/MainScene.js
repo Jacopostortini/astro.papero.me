@@ -7,56 +7,56 @@ export default class MainScene extends Phaser.Scene {
         super({key: "Main"});
         this.angularVelocity = Math.PI*2;
         this.velocity = 200;
+        this.players = [];
+        this.playerID = null;
         this.socket = io("https://papero.me", {
             path: "/server/astro/socket.io",
             autoConnect: true
         });
         this.socket.on("connect", ()=>{
-            console.log("connected");
+            console.log("connected")
         });
     }
 
     preload(){
         this.load.image("ship", "https://labs.phaser.io/assets/sprites/asteroids_ship.png");
-        this.players = [];
-        this.socket.emit("get-game", (data)=>{
-           for(let i= 0; i < data; i++){
-               this.players.push({
-                   id: i,
-                   position:  {x: 0, y: 0},
-                   rotation: 0
-               });
-           }
-            this.socket.emit("new-player");
+        this.socket.on("get-game", (data)=>{
+            console.log("get-game",data);
+            for(let id= 0; id < data; id++){
+                let ship = this.physics.add.image(0, 0, "ship");
+                ship.setCollideWorldBounds(true);
+                this.players.push({
+                    id,
+                    ship,
+                });
+            }
+        })
+        this.socket.on("new-player", (id)=> {
+            console.log("new-player")
+            this.playerID = id;
+            let ship = this.physics.add.image(400, 300, "ship");
+            ship.setCollideWorldBounds(true);
+            this.players.push({
+                id,
+                ship,
+            });
+            console.log(this.players);
+            console.log(this.playerID)
         });
     }
 
     create(){
-        this.players.forEach((player)=>{
-            player.ship = this.physics.add.image(player.position.x, player.position.y, "ship");
-            player.ship.rotation = player.rotation;
-            player.ship.setCollideWorldBounds(true);
-        })
+        this.socket.emit("get-game");
+        this.socket.emit("new-player");
         this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.socket.on("move", (data)=>{
            this.players.forEach(player => {
                if(player.id === data.id){
                    player.ship.rotation = data.rotation;
-                   player.ship.x  = data.position.x;
+                   player.ship.x = data.position.x;
                    player.ship.y = data.position.y;
                }
            });
-        });
-        this.socket.on("new-player", (id)=> {
-            this.playerID = id;
-            this.players.push({
-                id: id,
-                position: {
-                    x: 300,
-                    y: 400
-                },
-                rotation: 0
-            });
         });
     }
 
@@ -75,7 +75,7 @@ export default class MainScene extends Phaser.Scene {
                     });
                 }
             }
-            player.ship.setVelocity(this.velocity*Math.cos(player.ship.rotation), player.velocity*Math.sin(player.ship.rotation));
+            player.ship.setVelocity(this.velocity*Math.cos(player.ship.rotation), this.velocity*Math.sin(player.ship.rotation));
         });
     }
 }
