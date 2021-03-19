@@ -23,7 +23,6 @@ export default class MainScene extends Phaser.Scene {
         this.load.image("ship", "https://labs.phaser.io/assets/sprites/asteroids_ship.png");
         this.load.image("bullet", "https://labs.phaser.io/assets/sprites/bullet.png");
         this.socket.on("get-game", (data)=>{
-            console.log("get-game",data);
             for(let id= 0; id < data; id++){
                 let ship = this.physics.add.image(0, 0, "ship");
                 ship.setCollideWorldBounds(true);
@@ -41,16 +40,11 @@ export default class MainScene extends Phaser.Scene {
                 id,
                 ship,
             });
-            console.log("The players: ", this.players);
-            console.log("Your id is", this.playerID)
         });
         this.socket.on("your-id", (id)=>{
-            console.log("your-id");
             this.playerID = id;
             this.playerShip = this.physics.add.image(400, 300, "ship");
             this.playerShip.setCollideWorldBounds(true);
-            console.log("The players: ", this.players);
-            console.log("Your id is", this.playerID)
         })
     }
 
@@ -58,8 +52,8 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("get-game");
         this.socket.emit("new-player");
 
-        this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.input.keyboard.on("keyup-SPACE", ()=>{
+        this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.input.keyboard.on("keyup-ENTER", ()=>{
             let bullet = this.physics.add.image(this.playerShip.x, this.playerShip.y, "bullet");
             bullet.rotation = this.playerShip.rotation-Math.PI/2;
             let velocityX = this.bulletVelocity*Math.cos(this.playerShip.rotation);
