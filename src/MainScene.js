@@ -17,7 +17,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image("ship", "http://labs.phaser.io/assets/sprites/asteroids_ship.png");
+        this.load.image("ship", "https://labs.phaser.io/assets/sprites/asteroids_ship.png");
         this.players = [];
         this.socket.emit("get-game", (data)=>{
            for(let i= 0; i < data; i++){
