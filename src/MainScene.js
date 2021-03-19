@@ -5,6 +5,7 @@ export default class MainScene extends Phaser.Scene {
 
     constructor() {
         super({key: "Main"});
+        this.angularSpeed = Math.PI*4;
         this.socket = io("https://papero.me", {
             path: "/server/astro/socket.io",
             autoConnect: true
@@ -15,7 +16,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image("ship", "https://papero.me/astro/asteroids_ship.png");
+        this.load.image("ship", "./asteroids_ship.png");
     }
 
     create(){
@@ -27,9 +28,9 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    update(){
+    update(time, delta){
         if(this.keyA.isDown) {
-            this.ship.rotation += Math.PI/90;
+            this.ship.rotation += this.angularSpeed*delta/1000;
             this.socket.emit("move", this.ship.rotation);
         }
     }
