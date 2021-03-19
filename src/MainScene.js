@@ -61,7 +61,6 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit("new-player");
         this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.socket.on("move", (data)=>{
-            console.log("a player moved", data);
            this.players.forEach(player => {
                if(player.id === data.id){
                    player.ship.rotation = data.rotation;
@@ -77,9 +76,8 @@ export default class MainScene extends Phaser.Scene {
             if(player.id === this.playerID){
                 if(this.keyA.isDown){
                     player.ship.rotation += this.angularVelocity*delta/1000;
-                    console.log("you are about to emit a move");
                     this.socket.emit("move", {
-                        player: this.playerID,
+                        id: this.playerID,
                         rotation: player.ship.rotation,
                         position: {
                             x: player.ship.x,
