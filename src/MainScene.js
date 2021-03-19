@@ -33,6 +33,17 @@ export default class MainScene extends Phaser.Scene {
         })
         this.socket.on("new-player", (id)=> {
             console.log("new-player")
+            let ship = this.physics.add.image(400, 300, "ship");
+            ship.setCollideWorldBounds(true);
+            this.players.push({
+                id,
+                ship,
+            });
+            console.log("The players: ", this.players);
+            console.log("Your id is", this.playerID)
+        });
+        this.socket.on("your-id", (id)=>{
+            console.log("your-id");
             this.playerID = id;
             let ship = this.physics.add.image(400, 300, "ship");
             ship.setCollideWorldBounds(true);
@@ -40,9 +51,9 @@ export default class MainScene extends Phaser.Scene {
                 id,
                 ship,
             });
-            console.log(this.players);
-            console.log(this.playerID)
-        });
+            console.log("The players: ", this.players);
+            console.log("Your id is", this.playerID)
+        })
     }
 
     create(){
