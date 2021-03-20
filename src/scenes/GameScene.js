@@ -1,10 +1,11 @@
 import * as Phaser from "phaser";
 import io from "socket.io-client";
+import {sceneKeys} from "../constants/constants";
 
 export default class GameScene extends Phaser.Scene {
 
     constructor() {
-        super({key: "Main"});
+        super({key: sceneKeys.game});
         this.angularVelocity = Math.PI*2;
         this.shipVelocity = 200;
         this.bulletVelocity = 500;

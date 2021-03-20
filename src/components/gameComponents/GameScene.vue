@@ -9,7 +9,7 @@ import {config} from "../../constants/constants";
 export default {
   name: "GameScene",
   mounted(){
-    new Phaser.Game(config);
+    new Phaser.Game(config.game);
   }
 }
 </script>

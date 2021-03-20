@@ -1,27 +1,47 @@
 import Phaser from "phaser";
-import GameScene from "../scenes/GameScene";
 
 const strings = {
+    title: "Star Wars",
     homeView: {
-        title: "Star Wars",
         joinButton: "Join game",
         createButton: "Create game",
         joinGameInputPlaceholder: "Game ID"
+    },
+    gameView: {
+        lobby: {
+            changeColor: "Change color:",
+            totalTurns: "Number of turns:",
+            joinLobby: "Join",
+            startGame: "Start",
+            adminSettings: "Game settings"
+        }
     }
 }
-const config = {
-    parent: "app",
-    type: Phaser.AUTO,
-    width: window.innerWidth*0.95,
-    height: window.innerHeight*0.95,
-    physics: {
-        default: 'arcade'
-    },
-    scene: GameScene
+
+const colors = ["green", "red", "violet", "blue"];
+
+const config = (scene, parent, width, height) => {
+    return {
+        type: Phaser.AUTO,
+        physics: {
+            default: 'arcade'
+        },
+        canvasStyle: "border: 2px solid white",
+        transparent: true,
+        parent,
+        width,
+        height,
+        scene
+    }
+}
+
+const urls = {
+    baseURL: "https://papero.me"
 }
 
 const sceneKeys = {
-    game: "game"
+    game: "game",
+    lobby: "lobby"
 }
 
-export { config, sceneKeys, strings }
+export { strings, colors, config, urls, sceneKeys }

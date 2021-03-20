@@ -8,7 +8,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 html{
   width: 100%;
   height: 100%;
@@ -21,22 +21,28 @@ body{
 }
 
 h1{
-  margin: 0;
+  font-size: 500%;
+  margin: 2% 0 0 0;
   color: white;
 }
 
 button{
-  font-family: serif;
   font-size: 300%;
   padding: 2%;
   border-radius: 10px;
   outline: none;
-  border-width: 1px;
-  font-weight: bolder;
   color: white;
-  background-image: url("https://labs.phaser.io/assets/skies/space3.png");
+  background: none;
+  border: 2px solid white;
+  transition: all 0.5s;
+  /*background-image: url("https://labs.phaser.io/assets/skies/space3.png");
   background-size: 200px;
-  background-position: bottom center;
+  background-position: bottom center;*/
+
+  &:hover{
+    background-color: white;
+    color: black;
+  }
 }
 
 .popup-background{
@@ -55,10 +61,13 @@ button{
 #app {
   width: 100%;
   height: 100%;
-  font-family: serif, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  background-image: url("https://labs.phaser.io/assets/skies/nebula.jpg");
+  background-size: cover;
+  background-position: center;
 }
 </style>

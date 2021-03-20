@@ -1,8 +1,9 @@
 <template>
   <transition name="transition">
-    <div class="join-game-input" v-show="show">
-      <input :placeholder="strings.homeView.joinGameInputPlaceholder">
-    </div>
+    <form class="join-game-input" v-show="show" @submit.prevent="">
+      <input :placeholder="strings.homeView.joinGameInputPlaceholder" v-model="gameId">
+      <button @click="submitForm">Join</button>
+    </form>
   </transition>
 </template>
 
@@ -16,7 +17,13 @@ export default {
   },
   data(){
     return {
-      strings
+      strings,
+      gameId: ""
+    }
+  },
+  methods: {
+    submitForm(){
+      this.$router.push({name: "Game", params: {gameId: this.gameId}});
     }
   }
 }
@@ -33,7 +40,7 @@ export default {
 }
 
 
-div{
+form{
   position: fixed;
   top: 30%;
   left: 35%;
@@ -45,6 +52,7 @@ div{
               0 0  0 2px $bkg-col,
               0.3em 0.3em 1em $bkg-col;
   display: flex;
+  flex-flow: column;
   justify-content: center;
   align-items: center;
   z-index: 3;
