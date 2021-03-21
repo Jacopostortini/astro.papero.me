@@ -78,7 +78,7 @@ export default {
             Math.min(parent.offsetWidth, parent.offsetHeight)
         ));
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
-      console.log(game.settings.velocity);
+      console.log(game);
       this.game = {...game};
       window.mitt.emit(websocketEvents.LOBBY_MODIFIED, game);
     });
