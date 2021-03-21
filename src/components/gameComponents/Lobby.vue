@@ -80,7 +80,7 @@ export default {
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
       console.log(game);
       this.game = game;
-      window.mitt.emit(websocketEvents.LOBBY_MODIFIED, game);
+      //window.mitt.emit(websocketEvents.LOBBY_MODIFIED, game);
     });
   },
   computed: {
