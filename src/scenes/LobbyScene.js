@@ -40,6 +40,7 @@ export default class LobbyScene extends Phaser.Scene {
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
         ship.setBounce(1, 1);
+        console.log("newly created ship", ship);
         return ship;
     }
 
@@ -64,7 +65,6 @@ export default class LobbyScene extends Phaser.Scene {
 
     create(){
         window.mitt.on(websocketEvents.LOBBY_MODIFIED, game => {
-            console.log("lobby modified in phaser", game);
             let currentlyPlayingIds = [];
             game.players.forEach(player => {currentlyPlayingIds.push(player.localId)});
 
@@ -83,13 +83,17 @@ export default class LobbyScene extends Phaser.Scene {
             });
 
             this.ships = newShips;
+            this.lobby.settings.velocity *= 100;
+            this.lobby.settings.angularVelocity *= 100;
+            this.lobby.settings.reloadingVelocity *= 100;
 
-            console.log(this.ships, this.lobby)
+            console.log("appended ships:", this.ships)
+            console.log("lobby:", this.lobby)
         });
     }
 
     update(){
-        if(Array.isArray(this.lobby.players)) {
+        if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
             this.lobby.players.forEach(player => {
                 let {x, y} = this.ships[player.localId].body.velocity;
                 this.ships[player.localId].rotation = this.getAngle(x, y);
