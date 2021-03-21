@@ -79,10 +79,10 @@ export default class LobbyScene extends Phaser.Scene {
                     this.players[newPlayer.localId+""].ship = this.createNewShip(newPlayer.color);
                 }
             });
-/*            let difference = previousIds.filter(x => !newIds.includes(x));
+            let difference = previousIds.filter(x => !newIds.includes(x));
             difference.forEach(id => {
-                this.
-            })*/
+                this.players[id].ship.removedFromScene();
+            });
         });
     }
 
