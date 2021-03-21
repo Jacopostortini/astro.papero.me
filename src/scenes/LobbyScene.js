@@ -32,11 +32,11 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     createNewShip(color){
-        let x = Phaser.Math.Between(0, this.width);
-        let y = Phaser.Math.Between(0, this.height);
+        let x = 10//Phaser.Math.Between(0, this.width);
+        let y = 10//Phaser.Math.Between(0, this.height);
         let ship = this.physics.add.image(x, y, "ship"+color);
-        let angle = Phaser.Math.Between(Math.PI/4, Math.PI*3/4);
-        ship.setVelocity(this.shipVelocity*Math.cos(angle), this.shipVelocity*Math.sin(angle));
+        let angle = 1//Phaser.Math.Between(Math.PI/4, Math.PI*3/4);
+        ship.setVelocity(this.lobby.settings.velocity*Math.cos(angle), this.lobby.settings.velocity*Math.sin(angle));
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
         ship.setBounce(1, 1);
@@ -91,12 +91,12 @@ export default class LobbyScene extends Phaser.Scene {
     update(){
         if(Array.isArray(this.lobby.players)) {
             this.lobby.players.forEach(player => {
-                let ship = this.ships[player.localId]
-                let {x, y} = ship.body.velocity;
-                ship.rotation = this.getAngle(x, y);
-                ship.setVelocity(
-                    this.lobby.velocity * Math.cos(ship.rotation),
-                    this.lobby.velocity * Math.sin(ship.rotation));
+                let {x, y} = this.ships[player.localId].body.velocity;
+                this.ships[player.localId].rotation = this.getAngle(x, y);
+                this.ships[player.localId].setVelocity(
+                    this.lobby.velocity * Math.cos(this.ships[player.localId].rotation),
+                    this.lobby.velocity * Math.sin(this.ships[player.localId].rotation)
+                );
             });
         }
     }
