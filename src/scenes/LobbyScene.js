@@ -32,12 +32,12 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     createNewShip(color){
-        let x = 10//Phaser.Math.Between(0, this.width);
-        let y = 10//Phaser.Math.Between(0, this.height);
+        let x = Phaser.Math.Between(0, this.width);
+        let y = Phaser.Math.Between(0, this.height);
         let ship = this.physics.add.image(x, y, "ship"+color);
-        //let angle = 1//Phaser.Math.Between(Math.PI/4, Math.PI*3/4);
-        //ship.setVelocity(this.lobby.settings.velocity*Math.cos(angle), this.lobby.settings.velocity*Math.sin(angle));
-        //ship.rotation = angle;
+        let angle = Phaser.Math.Between(Math.PI/4, Math.PI*3/4);
+        ship.setVelocity(this.lobby.settings.velocity*Math.cos(angle), this.lobby.settings.velocity*Math.sin(angle));
+        ship.rotation = angle;
         ship.setCollideWorldBounds(true);
         ship.setBounce(1, 1);
         console.log("newly created ship", ship);
