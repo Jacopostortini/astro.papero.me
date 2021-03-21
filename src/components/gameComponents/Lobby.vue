@@ -26,6 +26,7 @@ import ChangeColor from "./lobbyComponents/ChangeColor";
 import CopyInformation from "./lobbyComponents/CopyInformation";
 import websocketEvents from "../../constants/websocketEvents";
 import GameSettings from "./lobbyComponents/GameSettings";
+import mitt from "mitt";
 export default {
   name: "Lobby",
   components: {GameSettings, CopyInformation, ChangeColor},
@@ -36,6 +37,7 @@ export default {
     return {
       strings,
       websocketEvents,
+      emitter: mitt(),
       game: {
         players: [
           {
