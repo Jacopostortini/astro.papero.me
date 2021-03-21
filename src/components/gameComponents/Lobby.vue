@@ -19,9 +19,9 @@
 </template>
 
 <script>
-//import * as Phaser from "phaser";
-import {/*config,*/ strings} from "../../constants/constants";
-//import LobbyScene from "../../scenes/LobbyScene";
+import * as Phaser from "phaser";
+import {config, strings} from "../../constants/constants";
+import LobbyScene from "../../scenes/LobbyScene";
 import ChangeColor from "./lobbyComponents/ChangeColor";
 import CopyInformation from "./lobbyComponents/CopyInformation";
 import websocketEvents from "../../constants/websocketEvents";
@@ -38,7 +38,7 @@ export default {
       strings,
       websocketEvents,
       emitter: mitt(),
-      game: {
+/*      game: {
         players: [
           {
             localId: 0,
@@ -57,21 +57,26 @@ export default {
           angularVelocity: 2,
           reloadingVelocity: 2
         }
-      }
-      /*game: {
-        settings: {}
       }*/
+      game: {
+        settings: {
+          totalTurns: 5,
+          velocity: 2,
+          angularVelocity: 2,
+          reloadingVelocity: 2
+        }
+      }
     }
   },
   mounted() {
-    /*let parent = document.getElementById("players-wrapper");
+    let parent = document.getElementById("players-wrapper");
     new Phaser.Game(
         config(
-            new LobbyScene(this.game.players, this.game.currentPlayer),
+            LobbyScene,
             parent,
             Math.min(parent.offsetWidth, parent.offsetHeight),
             Math.min(parent.offsetWidth, parent.offsetHeight)
-        ));*/
+        ));
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
       console.log(game);
       this.game = game;

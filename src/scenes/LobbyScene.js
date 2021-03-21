@@ -5,15 +5,20 @@ import websocketEvents from "../constants/websocketEvents";
 
 export default class LobbyScene extends Phaser.Scene {
 
-    constructor(players, currentPlayer) {
+    constructor() {
         super({key: sceneKeys.lobby});
-        this.shipVelocity = 200;
-        this.players = {};
-        players.forEach(player => {
-            this.players[player.localId+""] = player;
-        })
-        this.currentPlayer = currentPlayer;
         this.emitter = mitt();
+        this.lobby = {
+            players: [],
+            currentPlayer: null,
+            settings: {
+                totalTurns: 5,
+                velocity: 2,
+                angularVelocity: 2,
+                reloadingVelocity: 2
+            }
+        }
+        this.ships = {};
     }
 
     getAngle(x, y){
@@ -37,62 +42,59 @@ export default class LobbyScene extends Phaser.Scene {
         ship.setBounce(1, 1);
     }
 
+    findPlayerById(id){
+        for(let i = 0; i < this.lobby.players.length; i++){
+            if(this.lobby.players[i].localId === id) return this.lobby.players[i];
+        }
+        return null;
+    }
+
     preload(){
+
+        //load images
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
-
         colors.forEach((value, index) => {
             this.load.image("ship"+index, require("@/assets/ship"+index+".png"))
         });
         this.load.image('particle', 'https://labs.phaser.io/assets/particles/red.png');
+
     }
 
     create(){
-        this.players.forEach(player => {
-            player.ship = this.createNewShip(player.color);
-            /*if(player.localId===this.currentPlayer) {
-                let particle = this.add.particles("particle");
-                let emitter = particle.createEmitter({
-                    speed: 100,
-                    scale: {start: 0.3, end: 0},
-                    blendMode: "ADD"
-                });
-                emitter.startFollow(this.ships[player.localId+""]);
-            }*/
-        });
-
         this.emitter.on(websocketEvents.LOBBY_MODIFIED, game => {
-            this.currentPlayer = game.currentPlayer;
-            this.shipVelocity = game.settings.velocity;
-            let previousIds = this.players.keys();
-            let newIds = [];
-            game.players.forEach(newPlayer => {
-                newIds.push(newPlayer.localId);
-                if( previousIds.includes(newPlayer.localId+"") &&
-                    this.players[newPlayer.localId+""].color !== newPlayer.color){
+            console.log("lobby modified in phaser", game);
+            let currentlyPlayingIds = [];
+            game.players.forEach(player => {currentlyPlayingIds.push(player.localId)});
 
-                    this.players[newPlayer.localId+""].color = newPlayer.color;
-                    this.players[newPlayer.localId+""].ship.setTexture("ship"+newPlayer.color);
+            let previousPlayingIds = [];
+            this.lobby.players.forEach(player => {previousPlayingIds.push(player.localId)});
 
-                } else if( !previousIds.includes(newPlayer.localId+"") ){
-                    this.players[newPlayer.localId+""] = newPlayer;
-                    this.players[newPlayer.localId+""].ship = this.createNewShip(newPlayer.color);
+            this.lobby = game;
+
+            let newShips = {};
+            currentlyPlayingIds.forEach(id => {
+                if(previousPlayingIds.includes(id)){
+                    newShips[id] = this.ships[id];
+                } else {
+                    newShips[id] = this.createNewShip(this.findPlayerById(id).color);
                 }
             });
-            let difference = previousIds.filter(x => !newIds.includes(x));
-            difference.forEach(id => {
-                this.players[id].ship.removedFromScene();
-            });
+
+            this.ships = newShips;
         });
     }
 
     update(){
-        this.players.forEach(player =>{
-            let {x, y} = player.ship.body.velocity;
-            player.ship.rotation = this.getAngle(x, y);
-            player.ship.setVelocity(
-                this.shipVelocity*Math.cos(player.ship.rotation),
-                this.shipVelocity*Math.sin(player.ship.rotation));
-        })
+        if(Array.isArray(this.lobby.players)) {
+            this.lobby.players.forEach(player => {
+                let ship = this.ships[player.localId]
+                let {x, y} = ship.body.velocity;
+                ship.rotation = this.getAngle(x, y);
+                ship.setVelocity(
+                    this.lobby.velocity * Math.cos(ship.rotation),
+                    this.lobby.velocity * Math.sin(ship.rotation));
+            });
+        }
     }
 }
