@@ -11,8 +11,6 @@ import Lobby from "../components/gameComponents/Lobby";
 import io from "socket.io-client";
 import {urls} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
-import mitt from "mitt";
-window.mitt = window.mitt || mitt();
 export default {
   name: 'Game',
   components: {Lobby, GameScene},
@@ -20,7 +18,6 @@ export default {
     return {
       status: 0,
       socket: null,
-      emitter: mitt()
     }
   },
   computed: {
@@ -29,8 +26,6 @@ export default {
     }
   },
   mounted() {
-    window.mitt.on("*", (type, event)=> {
-      console.log(type, event)});
     this.socket = io(urls.baseURL, {
       path: "/server/astro/socket.io",
       autoConnect: true

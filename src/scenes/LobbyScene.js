@@ -82,6 +82,8 @@ export default class LobbyScene extends Phaser.Scene {
             });
 
             this.ships = newShips;
+
+            console.log(this.ships, this.lobby)
         });
     }
 
