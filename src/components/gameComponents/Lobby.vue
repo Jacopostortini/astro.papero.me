@@ -36,7 +36,7 @@ export default {
     return{
       strings,
       websocketEvents,
-      game: {
+      /*game: {
         players: [0,1],
         admin: 0,
         currentPlayer: 1,
@@ -46,6 +46,9 @@ export default {
           angularVelocity: 2,
           reloadingVelocity: 2
         }
+      }*/
+      game: {
+        settings: {}
       }
     }
   },
