@@ -12,6 +12,7 @@ import io from "socket.io-client";
 import {urls} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
 import mitt from "mitt";
+window.mitt = window.mitt || mitt();
 export default {
   name: 'Game',
   components: {Lobby, GameScene},
@@ -28,7 +29,7 @@ export default {
     }
   },
   mounted() {
-    this.emitter.on("*", (type, event)=> {
+    window.mitt.on("*", (type, event)=> {
       console.log(type, event)});
     this.socket = io(urls.baseURL, {
       path: "/server/astro/socket.io",

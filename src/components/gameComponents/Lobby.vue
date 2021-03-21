@@ -27,6 +27,7 @@ import CopyInformation from "./lobbyComponents/CopyInformation";
 import websocketEvents from "../../constants/websocketEvents";
 import GameSettings from "./lobbyComponents/GameSettings";
 import mitt from "mitt";
+window.mitt = window.mitt || mitt();
 export default {
   name: "Lobby",
   components: {GameSettings, CopyInformation, ChangeColor},
@@ -37,7 +38,6 @@ export default {
     return {
       strings,
       websocketEvents,
-      emitter: mitt(),
 /*      game: {
         players: [
           {
@@ -80,7 +80,7 @@ export default {
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
       console.log(game);
       this.game = game;
-      this.emitter.emit(websocketEvents.LOBBY_MODIFIED, game);
+      window.mitt.emit(websocketEvents.LOBBY_MODIFIED, game);
     });
   },
   computed: {

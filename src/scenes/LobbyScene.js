@@ -3,11 +3,11 @@ import {colors, sceneKeys} from "../constants/constants";
 import mitt from "mitt";
 import websocketEvents from "../constants/websocketEvents";
 
+window.mitt = window.mitt || mitt();
 export default class LobbyScene extends Phaser.Scene {
 
     constructor() {
         super({key: sceneKeys.lobby});
-        this.emitter = mitt();
         this.lobby = {
             players: [],
             currentPlayer: null,
@@ -62,7 +62,7 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     create(){
-        this.emitter.on(websocketEvents.LOBBY_MODIFIED, game => {
+        window.mitt.on(websocketEvents.LOBBY_MODIFIED, game => {
             console.log("lobby modified in phaser", game);
             let currentlyPlayingIds = [];
             game.players.forEach(player => {currentlyPlayingIds.push(player.localId)});
