@@ -90,7 +90,7 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     update(){
-        if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
+        /*if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
             this.lobby.players.forEach(player => {
                 let {x, y} = this.ships[player.localId].body.velocity;
                 this.ships[player.localId].rotation = this.getAngle(x, y);
@@ -99,6 +99,6 @@ export default class LobbyScene extends Phaser.Scene {
                     this.lobby.velocity * Math.sin(this.ships[player.localId].rotation)
                 );
             });
-        }
+        }*/
     }
 }
