@@ -11,9 +11,14 @@ const strings = {
         lobby: {
             changeColor: "Change color:",
             totalTurns: "Number of turns:",
+            angularVelocity: "Rotation velocity:",
+            velocity: "Ship's velocity:",
+            reloadingVelocity: "Reloading velocity:",
             joinLobby: "Join",
             startGame: "Start",
-            adminSettings: "Game settings"
+            adminSettings: "Game settings",
+            shareTheLink: "Copy link",
+            copyTag: "Copy tag",
         }
     }
 }

@@ -35,9 +35,6 @@ button{
   background: none;
   border: 2px solid white;
   transition: all 0.5s;
-  /*background-image: url("https://labs.phaser.io/assets/skies/space3.png");
-  background-size: 200px;
-  background-position: bottom center;*/
 
   &:hover{
     background-color: white;
@@ -69,5 +66,9 @@ button{
   background-image: url("https://labs.phaser.io/assets/skies/nebula.jpg");
   background-size: cover;
   background-position: center;
+}
+
+::-webkit-scrollbar {
+  width: 0;
 }
 </style>

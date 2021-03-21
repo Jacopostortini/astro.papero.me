@@ -5,7 +5,7 @@ import {sceneKeys} from "../constants/constants";
 export default class GameScene extends Phaser.Scene {
 
     constructor() {
-        super({key: sceneKeys.game});
+        super({settingKey: sceneKeys.game});
         this.angularVelocity = Math.PI*2;
         this.shipVelocity = 200;
         this.bulletVelocity = 500;

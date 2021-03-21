@@ -49,13 +49,13 @@ export default {
 .change-color{
   display: flex;
   flex-flow: row;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   width: 100%;
   position: relative;
 
   p{
-    font-size: 200%;
+    font-size: 150%;
     color: white;
   }
 
