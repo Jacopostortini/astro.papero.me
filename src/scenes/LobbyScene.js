@@ -13,9 +13,9 @@ export default class LobbyScene extends Phaser.Scene {
             currentPlayer: null,
             settings: {
                 totalTurns: 5,
-                velocity: 2,
-                angularVelocity: 2,
-                reloadingVelocity: 2
+                velocity: 200,
+                angularVelocity: 200,
+                reloadingVelocity: 200
             }
         }
         this.ships = {};
@@ -40,7 +40,6 @@ export default class LobbyScene extends Phaser.Scene {
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
         ship.setBounce(1, 1);
-        console.log("newly created ship", ship);
         return ship;
     }
 
@@ -81,6 +80,10 @@ export default class LobbyScene extends Phaser.Scene {
             currentlyPlayingIds.forEach(id => {
                 if(previousPlayingIds.includes(id)){
                     newShips[id] = this.ships[id];
+                    newShips[id].setVelocity(
+                        this.lobby.settings.velocity * Math.cos(newShips[id].rotation),
+                        this.lobby.settings.velocity * Math.sin(newShips[id].rotation)
+                    );
                 } else {
                     newShips[id] = this.createNewShip(this.findPlayerById(id).color);
                 }
@@ -91,15 +94,11 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     update(){
-        /*if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
+        if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
             this.lobby.players.forEach(player => {
                 let {x, y} = this.ships[player.localId].body.velocity;
                 this.ships[player.localId].rotation = this.getAngle(x, y);
-                this.ships[player.localId].setVelocity(
-                    this.lobby.velocity * Math.cos(this.ships[player.localId].rotation),
-                    this.lobby.velocity * Math.sin(this.ships[player.localId].rotation)
-                );
             });
-        }*/
+        }
     }
 }
