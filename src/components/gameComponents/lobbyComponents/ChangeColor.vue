@@ -30,8 +30,12 @@ export default {
   computed: {
     availableColors: function(){
       let av = [];
+      let used = [];
+      this.players.forEach(player=>{
+        used.push(player.color);
+      })
       for(let i = 0; i < colors.length; i++){
-        if (!this.players.includes(i)) av.push(i);
+        if (!used.includes(i)) av.push(i);
       }
       return av;
     }

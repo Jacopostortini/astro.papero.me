@@ -33,11 +33,20 @@ export default {
     socket: Object
   },
   data(){
-    return{
+    return {
       strings,
       websocketEvents,
-      /*game: {
-        players: [0,1],
+      game: {
+        players: [
+          {
+            localId: 0,
+            color: 0
+          },
+          {
+            localId: 1,
+            color: 1
+          }
+        ],
         admin: 0,
         currentPlayer: 1,
         settings: {
@@ -46,21 +55,26 @@ export default {
           angularVelocity: 2,
           reloadingVelocity: 2
         }
-      }*/
-      game: {
-        settings: {}
       }
+      /*game: {
+        settings: {}
+      }*/
     }
   },
   mounted() {
     let parent = document.getElementById("players-wrapper");
     new Phaser.Game(
         config(
-            new LobbyScene(this.socket, this.game.players, this.game.currentPlayer),
+            new LobbyScene(this.game.players, this.game.currentPlayer),
             parent,
             Math.min(parent.offsetWidth, parent.offsetHeight),
             Math.min(parent.offsetWidth, parent.offsetHeight)
         ));
+    this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
+      console.log(game);
+      this.game = game;
+      this.emitter.emit(websocketEvents.LOBBY_MODIFIED, game);
+    });
   },
   computed: {
     gameId: function () {
@@ -71,16 +85,6 @@ export default {
     },
     link: function(){
       return window.location.href;
-    }
-  },
-  watch: {
-    socket: function(newSocket, oldSocket){
-      if(!oldSocket && newSocket){
-        this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
-          console.log(game);
-          this.game = game;
-        });
-      }
     }
   },
   methods: {

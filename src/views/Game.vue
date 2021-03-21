@@ -1,7 +1,7 @@
 <template>
-  <Lobby v-if="status === 0"
+  <Lobby v-if="status === 0 && socket"
          :socket="socket"/>
-  <GameScene v-if="status === 1"
+  <GameScene v-if="status === 1 && socket"
              :socket="socket"/>
 </template>
 
@@ -28,7 +28,7 @@ export default {
   mounted() {
     this.socket = io(urls.baseURL, {
       path: "/server/astro/socket.io",
-      autoConnect: true
+      autoConnect: false
     });
 
     this.socket.on("connect", ()=>{
