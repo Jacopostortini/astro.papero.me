@@ -5,7 +5,8 @@
     <GameSettings  v-if="game.currentPlayer!==null"
                    :game="game"
                    :socket="socket"/>
-    <button class="join-button" v-else>{{strings.gameView.lobby.joinLobby}}</button>
+
+    <button class="join-button" v-else @click="joinGame">{{strings.gameView.lobby.joinLobby}}</button>
 
     <div id="players-wrapper"/>
 
@@ -57,10 +58,6 @@ export default {
             Math.min(parent.offsetWidth, parent.offsetHeight),
             Math.min(parent.offsetWidth, parent.offsetHeight)
         ));
-
-/*    this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
-      this.game = game;
-    });*/
   },
   computed: {
     gameId: function () {
@@ -71,6 +68,21 @@ export default {
     },
     link: function(){
       return window.location.href;
+    }
+  },
+  watch: {
+    socket: function(newSocket, oldSocket){
+      if(!oldSocket && newSocket){
+        this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
+          console.log(game);
+          this.game = game;
+        });
+      }
+    }
+  },
+  methods: {
+    joinGame(){
+      this.socket.emit(websocketEvents.JOIN_GAME);
     }
   }
 

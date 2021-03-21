@@ -26,14 +26,17 @@ export default {
   computed: {
     value: function(){
       return this.game.settings[this.settingKey];
+    },
+    isAdmin: function(){
+      return this.game.admin === this.game.currentPlayer;
     }
   },
   methods: {
     increase(){
-      if(this.value<this.max) this.socket.emit(this.event, this.value+1);
+      if(this.value<this.max && this.isAdmin) this.socket.emit(this.event, this.value+1);
     },
     decrease(){
-      if(this.value>this.min) this.socket.emit(this.event, this.value-1);
+      if(this.value>this.min && this.isAdmin) this.socket.emit(this.event, this.value-1);
     }
   }
 }

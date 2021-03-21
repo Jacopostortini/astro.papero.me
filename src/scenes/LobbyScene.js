@@ -4,7 +4,7 @@ import {colors, sceneKeys} from "../constants/constants";
 export default class LobbyScene extends Phaser.Scene {
 
     constructor(socket, players, currentPlayer) {
-        super({settingKey: sceneKeys.lobby});
+        super({key: sceneKeys.lobby});
         this.shipVelocity = 200;
         this.socket = socket;
         this.players = players;
