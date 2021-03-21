@@ -71,7 +71,11 @@ export default class LobbyScene extends Phaser.Scene {
             let previousPlayingIds = [];
             this.lobby.players.forEach(player => {previousPlayingIds.push(player.localId)});
 
-            this.lobby = game;
+            this.lobby = {...game};
+
+            this.lobby.settings.velocity *= 100;
+            this.lobby.settings.angularVelocity *= 100;
+            this.lobby.settings.reloadingVelocity *= 100;
 
             let newShips = {};
             currentlyPlayingIds.forEach(id => {
@@ -83,9 +87,6 @@ export default class LobbyScene extends Phaser.Scene {
             });
 
             this.ships = newShips;
-            this.lobby.settings.velocity *= 100;
-            this.lobby.settings.angularVelocity *= 100;
-            this.lobby.settings.reloadingVelocity *= 100;
         });
     }
 
