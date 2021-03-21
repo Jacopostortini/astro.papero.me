@@ -28,7 +28,7 @@ export default {
   mounted() {
     this.socket = io(urls.baseURL, {
       path: "/server/astro/socket.io",
-      autoConnect: false
+      autoConnect: true
     });
 
     this.socket.on("connect", ()=>{
