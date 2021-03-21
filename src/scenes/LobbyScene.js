@@ -40,6 +40,7 @@ export default class LobbyScene extends Phaser.Scene {
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
         ship.setBounce(1, 1);
+        return ship;
     }
 
     findPlayerById(id){
