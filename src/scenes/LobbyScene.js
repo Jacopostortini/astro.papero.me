@@ -161,7 +161,7 @@ export default class LobbyScene extends Phaser.Scene {
                 }
             });
         }
-        if(this.lobby.currentPlayer && this.keySpace.isDown){
+        if(this.lobby.currentPlayer!==null && this.keySpace.isDown){
             console.log("space is down")
             this.ships[this.lobby.currentPlayer].rotation += this.lobby.settings.angularVelocity* this.normalizers.angularVelocity *delta;
             this.ships[this.lobby.currentPlayer].setVelocity(
