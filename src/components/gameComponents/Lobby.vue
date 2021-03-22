@@ -38,7 +38,7 @@ export default {
     return {
       strings,
       websocketEvents,
-      game: {
+/*      game: {
         players: [
           {
             localId: 0,
@@ -57,15 +57,15 @@ export default {
           angularVelocity: 2,
           reloadingVelocity: 2
         }
-      }
-      /*game: {
+      }*/
+      game: {
         settings: {
           totalTurns: 5,
           velocity: 2,
           angularVelocity: 2,
           reloadingVelocity: 2
         }
-      }*/
+      }
     }
   },
   mounted() {

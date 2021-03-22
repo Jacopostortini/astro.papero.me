@@ -30,6 +30,13 @@
                      :label="strings.gameView.lobby.reloadingVelocity"
                      setting-key="reloadingVelocity"
                      :event="websocketEvents.SET_RELOADING_VELOCITY"/>
+      <SingleSetting :game="game"
+                     :socket="socket"
+                     :min="1"
+                     :max="4"
+                     :label="strings.gameView.lobby.bulletVelocity"
+                     setting-key="bulletVelocity"
+                     :event="websocketEvents.SET_BULLET_VELOCITY"/>
       <button :disabled="!isAdmin">{{strings.gameView.lobby.startGame}}</button>
       <div class="not-admin" v-if="!isAdmin"/>
     </div>

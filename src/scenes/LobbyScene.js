@@ -8,17 +8,18 @@ export default class LobbyScene extends Phaser.Scene {
 
     constructor() {
         super({key: sceneKeys.lobby});
-        /*this.lobby = {
+        this.lobby = {
             players: [],
             currentPlayer: null,
             settings: {
                 totalTurns: 5,
                 velocity: 2,
                 angularVelocity: 2,
-                reloadingVelocity: 2
+                reloadingVelocity: 2,
+                bulletVelocity: 2
             }
-        }*/
-        this.lobby = {
+        }
+/*        this.lobby = {
             players: [
                 {
                     localId: 0,
@@ -35,9 +36,10 @@ export default class LobbyScene extends Phaser.Scene {
                 totalTurns: 5,
                 velocity: 2,
                 angularVelocity: 2,
-                reloadingVelocity: 2
+                reloadingVelocity: 2,
+                bulletVelocity: 2
             }
-        }
+        }*/
         this.normalizers = {
             velocity: 100,
             angularVelocity: Math.PI/1200,
@@ -93,7 +95,7 @@ export default class LobbyScene extends Phaser.Scene {
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
         colors.forEach((value, index) => {
-            this.textures.addBase64("ship"+index, require("@/assets/ship"+index+".png"))
+            this.load.image("ship"+index, require("@/assets/ship"+index+".png"));
         });
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
@@ -140,8 +142,8 @@ export default class LobbyScene extends Phaser.Scene {
                 );
                 bullet.rotation = this.ships[this.lobby.currentPlayer].rotation;
                 bullet.setVelocity(
-                    this.lobby.settings.velocity*this.normalizers.bulletVelocity*Math.cos(bullet.rotation),
-                    this.lobby.settings.velocity*this.normalizers.bulletVelocity*Math.sin(bullet.rotation)
+                    this.lobby.settings.bulletVelocity*this.normalizers.bulletVelocity*Math.cos(bullet.rotation),
+                    this.lobby.settings.bulletVelocity*this.normalizers.bulletVelocity*Math.sin(bullet.rotation)
                 );
                 this.availableBullets--;
             }

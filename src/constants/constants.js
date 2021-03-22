@@ -14,6 +14,7 @@ const strings = {
             angularVelocity: "Rotation velocity:",
             velocity: "Ship's velocity:",
             reloadingVelocity: "Reloading velocity:",
+            bulletVelocity: "Bullet velocity",
             joinLobby: "Join",
             startGame: "Start",
             adminSettings: "Game settings",
