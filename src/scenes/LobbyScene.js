@@ -123,6 +123,7 @@ export default class LobbyScene extends Phaser.Scene {
                         this.lobby.settings.velocity* this.normalizers.velocity * Math.cos(newShips[id].rotation),
                         this.lobby.settings.velocity* this.normalizers.velocity * Math.sin(newShips[id].rotation)
                     );
+                    newShips[id].setTexture("ship"+this.findPlayerById(id).color);
                 } else {
                     newShips[id] = this.createNewShip(this.findPlayerById(id).color, id!==game.currentPlayer);
                 }
