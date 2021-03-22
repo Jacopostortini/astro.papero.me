@@ -77,12 +77,13 @@ export default {
   display: flex;
   flex-flow: column;
   min-width: 90%;
-  height: 90%;
+  height: 95%;
   @media (max-width: 751px) {
     height: 500px;
   }
   overflow-y: scroll;
   margin-left: 10px;
+  margin-top: -40px;
 
   .admin-reserved{
     position: relative;

@@ -6,8 +6,9 @@ import websocketEvents from "../constants/websocketEvents";
 window.mitt = window.mitt || mitt();
 export default class LobbyScene extends Phaser.Scene {
 
-    constructor() {
+    constructor(socket) {
         super({key: sceneKeys.lobby});
+        this.socket = socket;
         this.lobby = {
             players: [],
             currentPlayer: null,
@@ -106,7 +107,7 @@ export default class LobbyScene extends Phaser.Scene {
         //this.ships["1"] = this.createNewShip(1, false)
 
         //Event lobby-modified
-        window.mitt.on(websocketEvents.LOBBY_MODIFIED, game => {
+        this.socket.on(websocketEvents.LOBBY_MODIFIED, game => {
             let currentlyPlayingIds = [];
             game.players.forEach(player => {currentlyPlayingIds.push(player.localId)});
 

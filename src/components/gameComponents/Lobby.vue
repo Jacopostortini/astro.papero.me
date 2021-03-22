@@ -63,7 +63,8 @@ export default {
           totalTurns: 5,
           velocity: 2,
           angularVelocity: 2,
-          reloadingVelocity: 2
+          reloadingVelocity: 2,
+          bulletVelocity: 2
         }
       }
     }
@@ -72,7 +73,7 @@ export default {
     let parent = document.getElementById("players-wrapper");
     new Phaser.Game(
         config(
-            LobbyScene,
+            new LobbyScene(this.socket),
             parent,
             Math.min(parent.offsetWidth, parent.offsetHeight),
             Math.min(parent.offsetWidth, parent.offsetHeight)
