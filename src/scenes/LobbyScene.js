@@ -8,17 +8,51 @@ export default class LobbyScene extends Phaser.Scene {
 
     constructor() {
         super({key: sceneKeys.lobby});
-        this.lobby = {
+        /*this.lobby = {
             players: [],
             currentPlayer: null,
             settings: {
                 totalTurns: 5,
-                velocity: 200,
-                angularVelocity: 200,
-                reloadingVelocity: 200
+                velocity: 2,
+                angularVelocity: 2,
+                reloadingVelocity: 2
+            }
+        }*/
+        this.lobby = {
+            players: [
+                {
+                    localId: 0,
+                    color: 0
+                },
+                {
+                    localId: 1,
+                    color: 1
+                }
+            ],
+            admin: 0,
+            currentPlayer: 1,
+            settings: {
+                totalTurns: 5,
+                velocity: 2,
+                angularVelocity: 2,
+                reloadingVelocity: 2
             }
         }
+        this.normalizers = {
+            velocity: 100,
+            angularVelocity: Math.PI/1200,
+            reloadingVelocity: 1/2000,
+            bulletVelocity: 200
+        }
         this.ships = {};
+        this.availableBullets = 3;
+        let interval;
+        let handler = () => {
+            this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
+            clearInterval(interval)
+            interval = setInterval(handler, 2000/this.lobby.settings.reloadingVelocity);
+        }
+        interval = setInterval(handler, 2000/this.lobby.settings.reloadingVelocity);
     }
 
     getAngle(x, y){
@@ -31,15 +65,18 @@ export default class LobbyScene extends Phaser.Scene {
         return angle;
     }
 
-    createNewShip(color){
+    createNewShip(color, bounce){
         let x = Phaser.Math.Between(0, this.width);
         let y = Phaser.Math.Between(0, this.height);
         let ship = this.physics.add.image(x, y, "ship"+color);
         let angle = Phaser.Math.Between(Math.PI/4, Math.PI*3/4);
-        ship.setVelocity(this.lobby.settings.velocity*Math.cos(angle), this.lobby.settings.velocity*Math.sin(angle));
+        ship.setVelocity(
+            this.lobby.settings.velocity*this.normalizers.velocity*Math.cos(angle),
+            this.lobby.settings.velocity*this.normalizers.velocity*Math.sin(angle)
+        );
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
-        ship.setBounce(1, 1);
+        if(bounce) ship.setBounce(1, 1);
         return ship;
     }
 
@@ -56,13 +93,17 @@ export default class LobbyScene extends Phaser.Scene {
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
         colors.forEach((value, index) => {
-            this.load.image("ship"+index, require("@/assets/ship"+index+".png"))
+            this.textures.addBase64("ship"+index, require("@/assets/ship"+index+".png"))
         });
-        this.load.image('particle', 'https://labs.phaser.io/assets/particles/red.png');
+        this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
     }
 
     create(){
+        this.ships["0"] = this.createNewShip(0, true)
+        this.ships["1"] = this.createNewShip(1, false)
+
+        //Event lobby-modified
         window.mitt.on(websocketEvents.LOBBY_MODIFIED, game => {
             let currentlyPlayingIds = [];
             game.players.forEach(player => {currentlyPlayingIds.push(player.localId)});
@@ -72,33 +113,56 @@ export default class LobbyScene extends Phaser.Scene {
 
             this.lobby = {...game};
 
-            this.lobby.settings.velocity *= 100;
-            this.lobby.settings.angularVelocity *= 100;
-            this.lobby.settings.reloadingVelocity *= 100;
-
             let newShips = {};
             currentlyPlayingIds.forEach(id => {
                 if(previousPlayingIds.includes(id)){
                     newShips[id] = this.ships[id];
                     newShips[id].setVelocity(
-                        this.lobby.settings.velocity * Math.cos(newShips[id].rotation),
-                        this.lobby.settings.velocity * Math.sin(newShips[id].rotation)
+                        this.lobby.settings.velocity* this.normalizers.velocity * Math.cos(newShips[id].rotation),
+                        this.lobby.settings.velocity* this.normalizers.velocity * Math.sin(newShips[id].rotation)
                     );
                 } else {
-                    newShips[id] = this.createNewShip(this.findPlayerById(id).color);
+                    newShips[id] = this.createNewShip(this.findPlayerById(id).color, id!==game.currentPlayer);
                 }
             });
 
             this.ships = newShips;
         });
+
+        //Setting up rotation and shooting
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.input.keyboard.on("keyup-ENTER", ()=>{
+            if(this.availableBullets>0){
+                let bullet = this.physics.add.image(
+                    this.ships[this.lobby.currentPlayer].x,
+                    this.ships[this.lobby.currentPlayer].y,
+                    "bullet"
+                );
+                bullet.rotation = this.ships[this.lobby.currentPlayer].rotation;
+                bullet.setVelocity(
+                    this.lobby.settings.velocity*this.normalizers.bulletVelocity*Math.cos(bullet.rotation),
+                    this.lobby.settings.velocity*this.normalizers.bulletVelocity*Math.sin(bullet.rotation)
+                );
+                this.availableBullets--;
+            }
+        });
     }
 
-    update(){
+    update(time, delta){
         if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
             this.lobby.players.forEach(player => {
-                let {x, y} = this.ships[player.localId].body.velocity;
-                this.ships[player.localId].rotation = this.getAngle(x, y);
+                if(player.localId !== this.lobby.currentPlayer) {
+                    let {x, y} = this.ships[player.localId].body.velocity;
+                    this.ships[player.localId].rotation = this.getAngle(x, y);
+                }
             });
+        }
+        if(this.lobby.currentPlayer && this.keySpace.isDown){
+            this.ships[this.lobby.currentPlayer].rotation += this.lobby.settings.angularVelocity* this.normalizers.angularVelocity *delta;
+            this.ships[this.lobby.currentPlayer].setVelocity(
+                this.lobby.settings.velocity* this.normalizers.velocity * Math.cos(this.ships[this.lobby.currentPlayer].rotation),
+                this.lobby.settings.velocity* this.normalizers.velocity * Math.sin(this.ships[this.lobby.currentPlayer].rotation)
+            );
         }
     }
 }
