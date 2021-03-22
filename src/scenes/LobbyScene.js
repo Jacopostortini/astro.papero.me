@@ -135,7 +135,6 @@ export default class LobbyScene extends Phaser.Scene {
         //Setting up rotation and shooting
         this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.input.keyboard.on("keyup-ENTER", ()=>{
-            console.log("enter up")
             if(this.availableBullets>0){
                 let bullet = this.physics.add.image(
                     this.ships[this.lobby.currentPlayer].x,
@@ -162,7 +161,6 @@ export default class LobbyScene extends Phaser.Scene {
             });
         }
         if(this.lobby.currentPlayer!==null && this.keySpace.isDown){
-            console.log("space is down")
             this.ships[this.lobby.currentPlayer].rotation += this.lobby.settings.angularVelocity* this.normalizers.angularVelocity *delta;
             this.ships[this.lobby.currentPlayer].setVelocity(
                 this.lobby.settings.velocity* this.normalizers.velocity * Math.cos(this.ships[this.lobby.currentPlayer].rotation),
