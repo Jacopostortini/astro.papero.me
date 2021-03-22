@@ -1,4 +1,8 @@
 <template>
+  <UserHamburgerMenu :show="showHamburgerMenu"
+                     :src="require('@/assets/hamburger_icon_dark.png')"
+                     :auto-login="true"
+                     @toggle-show="showHamburgerMenu=$event"/>
   <Lobby v-if="status === 0 && socket"
          :socket="socket"/>
   <GameScene v-if="status === 1 && socket"
@@ -11,13 +15,15 @@ import Lobby from "../components/gameComponents/Lobby";
 import io from "socket.io-client";
 import {urls} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
+import UserHamburgerMenu from "../components/UserHamburgerMenu";
 export default {
   name: 'Game',
-  components: {Lobby, GameScene},
+  components: {UserHamburgerMenu, Lobby, GameScene},
   data(){
     return {
       status: 0,
       socket: null,
+      showHamburgerMenu: true
     }
   },
   computed: {
@@ -38,7 +44,10 @@ export default {
     this.socket.on(websocketEvents.STATUS, status => {
       this.status = status;
     });
-  }
+  },
+  /*beforeRouteEnter(to, from, next){
+
+  }*/
 }
 </script>
 

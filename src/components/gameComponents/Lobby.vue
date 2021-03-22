@@ -8,7 +8,12 @@
 
     <button class="join-button" v-else @click="joinGame">{{strings.gameView.lobby.joinLobby}}</button>
 
-    <div id="players-wrapper"/>
+    <div id="players-wrapper">
+      <div>
+        <img src="../../assets/space-key-icon.png"/>
+        <img src="../../assets/enter-key-icon.png"/>
+      </div>
+    </div>
 
     <div class="infos">
       <ChangeColor :socket="socket" :players="game.players"/>
@@ -26,8 +31,6 @@ import ChangeColor from "./lobbyComponents/ChangeColor";
 import CopyInformation from "./lobbyComponents/CopyInformation";
 import websocketEvents from "../../constants/websocketEvents";
 import GameSettings from "./lobbyComponents/GameSettings";
-import mitt from "mitt";
-window.mitt = window.mitt || mitt();
 export default {
   name: "Lobby",
   components: {GameSettings, CopyInformation, ChangeColor},
@@ -81,7 +84,6 @@ export default {
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
       console.log(game);
       this.game = {...game};
-      window.mitt.emit(websocketEvents.LOBBY_MODIFIED, game);
     });
   },
   computed: {
@@ -137,11 +139,22 @@ export default {
     width: 80%;
     height: 80%;
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
     grid-area: phaser;
     margin-top: 20px;
     justify-content: center;
     align-items: center;
+
+    div{
+      display: flex;
+      margin: 10px;
+
+      img{
+        margin: 10px;
+        height: 50px;
+        width: auto;
+      }
+    }
   }
 
   .infos{

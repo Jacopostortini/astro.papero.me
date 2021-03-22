@@ -1,5 +1,9 @@
 <template>
   <div class="wrapper">
+    <UserHamburgerMenu :show="showHamburgerMenu"
+                       :src="require('@/assets/hamburger_icon_dark.png')"
+                       :auto-login="false"
+                       @toggle-show="showHamburgerMenu=$event"/>
     <div class="home">
       <h1>{{strings.title}}</h1>
       <div>
@@ -15,14 +19,16 @@
 <script>
 import {strings} from "../constants/constants";
 import JoinGameInput from "../components/homeComponents/JoinGameInput";
+import UserHamburgerMenu from "../components/UserHamburgerMenu";
 
 export default {
   name: 'Game',
-  components: {JoinGameInput},
+  components: {JoinGameInput, UserHamburgerMenu},
   data() {
     return {
       strings: strings,
-      showPopup: false
+      showPopup: false,
+      showHamburgerMenu: false
     }
   }
 }

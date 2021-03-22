@@ -41,8 +41,12 @@ const config = (scene, parent, width, height) => {
     }
 }
 
+let baseUrl = "https://papero.me";
 const urls = {
-    baseURL: "https://papero.me"
+    baseURL: baseUrl,
+    getLoginInfoUrl: baseUrl+"/user/get_info",
+    createLocalAccountUrl: baseUrl+"/auth/local",
+    logoutUrl: baseUrl+"/auth/logout",
 }
 
 const sceneKeys = {

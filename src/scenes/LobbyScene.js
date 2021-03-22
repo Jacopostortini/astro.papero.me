@@ -1,9 +1,7 @@
 import * as Phaser from "phaser";
 import {colors, sceneKeys} from "../constants/constants";
-import mitt from "mitt";
 import websocketEvents from "../constants/websocketEvents";
 
-window.mitt = window.mitt || mitt();
 export default class LobbyScene extends Phaser.Scene {
 
     constructor(socket) {
