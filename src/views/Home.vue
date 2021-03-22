@@ -2,7 +2,8 @@
   <div class="wrapper">
     <UserHamburgerMenu :show="showHamburgerMenu"
                        :src="require('@/assets/hamburger_icon_dark.png')"
-                       :auto-login="false"
+                       :logged="logged"
+                       :username="username"
                        @toggle-show="showHamburgerMenu=$event"/>
     <div class="home">
       <h1>{{strings.title}}</h1>
@@ -17,9 +18,10 @@
 </template>
 
 <script>
-import {strings} from "../constants/constants";
+import {strings, urls} from "../constants/constants";
 import JoinGameInput from "../components/homeComponents/JoinGameInput";
 import UserHamburgerMenu from "../components/UserHamburgerMenu";
+import axios from "axios";
 
 export default {
   name: 'Game',
@@ -28,8 +30,22 @@ export default {
     return {
       strings: strings,
       showPopup: false,
-      showHamburgerMenu: false
+      showHamburgerMenu: false,
+      logged: false,
+      username: null
     }
+  },
+  mounted() {
+    axios.get(urls.getLoginInfoUrl)
+        .then(response => {
+          if(response.data) {
+            this.logged = response.data.google_signed_in;
+            this.username = response.data.username;
+          }
+        })
+        .catch(() => {
+          location.href = location.origin+"/error?from="+location.pathname;
+        });
   }
 }
 </script>

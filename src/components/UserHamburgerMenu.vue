@@ -31,36 +31,11 @@ export default {
       required: true
     },
     show: Boolean,
-    autoLogin: Boolean
-  },
-  data(){
-    return {
-      logged: false,
-      username: null
-    }
+    logged: Boolean,
+    username: String
   },
   mounted() {
     window.addEventListener("click", ()=>{this.$emit("toggle-show", false)});
-    const createLocalAccount = ()=>{
-      axios
-          .get(urls.createLocalAccountUrl)
-          .then((response) => {
-            this.logged = false;
-            this.username = response.data.username;
-          })
-          .catch(() => {
-            location.href = location.origin+"/error?from="+location.pathname;
-          });
-    }
-    axios.get(urls.getLoginInfoUrl)
-        .then(response => {
-          if(!response.data){ //se non è loggato
-            if(this.autoLogin) createLocalAccount();
-          } else {
-            this.logged = response.data.google_signed_in;
-            this.username = response.data.username;
-          }
-        })
   },
   methods: {
     toggleMenu(){
