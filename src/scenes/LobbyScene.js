@@ -102,8 +102,8 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     create(){
-        this.ships["0"] = this.createNewShip(0, true)
-        this.ships["1"] = this.createNewShip(1, false)
+        //this.ships["0"] = this.createNewShip(0, true)
+        //this.ships["1"] = this.createNewShip(1, false)
 
         //Event lobby-modified
         window.mitt.on(websocketEvents.LOBBY_MODIFIED, game => {
