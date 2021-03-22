@@ -129,6 +129,7 @@ export default class LobbyScene extends Phaser.Scene {
             });
 
             this.ships = newShips;
+            console.log(this.lobby, this.ships);
         });
 
         //Setting up rotation and shooting
