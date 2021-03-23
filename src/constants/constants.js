@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 const strings = {
-    title: "Star Wars",
+    title: "Cosmos",
     homeView: {
         play: "Play",
         joinGameInputPlaceholder: "Game ID",

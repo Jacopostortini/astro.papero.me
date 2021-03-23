@@ -5,12 +5,12 @@ const Game = () => import("../views/Game" /* webpackChunkName: "game" */);
 
 const routes = [
     {
-        path: '/astro',
+        path: '/cosmos',
         name: 'Home',
         component: Home
     },
     {
-        path: '/astro/:gameId',
+        path: '/cosmos/:gameId',
         name: 'Game',
         component: Game
     }
@@ -18,7 +18,7 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    base: "astro",
+    base: "cosmos",
     routes
 });
 

@@ -1,3 +1,3 @@
 module.exports = {
-    publicPath: "/astro/"
+    publicPath: "/cosmos/"
 }
