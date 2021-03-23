@@ -4,7 +4,7 @@
                        :src="require('@/assets/hamburger_icon_dark.png')"
                        @toggle-show="showHamburgerMenu=$event"/>
     <div class="home">
-      <h1>{{strings.title}}</h1>
+      <img src="../assets/title.png">
       <form @submit.prevent="play">
         <input :placeholder="strings.homeView.joinGameInputPlaceholder" v-model="input" required>
         <button>{{ strings.homeView.play }}</button>
@@ -84,6 +84,12 @@ export default {
     flex-flow: column;
     justify-content: flex-start;
     height: 100%;
+    align-items: center;
+
+    img{
+      margin-top: 10px;
+      width: 50%;
+    }
 
     form {
       display: flex;
@@ -91,6 +97,7 @@ export default {
       justify-content: space-evenly;
       align-items: center;
       height: 100%;
+      width: 100%;
 
       input{
         background: none;
@@ -99,8 +106,11 @@ export default {
         border-bottom: 2px solid white;
         font-size: 250%;
         text-align: center;
-        width: 20%;
         color: white;
+        width: 20%;
+        @media (max-width: 750px){
+          width: 80%;
+        }
       }
     }
   }
