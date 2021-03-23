@@ -2,8 +2,6 @@
   <div class="wrapper">
     <UserHamburgerMenu :show="showHamburgerMenu"
                        :src="require('@/assets/hamburger_icon_dark.png')"
-                       :logged="logged"
-                       :username="username"
                        @toggle-show="showHamburgerMenu=$event"/>
     <div class="home">
       <h1>{{strings.title}}</h1>
@@ -22,6 +20,8 @@ import {strings, urls} from "../constants/constants";
 import JoinGameInput from "../components/homeComponents/JoinGameInput";
 import UserHamburgerMenu from "../components/UserHamburgerMenu";
 import axios from "axios";
+import store from "../store";
+
 
 export default {
   name: 'Game',
@@ -30,22 +30,27 @@ export default {
     return {
       strings: strings,
       showPopup: false,
-      showHamburgerMenu: false,
-      logged: false,
-      username: null
+      showHamburgerMenu: false
     }
   },
-  mounted() {
-    axios.get(urls.getLoginInfoUrl)
-        .then(response => {
-          if(response.data) {
-            this.logged = response.data.google_signed_in;
-            this.username = response.data.username;
-          }
-        })
-        .catch(() => {
-          location.href = location.origin+"/error?from="+location.pathname;
-        });
+  beforeRouteEnter(to, from, next){
+    if (store.state.logged === -1 || store.state.username === "") {
+      axios.get(urls.getLoginInfoUrl)
+          .then(response => {
+            if (response.data) {
+              store.dispatch("setLogged", response.data.google_signed_in);
+              store.dispatch("setUsername", response.data.username);
+              next();
+            } else {
+              store.dispatch("setLogged", false);
+              store.dispatch("setUsername", null);
+              next();
+            }
+          })
+          .catch(() => {
+            location.href = location.origin + "/error?from=" + location.pathname;
+          });
+    } else next();
   }
 }
 </script>

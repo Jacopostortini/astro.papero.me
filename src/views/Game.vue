@@ -1,12 +1,10 @@
 <template>
   <UserHamburgerMenu :show="showHamburgerMenu"
                      :src="require('@/assets/hamburger_icon_dark.png')"
-                     :logged="logged"
-                     :username="username"
                      @toggle-show="showHamburgerMenu=$event"/>
-  <Lobby v-if="status === 0 && socket && settedUp"
+  <Lobby v-if="status === 0 && socket"
          :socket="socket"/>
-  <GameScene v-if="status === 1 && socket && settedUp"
+  <GameScene v-if="status === 1 && socket"
              :socket="socket"/>
 </template>
 
@@ -18,6 +16,7 @@ import {urls} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
 import UserHamburgerMenu from "../components/UserHamburgerMenu";
 import axios from "axios";
+import store from "../store";
 export default {
   name: 'Game',
   components: {UserHamburgerMenu, Lobby, GameScene},
@@ -25,10 +24,7 @@ export default {
     return {
       status: 0,
       socket: null,
-      showHamburgerMenu: false,
-      logged: false,
-      username: null,
-      settedUp: false
+      showHamburgerMenu: false
     }
   },
   computed: {
@@ -49,31 +45,36 @@ export default {
     this.socket.on(websocketEvents.STATUS, status => {
       this.status = status;
     });
-
-    const createLocalAccount = ()=>{
+  },
+  beforeRouteEnter(to, from, next) {
+    const createLocalAccount = () => {
       axios
           .get(urls.createLocalAccountUrl)
           .then((response) => {
-            this.logged = false;
-            this.username = response.data.username;
-            this.settedUp = true;
+            store.dispatch("setLogged", false);
+            store.dispatch("setUsername", response.data.username);
+            next();
           })
           .catch(() => {
-            location.href = location.origin+"/error?from="+location.pathname;
+            location.href = location.origin + "/error?from=" + location.pathname;
           });
     }
-    axios.get(urls.getLoginInfoUrl)
-        .then(response => {
-          if(!response.data) createLocalAccount();
-          else {
-            this.logged = response.data.google_signed_in;
-            this.username = response.data.username;
-            this.settedUp = true;
-          }
-        })
-        .catch(() => {
-          location.href = location.origin+"/error?from="+location.pathname;
-        });
+    if (store.state.logged === -1 || store.state.username === "") {
+      axios.get(urls.getLoginInfoUrl)
+          .then(response => {
+            if (!response.data) createLocalAccount();
+            else {
+              store.dispatch("setLogged", response.data.google_signed_in);
+              store.dispatch("setUsername", response.data.username);
+              next();
+            }
+          })
+          .catch(() => {
+            location.href = location.origin + "/error?from=" + location.pathname;
+          });
+    } else if(store.state.username === null && store.state.logged === false){
+      createLocalAccount();
+    } else next();
   }
 }
 </script>

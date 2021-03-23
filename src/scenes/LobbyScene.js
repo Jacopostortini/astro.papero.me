@@ -94,9 +94,15 @@ export default class LobbyScene extends Phaser.Scene {
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
         colors.forEach((value, index) => {
-            this.load.image("ship"+index, require("@/assets/ship"+index+".png"));
+            this.load.image("ship"+index, require("@/assets/ships/ship"+index+".png"));
         });
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
+
+        window.addEventListener('resize', () => {
+            let parent = document.getElementById("players-wrapper");
+            let dim = Math.min(parent.offsetWidth, parent.offsetHeight);
+            this.game.scale.resize(dim, dim);
+        });
 
     }
 

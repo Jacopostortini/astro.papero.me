@@ -30,9 +30,15 @@ export default {
     src: {
       required: true
     },
-    show: Boolean,
-    logged: Boolean,
-    username: String
+    show: Boolean
+  },
+  computed: {
+    logged: function () {
+      return this.$store.state.logged;
+    },
+    username: function () {
+      return this.$store.state.username;
+    }
   },
   mounted() {
     window.addEventListener("click", ()=>{this.$emit("toggle-show", false)});
@@ -108,6 +114,7 @@ $papero-color-dark: #ffa500;
 
       button{
         font-size: 150%;
+        margin: 10px;
       }
       button:hover{
         color: $papero-color-dark;
