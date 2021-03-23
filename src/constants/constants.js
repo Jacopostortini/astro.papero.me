@@ -3,9 +3,10 @@ import Phaser from "phaser";
 const strings = {
     title: "Star Wars",
     homeView: {
-        joinButton: "Join game",
-        createButton: "Create game",
-        joinGameInputPlaceholder: "Game ID"
+        play: "Play",
+        joinGameInputPlaceholder: "Game ID",
+        confirmButton: "Confirm",
+        cancelButton: "Cancel"
     },
     gameView: {
         lobby: {

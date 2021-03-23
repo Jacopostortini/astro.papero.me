@@ -5,19 +5,25 @@
                        @toggle-show="showHamburgerMenu=$event"/>
     <div class="home">
       <h1>{{strings.title}}</h1>
+      <form @submit.prevent="play">
+        <input :placeholder="strings.homeView.joinGameInputPlaceholder" v-model="input" required>
+        <button>{{ strings.homeView.play }}</button>
+      </form>
+    </div>
+    <div class="popup-background" v-if="showPopup" @click="showPopup=false">
       <div>
-        <button>{{strings.homeView.createButton}}</button>
-        <button @click="showPopup=true">{{strings.homeView.joinButton}}</button>
+        <p>{{popupMessage}}</p>
+        <div>
+          <button @click="confirm">{{ strings.homeView.confirmButton }}</button>
+          <button @click="showPopup=false">{{ strings.homeView.cancelButton }}</button>
+        </div>
       </div>
     </div>
-    <div class="popup-background" v-if="showPopup" @click="showPopup=false"/>
-    <JoinGameInput :show="showPopup"/>
   </div>
 </template>
 
 <script>
 import {strings, urls} from "../constants/constants";
-import JoinGameInput from "../components/homeComponents/JoinGameInput";
 import UserHamburgerMenu from "../components/UserHamburgerMenu";
 import axios from "axios";
 import store from "../store";
@@ -25,12 +31,24 @@ import store from "../store";
 
 export default {
   name: 'Game',
-  components: {JoinGameInput, UserHamburgerMenu},
+  components: {UserHamburgerMenu},
   data() {
     return {
       strings: strings,
+      showHamburgerMenu: false,
       showPopup: false,
-      showHamburgerMenu: false
+      popupMessage: "",
+      input: ""
+    }
+  },
+  methods: {
+    play(){
+      //TODO: Logic for checking existence
+      this.popupMessage = "Do you want to join the game with ID "+this.input;
+      this.showPopup = true
+    },
+    confirm(){
+      this.$router.push({name: "Game", params: {gameId: this.input}})
     }
   },
   beforeRouteEnter(to, from, next){
@@ -64,14 +82,47 @@ export default {
   .home {
     display: flex;
     flex-flow: column;
-    justify-content: space-between;
-    height: 60%;
+    justify-content: flex-start;
+    height: 100%;
 
-    div {
+    form {
       display: flex;
-      flex-flow: row;
+      flex-flow: column;
       justify-content: space-evenly;
       align-items: center;
+      height: 100%;
+
+      input{
+        background: none;
+        outline: none;
+        border: none;
+        border-bottom: 2px solid white;
+        font-size: 250%;
+        text-align: center;
+        width: 20%;
+        color: white;
+      }
+    }
+  }
+
+  .popup-background{
+
+    div{
+      display: flex;
+      flex-flow: column;
+      color: white;
+      font-size: 150%;
+
+      div{
+        display: flex;
+        flex-flow: row;
+        justify-content: space-evenly;
+        align-items: center;
+
+        button{
+          font-size: 100%;
+        }
+      }
     }
   }
 }
