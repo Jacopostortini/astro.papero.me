@@ -98,7 +98,7 @@ $papero-color-dark: #ffa500;
     .home-button{
       margin-top: 2%;
       grid-area: logo;
-      height: 90%;
+      height: 100%;
     }
 
     .user-menu{
