@@ -47,7 +47,8 @@ const config = (scene, parent, width, height) => {
 
 let baseUrl = "https://papero.me";
 const urls = {
-    baseURL: baseUrl,
+    baseUrl: "https://papero.me",
+    socketPath: baseUrl+"/server/cosmos/socket.io",
     getLoginInfoUrl: baseUrl+"/user/get_info",
     createLocalAccountUrl: baseUrl+"/auth/local",
     logoutUrl: baseUrl+"/auth/logout",

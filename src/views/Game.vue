@@ -33,8 +33,8 @@ export default {
     }
   },
   mounted() {
-    this.socket = io(urls.baseURL, {
-      path: "/server/astro/socket.io",
+    this.socket = io(urls.baseUrl, {
+      path: urls.socketPath,
       autoConnect: true
     });
 

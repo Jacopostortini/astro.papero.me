@@ -41,26 +41,6 @@ export default {
     return {
       strings,
       websocketEvents,
-/*      game: {
-        players: [
-          {
-            localId: 0,
-            color: 0
-          },
-          {
-            localId: 1,
-            color: 1
-          }
-        ],
-        admin: 0,
-        currentPlayer: 1,
-        settings: {
-          totalTurns: 5,
-          velocity: 2,
-          angularVelocity: 2,
-          reloadingVelocity: 2
-        }
-      }*/
       game: {
         settings: {
           totalTurns: 5,
@@ -69,12 +49,13 @@ export default {
           reloadingVelocity: 2,
           bulletVelocity: 2
         }
-      }
+      },
+      phaserScene: null
     }
   },
   mounted() {
     let parent = document.getElementById("players-wrapper");
-    new Phaser.Game(
+    this.phaserScene = new Phaser.Game(
         config(
             new LobbyScene(this.socket),
             parent,
@@ -101,6 +82,9 @@ export default {
     joinGame(){
       this.socket.emit(websocketEvents.JOIN_GAME);
     }
+  },
+  unmounted() {
+    this.phaserScene.destroy();
   }
 
 }
