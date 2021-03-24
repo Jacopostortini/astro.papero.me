@@ -84,7 +84,8 @@ export default {
     }
   },
   unmounted() {
-    this.phaserScene.destroy();
+    console.log("destroying")
+    this.phaserScene.destroy(true);
   }
 
 }
