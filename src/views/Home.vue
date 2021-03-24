@@ -61,7 +61,7 @@ export default {
   methods: {
     play(){
       axios
-          .get(urls.getGameStatusUrl, {params: {game_id: this.input.toLowerCase()}})
+          .get(urls.getGameStatusUrl, {params: {gameId: this.input.toLowerCase()}})
           .then(response => {
             if(response.data){
               if(this.choice==="join"){
