@@ -202,7 +202,7 @@ export default {
         display: flex;
         flex-wrap: wrap;
         flex-flow: row;
-        justify-content: space-evenly;
+        justify-content: center;
         align-items: center;
 
         button{
