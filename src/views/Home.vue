@@ -65,15 +65,20 @@ export default {
           .then(response => {
             if(response.data){
               if(this.choice==="join"){
-                this.popupMessage = strings.homeView.gameDoesNotExists;
-                this.confirmButton = strings.homeView.createGameButton;
+                this.$router.push({name: "Game", params: {gameId: this.input}});
               } else if (this.choice==="create"){
                 this.popupMessage = strings.homeView.gameAlreadyExists;
                 this.confirmButton = strings.homeView.joinGameButton;
+                this.showPopup = true;
               }
-              this.showPopup = true
             } else {
-              this.$router.push({name: "Game", params: {gameId: this.input}})
+              if(this.choice==="join"){
+                this.popupMessage = strings.homeView.gameDoesNotExists;
+                this.confirmButton = strings.homeView.createGameButton;
+                this.showPopup = true;
+              } else if(this.choice==="create"){
+                this.$router.push({name: "Game", params: {gameId: this.input}});
+              }
             }
           });
     },
