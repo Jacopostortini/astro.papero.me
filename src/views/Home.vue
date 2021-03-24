@@ -5,20 +5,35 @@
                        @toggle-show="showHamburgerMenu=$event"/>
     <div class="home">
       <img src="../assets/title.png">
-      <form @submit.prevent="play">
+
+
+      <div class="buttons-container" v-if="choice===null">
+        <button @click="choice='join'">{{strings.homeView.joinGameButton}}</button>
+        <button @click="choice='create'">{{strings.homeView.createGameButton}}</button>
+      </div>
+
+
+      <form @submit.prevent="play" v-if="choice!==null">
+        <span @click="choice=null">&#8617;</span>
         <input :placeholder="strings.homeView.joinGameInputPlaceholder" v-model="input" required>
         <button>{{ strings.homeView.play }}</button>
       </form>
+
+
     </div>
+
+
     <div class="popup-background" v-if="showPopup" @click="showPopup=false">
       <div>
         <p>{{popupMessage}}</p>
         <div>
-          <button @click="confirm">{{ strings.homeView.confirmButton }}</button>
+          <button @click="confirm">{{ confirmButton }}</button>
           <button @click="showPopup=false">{{ strings.homeView.cancelButton }}</button>
         </div>
       </div>
     </div>
+
+
   </div>
 </template>
 
@@ -38,14 +53,29 @@ export default {
       showHamburgerMenu: false,
       showPopup: false,
       popupMessage: "",
-      input: ""
+      input: "",
+      choice: null,
+      confirmButton: ""
     }
   },
   methods: {
     play(){
-      //TODO: Logic for checking existence
-      this.popupMessage = "Do you want to join the game with ID "+this.input;
-      this.showPopup = true
+      axios
+          .get(urls.getGameStatusUrl, {params: {game_id: this.input.toLowerCase()}})
+          .then(response => {
+            if(response.data){
+              if(this.choice==="join"){
+                this.popupMessage = strings.homeView.gameDoesNotExists;
+                this.confirmButton = strings.homeView.createGameButton;
+              } else if (this.choice==="create"){
+                this.popupMessage = strings.homeView.gameAlreadyExists;
+                this.confirmButton = strings.homeView.joinGameButton;
+              }
+              this.showPopup = true
+            } else {
+              this.$router.push({name: "Game", params: {gameId: this.input}})
+            }
+          });
     },
     confirm(){
       this.$router.push({name: "Game", params: {gameId: this.input}})
@@ -82,7 +112,7 @@ export default {
   .home {
     display: flex;
     flex-flow: column;
-    justify-content: flex-start;
+    justify-content: space-between;
     height: 100%;
     align-items: center;
 
@@ -91,13 +121,48 @@ export default {
       width: 50%;
     }
 
+
+
+
+    .buttons-container{
+      display: flex;
+      flex-flow: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+
+      button{
+        margin: 10px;
+      }
+    }
+
     form {
+      position: relative;
       display: flex;
       flex-flow: column;
       justify-content: space-evenly;
       align-items: center;
-      height: 100%;
-      width: 100%;
+      height: 70%;
+      width: 50%;
+      @media (max-width: 750px){
+        width: 80%;
+      }
+
+      span{
+        position: absolute;
+        font-size: 300%;
+        top: 10%;
+        left: 10%;
+        color: white;
+        transition: all 0.5s;
+        cursor: pointer;
+
+        &:hover{
+          transform: scale(1.3);
+        }
+      }
 
       input{
         background: none;
@@ -107,12 +172,15 @@ export default {
         font-size: 250%;
         text-align: center;
         color: white;
-        width: 20%;
+        width: 50%;
         @media (max-width: 750px){
           width: 80%;
         }
       }
     }
+
+
+
   }
 
   .popup-background{

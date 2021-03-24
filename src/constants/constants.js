@@ -5,8 +5,11 @@ const strings = {
     homeView: {
         play: "Play",
         joinGameInputPlaceholder: "Game ID",
-        confirmButton: "Confirm",
-        cancelButton: "Cancel"
+        cancelButton: "Cancel",
+        joinGameButton: "Join lobby",
+        createGameButton: "Create lobby",
+        gameAlreadyExists: "This game already exists",
+        gameDoesNotExists: "This game doesn't exists"
     },
     gameView: {
         lobby: {
@@ -48,6 +51,7 @@ const urls = {
     getLoginInfoUrl: baseUrl+"/user/get_info",
     createLocalAccountUrl: baseUrl+"/auth/local",
     logoutUrl: baseUrl+"/auth/logout",
+    getGameStatusUrl: baseUrl+"/server/cosmos/games/status_by_id"
 }
 
 const sceneKeys = {
