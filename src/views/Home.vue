@@ -195,9 +195,12 @@ export default {
       flex-flow: column;
       color: white;
       font-size: 150%;
+      width: 100%;
 
       div{
+        width: 100%;
         display: flex;
+        flex-wrap: wrap;
         flex-flow: row;
         justify-content: space-evenly;
         align-items: center;

@@ -35,6 +35,7 @@ button{
   background: none;
   border: 2px solid white;
   transition: all 0.5s;
+  margin: 10px;
 
   &:hover{
     background-color: white;
