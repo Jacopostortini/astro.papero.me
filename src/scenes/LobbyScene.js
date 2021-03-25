@@ -18,27 +18,7 @@ export default class LobbyScene extends Phaser.Scene {
                 bulletVelocity: 2
             }
         }
-/*        this.lobby = {
-            players: [
-                {
-                    localId: 0,
-                    color: 0
-                },
-                {
-                    localId: 1,
-                    color: 1
-                }
-            ],
-            admin: 0,
-            currentPlayer: 1,
-            settings: {
-                totalTurns: 5,
-                velocity: 2,
-                angularVelocity: 2,
-                reloadingVelocity: 2,
-                bulletVelocity: 2
-            }
-        }*/
+
         this.normalizers = {
             velocity: 100,
             angularVelocity: Math.PI/1200,
@@ -108,9 +88,6 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     create(){
-        //this.ships["0"] = this.createNewShip(0, true)
-        //this.ships["1"] = this.createNewShip(1, false)
-
         //Event lobby-modified
         this.socket.on(websocketEvents.LOBBY_MODIFIED, game => {
             let currentlyPlayingIds = [];

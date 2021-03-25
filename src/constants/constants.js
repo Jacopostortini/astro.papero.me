@@ -60,4 +60,9 @@ const sceneKeys = {
     lobby: "lobby"
 }
 
-export { strings, colors, config, urls, sceneKeys }
+const gameDimensions = {
+    width: 800,
+    height: 600
+}
+
+export { strings, colors, config, urls, sceneKeys, gameDimensions }

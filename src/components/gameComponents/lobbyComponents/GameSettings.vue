@@ -37,7 +37,7 @@
                      :label="strings.gameView.lobby.bulletVelocity"
                      setting-key="bulletVelocity"
                      :event="websocketEvents.SET_BULLET_VELOCITY"/>
-      <button :disabled="!isAdmin">{{strings.gameView.lobby.startGame}}</button>
+      <button :disabled="!isAdmin" @click="startGame">{{strings.gameView.lobby.startGame}}</button>
       <div class="not-admin" v-if="!isAdmin"/>
     </div>
   </div>
@@ -64,6 +64,11 @@ export default {
   computed: {
     isAdmin: function(){
       return this.game.currentPlayer === this.game.admin;
+    }
+  },
+  methods: {
+    startGame(){
+      this.socket.emit(websocketEvents.START_GAME);
     }
   }
 }
