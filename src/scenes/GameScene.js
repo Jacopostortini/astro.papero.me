@@ -25,8 +25,8 @@ export default class GameScene extends Phaser.Scene {
             bulletVelocity: 200
         }
 
-        this.shipsGroup = new Phaser.Group(this);
-        this.bulletsGroup = new Phaser.Group(this);
+        this.shipsGroup = this.physics.add.group();
+        this.bulletsGroup = this.physics.add.group();
     }
 
     preload(){
