@@ -78,7 +78,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[key].ship.setVelocity(x, y);
             this.players[key].ship.setCollideWorldBounds(true);
             this.players[key].ship.localId = key;
-            this.shipsGroup.add(this.players[key].ship);
+            //this.shipsGroup.add(this.players[key].ship);
         });
         console.log(this.players);
     }
