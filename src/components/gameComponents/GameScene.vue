@@ -15,6 +15,7 @@ export default {
   },
   mounted(){
     this.socket.on(websocketEvents.GAME_MODIFIED, game =>{
+      console.log(game);
       let parent = document.getElementById("game");
       new Phaser.Game(
           config(

@@ -78,11 +78,15 @@ export default class LobbyScene extends Phaser.Scene {
         });
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
-        window.addEventListener('resize', () => {
+        let onresize = () => {
             let parent = document.getElementById("players-wrapper");
             let dim = Math.min(parent.offsetWidth, parent.offsetHeight);
             this.game.scale.resize(dim, dim);
             this.physics.world.setBounds(0, 0, dim, dim);
+        };
+        window.addEventListener("resize", onresize);
+        this.events.on("destroy", ()=>{
+            window.removeEventListener("resize", onresize);
         });
 
     }
