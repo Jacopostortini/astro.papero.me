@@ -37,8 +37,12 @@ export default class GameScene extends Phaser.Scene {
 
     create(){
 
-        this.shipsGroup = this.physics.add.group();
-        this.bulletsGroup = this.physics.add.group();
+        this.shipsGroup = this.physics.add.group({
+            collideWorldBounds: true
+        });
+        this.bulletsGroup = this.physics.add.group({
+            collideWorldBounds: true
+        });
 
         this.setupNewShips();
 
@@ -73,18 +77,16 @@ export default class GameScene extends Phaser.Scene {
                 "ship"+this.players[key].color
             );
             this.players[key].ship.rotation = -Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 );
+            this.players[key].ship.localId = key;
+            this.shipsGroup.add(this.players[key].ship);
             let {x, y} = this.getVelocity(this.players[key].ship.rotation, this.settings.velocity*this.normalizers.velocity);
-            console.log("velocity: ", x, y);
             this.players[key].ship.setVelocity(x, y);
             this.players[key].ship.setCollideWorldBounds(true);
-            this.players[key].ship.localId = key;
-            //this.shipsGroup.add(this.players[key].ship);
         });
         console.log(this.players);
     }
 
     onBigMoved(data){
-        console.log("big moved", data);
         this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
         this.players[data.localId].ship.setRotation(data.rotation);
         let {x, y} = this.getVelocity(data.rotation, this.settings.velocity * this.normalizers.velocity);
