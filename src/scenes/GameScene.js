@@ -42,14 +42,14 @@ export default class GameScene extends Phaser.Scene {
 
         this.setupNewShips();
 
-        this.socket.on(websocketEvents.MOVE_BIG, this.onBigMoved);
-        this.socket.on(websocketEvents.MOVE_LITTLE, this.onLittleMoved);
-        this.socket.on(websocketEvents.SHOOT, this.createBullet);
-        this.socket.on(websocketEvents.CHANGE_STATE, this.updateState);
-        this.socket.on(websocketEvents.RELOAD, this.reload);
+        this.socket.on(websocketEvents.MOVE_BIG, data => this.onBigMoved(data));
+        this.socket.on(websocketEvents.MOVE_LITTLE, data => this.onLittleMoved(data));
+        this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
+        this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
+        this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
 
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.input.keyboard.on("keyup-ENTER", this.shoot);
+        this.input.keyboard.on("keyup-ENTER", this.shoot, this);
 
         this.physics.add.collider(this.shipsGroup, this.bulletsGroup, this.onCollision);
     }
