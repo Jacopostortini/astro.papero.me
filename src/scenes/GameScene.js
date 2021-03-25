@@ -66,7 +66,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setupNewShips(){
-        this.players.getKeys().forEach((key, index) => {
+        Object.keys(this.players).forEach((key, index) => {
             this.players[key].ship = this.physics.add.image(
                 ( Math.sign(index-1.5) / 2 + 1 ) * gameDimensions.width,
                 ( index % 2 ) * gameDimensions.height,
