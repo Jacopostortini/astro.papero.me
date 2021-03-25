@@ -68,8 +68,8 @@ export default class GameScene extends Phaser.Scene {
     setupNewShips(){
         Object.keys(this.players).forEach((key, index) => {
             this.players[key].ship = this.physics.add.image(
-                ( Math.sign(index-1.5) / 2 + 1 ) * gameDimensions.width,
-                ( index % 2 ) * gameDimensions.height,
+                (index<2 ? 0.05 : 0.95) * gameDimensions.width,
+                ( index%2 === 0 ? 0.05 : 0.95 ) * gameDimensions.height,
                 "ship"+this.players[key].color
             );
             this.players[key].ship.rotation = -Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 );
@@ -82,6 +82,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onBigMoved(data){
+        console.log("big moved", data);
         this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
         this.players[data.localId].ship.setRotation(data.rotation);
         let {x, y} = this.getVelocity(data.rotation, this.settings.velocity * this.normalizers.velocity);
