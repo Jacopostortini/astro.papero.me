@@ -24,9 +24,6 @@ export default class GameScene extends Phaser.Scene {
             reloadingVelocity: 1/2000,
             bulletVelocity: 200
         }
-
-        this.shipsGroup = this.physics.add.group();
-        this.bulletsGroup = this.physics.add.group();
     }
 
     preload(){
@@ -39,6 +36,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
+
+        this.shipsGroup = this.physics.add.group();
+        this.bulletsGroup = this.physics.add.group();
+
         this.setupNewShips();
 
         this.socket.on(websocketEvents.MOVE_BIG, this.onBigMoved);
