@@ -26,7 +26,7 @@
 <script>
 import * as Phaser from "phaser";
 import {config, strings} from "../../constants/constants";
-import LobbyScene from "../../scenes/LobbyScene";
+import LobbyScene from "../../phaser/LobbyScene";
 import ChangeColor from "./lobbyComponents/ChangeColor";
 import CopyInformation from "./lobbyComponents/CopyInformation";
 import websocketEvents from "../../constants/websocketEvents";

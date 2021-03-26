@@ -5,7 +5,7 @@
 <script>
 import Phaser from "phaser";
 import {config} from "../../constants/constants";
-import GameScene from "../../scenes/GameScene";
+import GameScene from "../../phaser/GameScene";
 import websocketEvents from "../../constants/websocketEvents";
 
 export default {
