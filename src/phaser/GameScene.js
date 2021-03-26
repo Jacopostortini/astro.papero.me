@@ -1,7 +1,6 @@
 import * as Phaser from "phaser";
 import {colors, gameDimensions, sceneKeys} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
-import BulletGroup from "./bulletGroup";
 
 export default class GameScene extends Phaser.Scene {
 
@@ -37,8 +36,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        this.bulletsGroup = new BulletGroup(this);
-
         this.setupNewShips();
 
         this.socket.on(websocketEvents.MOVE_BIG, data => this.onBigMoved(data));
@@ -50,7 +47,6 @@ export default class GameScene extends Phaser.Scene {
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.input.keyboard.on("keyup-ENTER", this.shoot, this);
 
-        this.physics.add.collider(this.players[this.currentPlayer].ship, this.bulletsGroup, this.onCollision);
     }
 
     update(time, delta){
@@ -119,8 +115,11 @@ export default class GameScene extends Phaser.Scene {
 
 
     createBullet(data){
-        let velocity = this.getVelocity(data.rotation,this.settings.bulletVelocity*this.normalizers.bulletVelocity);
-        this.bulletsGroup.shoot(data.position.x, data.position.y, data.rotation, velocity, data.localId);
+        let bullet = this.physics.add.image(data.position.x, data.position.y, "bullet");
+        bullet.rotation = data.rotation;
+        let {x, y} = this.getVelocity(data.rotation, this.settings.bulletVelocity*this.normalizers.bulletVelocity);
+        bullet.setVelocity(x, y);
+        bullet.shotBy = data.localId;
         this.players[data.localId].availableBullets--;
     }
 
