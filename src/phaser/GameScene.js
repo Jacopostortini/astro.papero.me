@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import {colors, gameDimensions, sceneKeys} from "../constants/constants";
+import {gameDimensions, sceneKeys} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
 
 export default class GameScene extends Phaser.Scene {
@@ -28,9 +28,11 @@ export default class GameScene extends Phaser.Scene {
 
     preload(){
 
-        colors.forEach((value, index) => {
-            this.load.image("ship"+index, require("@/assets/ships/ship"+index+".png"));
-        });
+        this.textures.addBase64("ship0", require("@/assets/ships/ship0.png"));
+        this.textures.addBase64("ship1", require("@/assets/ships/ship1.png"));
+        this.textures.addBase64("ship2", require("@/assets/ships/ship2.png"));
+        this.textures.addBase64("ship3", require("@/assets/ships/ship3.png"));
+
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
     }
