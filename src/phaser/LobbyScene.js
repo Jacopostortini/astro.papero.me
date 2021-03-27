@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import {colors, sceneKeys} from "../constants/constants";
+import {sceneKeys} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
 
 export default class LobbyScene extends Phaser.Scene {
@@ -73,9 +73,12 @@ export default class LobbyScene extends Phaser.Scene {
         //load images
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
-        colors.forEach((value, index) => {
-            this.load.image("ship"+index, require("@/assets/ships/ship"+index+".png"));
-        });
+
+        this.textures.addBase64("ship0", require("@/assets/ships/ship0.png"));
+        this.load.image("ship1", require("@/assets/ships/ship1.png"));
+        this.load.image("ship2", require("@/assets/ships/ship2.png"));
+        this.load.image("ship3", require("@/assets/ships/ship3.png"));
+
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
         let onresize = () => {
