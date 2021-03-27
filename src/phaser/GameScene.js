@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import {colors, gameDimensions, sceneKeys} from "../constants/constants";
+import {gameDimensions, sceneKeys} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
 
 export default class GameScene extends Phaser.Scene {
