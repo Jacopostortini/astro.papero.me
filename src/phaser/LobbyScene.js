@@ -75,9 +75,9 @@ export default class LobbyScene extends Phaser.Scene {
         this.height = this.sys.game.canvas.height;
 
         this.textures.addBase64("ship0", require("@/assets/ships/ship0.png"));
-        this.load.image("ship1", require("@/assets/ships/ship1.png"));
-        this.load.image("ship2", require("@/assets/ships/ship2.png"));
-        this.load.image("ship3", require("@/assets/ships/ship3.png"));
+        this.textures.addBase64("ship1", require("@/assets/ships/ship1.png"));
+        this.textures.addBase64("ship2", require("@/assets/ships/ship2.png"));
+        this.textures.addBase64("ship3", require("@/assets/ships/ship3.png"));
 
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
