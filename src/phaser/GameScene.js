@@ -18,6 +18,7 @@ export default class GameScene extends Phaser.Scene {
         game.players.forEach(player => {
             this.players[player.localId] = player;
             this.players[player.localId].availableBullets = 3;
+            this.players[player.localId].state = 2;
         });
 
         /*this.settings = defaultSettings;
