@@ -55,14 +55,4 @@ const urls = {
     getGameStatusUrl: baseUrl+"/server/cosmos/games/status_by_id"
 }
 
-const sceneKeys = {
-    game: "game",
-    lobby: "lobby"
-}
-
-const gameDimensions = {
-    width: 800,
-    height: 600
-}
-
-export { strings, colors, config, urls, sceneKeys, gameDimensions }
+export { strings, colors, config, urls }

@@ -1,36 +1,33 @@
 import * as Phaser from "phaser";
-import {colors, gameDimensions, sceneKeys} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
+import {sceneKeys} from "../constants/gameSettings";
+
 
 export default class GameScene extends Phaser.Scene {
 
-    constructor(socket, game) {
+    constructor(socket) {
         super({key: sceneKeys.game});
 
         this.socket = socket;
-        this.settings = game.settings;
-        this.currentPlayer = game.currentPlayer;
-        this.maxVelocityLittle = game.settings.velocity+0.5;
 
-        this.players = {};
-        game.players.forEach(player => {
-            this.players[player.localId] = player;
-            this.players[player.localId].availableBullets = 3;
+        this.socket.on(websocketEvents.GAME_MODIFIED, game => {
+            this.settings = game.settings;
+            this.currentPlayer = game.currentPlayer;
+            this.settings.maxVelocityLittle = game.settings.velocity+0.5;
+            this.players = {};
+            game.players.forEach(player => {
+                this.players[player.localId] = player;
+                this.players[player.localId].availableBullets = 3;
+            });
         });
-
-        this.normalizers = {
-            velocity: 100,
-            angularVelocity: Math.PI/1200,
-            reloadingVelocity: 1/2000,
-            bulletVelocity: 200
-        }
     }
 
     preload(){
 
-        colors.forEach((value, index) => {
-            this.load.image("ship"+index, require("@/assets/ships/ship"+index+".png"));
-        });
+        this.load.image("ship0", require("@/assets/ships/ship0.png"));
+        this.load.image("ship1", require("@/assets/ships/ship1.png"));
+        this.load.image("ship2", require("@/assets/ships/ship2.png"));
+        this.load.image("ship3", require("@/assets/ships/ship3.png"));
         this.textures.addBase64("bullet", require("@/assets/bullet.png"));
 
     }

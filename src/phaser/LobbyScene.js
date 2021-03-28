@@ -1,6 +1,7 @@
-import * as Phaser from "phaser";
-import {colors, sceneKeys} from "../constants/constants";
+import Phaser from "phaser";
+import {colors} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
+import {defaultSettings, normalizers, sceneKeys} from "../constants/gameSettings";
 
 export default class LobbyScene extends Phaser.Scene {
 
@@ -10,21 +11,9 @@ export default class LobbyScene extends Phaser.Scene {
         this.lobby = {
             players: [],
             currentPlayer: null,
-            settings: {
-                totalTurns: 5,
-                velocity: 2,
-                angularVelocity: 2,
-                reloadingVelocity: 2,
-                bulletVelocity: 2
-            }
+            settings: defaultSettings
         }
 
-        this.normalizers = {
-            velocity: 100,
-            angularVelocity: Math.PI/1200,
-            reloadingVelocity: 1/2000,
-            bulletVelocity: 200
-        }
         this.ships = {};
         this.availableBullets = 3;
         let interval;
@@ -52,8 +41,8 @@ export default class LobbyScene extends Phaser.Scene {
         let ship = this.physics.add.image(x, y, "ship"+color);
         let angle = Phaser.Math.Between(Math.PI/4, Math.PI*3/4);
         ship.setVelocity(
-            this.lobby.settings.velocity*this.normalizers.velocity*Math.cos(angle),
-            this.lobby.settings.velocity*this.normalizers.velocity*Math.sin(angle)
+            this.lobby.settings.velocity*normalizers.velocity*Math.cos(angle),
+            this.lobby.settings.velocity*normalizers.velocity*Math.sin(angle)
         );
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
@@ -107,8 +96,8 @@ export default class LobbyScene extends Phaser.Scene {
                 if(previousPlayingIds.includes(id)){
                     newShips[id] = this.ships[id];
                     newShips[id].setVelocity(
-                        this.lobby.settings.velocity* this.normalizers.velocity * Math.cos(newShips[id].rotation),
-                        this.lobby.settings.velocity* this.normalizers.velocity * Math.sin(newShips[id].rotation)
+                        this.lobby.settings.velocity* normalizers.velocity * Math.cos(newShips[id].rotation),
+                        this.lobby.settings.velocity* normalizers.velocity * Math.sin(newShips[id].rotation)
                     );
                     newShips[id].setTexture("ship"+this.findPlayerById(id).color);
                 } else {
@@ -130,8 +119,8 @@ export default class LobbyScene extends Phaser.Scene {
                 );
                 bullet.rotation = this.ships[this.lobby.currentPlayer].rotation;
                 bullet.setVelocity(
-                    this.lobby.settings.bulletVelocity*this.normalizers.bulletVelocity*Math.cos(bullet.rotation),
-                    this.lobby.settings.bulletVelocity*this.normalizers.bulletVelocity*Math.sin(bullet.rotation)
+                    this.lobby.settings.bulletVelocity*normalizers.bulletVelocity*Math.cos(bullet.rotation),
+                    this.lobby.settings.bulletVelocity*normalizers.bulletVelocity*Math.sin(bullet.rotation)
                 );
                 this.availableBullets--;
             }
@@ -148,10 +137,10 @@ export default class LobbyScene extends Phaser.Scene {
             });
         }
         if(this.lobby.currentPlayer!==null && this.keySpace.isDown){
-            this.ships[this.lobby.currentPlayer].rotation += this.lobby.settings.angularVelocity* this.normalizers.angularVelocity *delta;
+            this.ships[this.lobby.currentPlayer].rotation += this.lobby.settings.angularVelocity* normalizers.angularVelocity *delta;
             this.ships[this.lobby.currentPlayer].setVelocity(
-                this.lobby.settings.velocity* this.normalizers.velocity * Math.cos(this.ships[this.lobby.currentPlayer].rotation),
-                this.lobby.settings.velocity* this.normalizers.velocity * Math.sin(this.ships[this.lobby.currentPlayer].rotation)
+                this.lobby.settings.velocity* normalizers.velocity * Math.cos(this.ships[this.lobby.currentPlayer].rotation),
+                this.lobby.settings.velocity* normalizers.velocity * Math.sin(this.ships[this.lobby.currentPlayer].rotation)
             );
         }
     }
