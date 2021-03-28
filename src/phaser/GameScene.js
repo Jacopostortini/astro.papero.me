@@ -53,7 +53,7 @@ export default class GameScene extends Phaser.Scene {
                 availableBullets
             };
             this.socket.emit(websocketEvents.RELOAD, data);
-            this.reload();
+            this.reload(data);
         }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
     }
 
