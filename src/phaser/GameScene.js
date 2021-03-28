@@ -247,6 +247,7 @@ export default class GameScene extends Phaser.Scene {
 
 
     reload(data){
+        console.log(data);
         this.players[data.localId].availableBullets = data.availableBullets;
     }
 
