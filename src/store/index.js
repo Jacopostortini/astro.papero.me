@@ -2,8 +2,8 @@ import {createStore} from "vuex";
 
 export default createStore({
     state: {
-        logged: -1,
-        username: ""
+        logged: -1, //TODO: CHANGE HERE
+        username: "" //TODO: CHANGE HERE
     },
     mutations: {
         SET_LOGGED(state, logged) {

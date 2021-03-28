@@ -1,93 +1,179 @@
 import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
-import {sceneKeys} from "../constants/gameSettings";
+import {gameDimensions, getVelocity, normalizers, sceneKeys} from "../constants/gameSettings";
 
 
 export default class GameScene extends Phaser.Scene {
 
-    constructor(socket) {
+    constructor(socket, game) {
         super({key: sceneKeys.game});
 
         this.socket = socket;
-
-        this.socket.on(websocketEvents.GAME_MODIFIED, game => {
-            this.settings = game.settings;
-            this.currentPlayer = game.currentPlayer;
-            this.settings.maxVelocityLittle = game.settings.velocity+0.5;
-            this.players = {};
-            game.players.forEach(player => {
-                this.players[player.localId] = player;
-                this.players[player.localId].availableBullets = 3;
-            });
+        this.settings = game.settings;
+        this.currentPlayer = game.currentPlayer;
+        this.settings.maxVelocityLittle = game.settings.velocity+0.5;
+        this.settings.accelerationLittle = 0.5;
+        this.settings.frictionAir = 0.1;
+        this.players = {};
+        game.players.forEach(player => {
+            this.players[player.localId] = player;
+            this.players[player.localId].availableBullets = 3;
         });
+
+        /*this.settings = defaultSettings;
+        this.settings.maxVelocityLittle = 2.5;
+        this.settings.accelerationLittle = 0.5;
+        this.settings.frictionAir = 0.1;
+        this.currentPlayer = 0;
+        this.players = { //STATE: 0=dead 1=little 2=ship 3=shield(?)
+            '0': {
+                localId: 0,
+                color: 0,
+                availableBullets: 3,
+                state: 2
+            },
+            '1': {
+                localId: 1,
+                color: 1,
+                availableBullets: 3,
+                state: 2
+            },
+            '2': {
+                localId: 2,
+                color: 2,
+                availableBullets: 3,
+                state: 2
+            }
+        };*/
+
+        setInterval(() => {
+            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
+            const data = {
+                localId: this.currentPlayer,
+                availableBullets
+            };
+            this.socket.emit(websocketEvents.RELOAD, data);
+            this.reload();
+        }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
     }
 
     preload(){
 
-        this.load.image("ship0", require("@/assets/ships/ship0.png"));
-        this.load.image("ship1", require("@/assets/ships/ship1.png"));
-        this.load.image("ship2", require("@/assets/ships/ship2.png"));
-        this.load.image("ship3", require("@/assets/ships/ship3.png"));
-        this.textures.addBase64("bullet", require("@/assets/bullet.png"));
+        this.load.image("ship0", "./ships/ship0.png");
+        this.load.image("ship1", "./ships/ship1.png");
+        this.load.image("ship2", "./ships/ship2.png");
+        this.load.image("ship3", "./ships/ship3.png");
+        this.load.image("little0", "./little.png");
+        this.load.image("little1", "./little.png");
+        this.load.image("little2", "./little.png");
+        this.load.image("little3", "./little.png");
+        this.load.image("bullet", "./bullet.png");
 
     }
 
     create(){
-        this.setupNewShips();
+        this.createGroups();
+        this.createShips();
 
-        this.socket.on(websocketEvents.MOVE_BIG, data => this.onBigMoved(data));
+        this.socket.on(websocketEvents.ROTATE_SHIP, data => this.onShipRotated(data));
         this.socket.on(websocketEvents.MOVE_LITTLE, data => this.onLittleMoved(data));
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
 
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.input.keyboard.on("keyup-ENTER", this.shoot, this);
-
+        this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
     }
 
     update(time, delta){
-        if(this.rotationKey.isDown) this.moveBig(delta);
-    }
-
-    getVelocity(angle, mag){
-        return {
-            x: Math.cos(angle)*mag,
-            y: Math.sin(angle)*mag
+        if(this.rotationKey.isDown) this.rotate(delta);
+        if(this.players[this.currentPlayer].state === 1){
+            if(this.accelerateLittleKey.isDown) this.moveLittle(delta)
         }
+        Object.values(this.players).forEach(player => {
+            const {x, y} = getVelocity(player.ship.rotation, this.settings.velocity * normalizers.velocity);
+            player.ship.setVelocity(x, y);
+            if(player.state === 2){
+                player.ship.velocityMagnitude = Math.max(
+                    0, player.ship.velocityMagnitude-this.settings.frictionAir*delta
+                );
+            }
+        });
     }
 
-    setupNewShips(){
-        Object.keys(this.players).forEach((key, index) => {
-            this.players[key].ship = this.physics.add.image(
+
+
+
+    //=============================================================================
+    //Creating things
+    createGroups(){
+        this.ships = this.physics.add.group();
+        this.bullets = this.physics.add.group();
+    }
+
+    createShips(){
+        let index = 0;
+        Object.values(this.players).forEach(player => {
+            player.ship = this.ships.create(
                 (index<2 ? 0.05 : 0.95) * gameDimensions.width,
                 ( index%2 === 0 ? 0.05 : 0.95 ) * gameDimensions.height,
-                "ship"+this.players[key].color
-            );
-            this.players[key].ship.rotation = -Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 );
-            this.players[key].ship.localId = key;
-            let {x, y} = this.getVelocity(this.players[key].ship.rotation, this.settings.velocity*this.normalizers.velocity);
-            this.players[key].ship.setVelocity(x, y);
-            this.players[key].ship.setCollideWorldBounds(true);
+                "ship"+player.color
+            )
+
+            player.ship.localId = player.localId;
+            player.ship.setRotation(-Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
+            player.ship.setCollideWorldBounds(true);
+            player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
+
+            if(player.localId===this.currentPlayer){
+                this.physics.add.overlap(player.ship, this.bullets, (ship, bullet) => {
+                    this.onBulletCollision(ship, bullet);
+                });
+            }
+
+            index++;
         });
-        console.log(this.players);
+
+        this.physics.add.collider(this.ships, this.ships);
     }
 
-    onBigMoved(data){
+    createBullet(data){
+        const bullet = this.bullets.create(data.position.x, data.position.y, "bullet");
+        bullet.rotation = data.rotation;
+        const {x, y} = getVelocity(data.rotation, this.settings.bulletVelocity*normalizers.bulletVelocity);
+        bullet.setVelocity(x, y);
+        bullet.shotBy = data.localId;
+        bullet.setCollideWorldBounds(true);
+        bullet.body.onWorldBounds = true;
+        this.players[data.localId].availableBullets--;
+    }
+
+
+
+
+
+
+    //=============================================================================
+    //Others do things via the websocket
+    onShipRotated(data){
         this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
         this.players[data.localId].ship.setRotation(data.rotation);
-        let {x, y} = this.getVelocity(data.rotation, this.settings.velocity * this.normalizers.velocity);
-        this.players[data.localId].ship.setVelocity(x, y);
     }
 
-    moveBig(delta){
-        this.players[this.currentPlayer].ship.rotation += delta * this.settings.angularVelocity * this.normalizers.angularVelocity;
-        let {x, y} = this.getVelocity(
-            this.players[this.currentPlayer].ship.rotation,
-            this.settings.velocity * this.normalizers.velocity
-        );
-        this.players[this.currentPlayer].ship.setVelocity(x, y);
-        this.socket.emit(websocketEvents.MOVE_BIG, {
+    onLittleMoved(data){
+        this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
+        this.players[data.localId].ship.velocityMagnitude = data.velocityMagnitude;
+    }
+
+
+
+    //=============================================================================
+    //Current players does things
+    rotate(delta){
+        this.players[this.currentPlayer].ship.rotation += delta * this.settings.angularVelocity * normalizers.angularVelocity;
+        this.socket.emit(websocketEvents.ROTATE_SHIP, {
             localId: this.currentPlayer,
             rotation: this.players[this.currentPlayer].ship.rotation,
             position: {
@@ -97,34 +183,31 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 
+    moveLittle(delta){
+        if(this.players[this.currentPlayer].state === 1){
+            const ship = this.players[this.currentPlayer].ship;
+            if(ship.velocityMagnitude < this.settings.maxVelocityLittle * normalizers.velocity){
+                ship.velocityMagnitude += delta*this.settings.accelerationLittle;
+            } else {
+                ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
+            }
 
-    onLittleMoved(data){
-        this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
-        this.players[data.localId].ship.setRotation(data.rotation);
-        let {x, y} = this.getVelocity(data.rotation, this.maxVelocityLittle*this.normalizers.velocity);
-        this.players[data.localId].ship.setMaxVelocity(x, y);
-        this.players[data.localId].ship.setAcceleration(data.acceleration.x, data.acceleration.y);
-    }
-
-    moveLittle(){
-
-    }
-
-
-    createBullet(data){
-        let bullet = this.physics.add.image(data.position.x, data.position.y, "bullet");
-        bullet.rotation = data.rotation;
-        let {x, y} = this.getVelocity(data.rotation, this.settings.bulletVelocity*this.normalizers.bulletVelocity);
-        bullet.setVelocity(x, y);
-        bullet.shotBy = data.localId;
-        this.players[data.localId].availableBullets--;
+            this.socket.emit(websocketEvents.MOVE_LITTLE, {
+                localId: this.currentPlayer,
+                position: {
+                    x: ship.x,
+                    y: ship.y
+                },
+                velocityMagnitude: ship.velocityMagnitude
+            })
+        }
     }
 
     shoot(){
-        if(this.players[this.currentPlayer].availableBullets>0){
-            let ship = this.players[this.currentPlayer].ship;
-            let angle = ship.rotation;
-            let data = {
+        if(this.players[this.currentPlayer].availableBullets>0 && this.players[this.currentPlayer].state>=2){
+            const ship = this.players[this.currentPlayer].ship;
+            const angle = ship.rotation;
+            const data = {
                 position: {
                     x: ship.x + ship.width*Math.cos(angle),
                     y: ship.y + ship.width*Math.sin(angle)
@@ -142,13 +225,24 @@ export default class GameScene extends Phaser.Scene {
         this.players[data.localId].state = data.state;
     }
 
-    onCollision(ship, bullet){
+    onBulletCollision(ship, bullet){
         bullet.destroy();
-        ship.destroy();
-        /*this.socket.emit(websocketEvents.CHANGE_STATE, {
+        this.players[ship.localId].state--;
+        switch (this.players[ship.localId].state){
+            case 0:
+                ship.destroy();
+                break;
+            case 1:
+                ship.setTexture("little"+ship.localId);
+                break;
+            case 2:
+                ship.setTexture("ship"+ship.localId);
+                break;
+        }
+        this.socket.emit(websocketEvents.CHANGE_STATE, {
             localId: ship.localId,
-            state: --this.players[ship.localId].state
-        })*/
+            state: this.players[ship.localId].state
+        })
     }
 
 

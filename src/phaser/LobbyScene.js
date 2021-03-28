@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import {colors} from "../constants/constants";
 import websocketEvents from "../constants/websocketEvents";
 import {defaultSettings, normalizers, sceneKeys} from "../constants/gameSettings";
 
@@ -17,7 +16,7 @@ export default class LobbyScene extends Phaser.Scene {
         this.ships = {};
         this.availableBullets = 3;
         let interval;
-        let handler = () => {
+        const handler = () => {
             this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
             clearInterval(interval)
             interval = setInterval(handler, 2000/this.lobby.settings.reloadingVelocity);
@@ -63,12 +62,11 @@ export default class LobbyScene extends Phaser.Scene {
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
 
-        this.textures.addBase64("ship0", require("@/assets/ships/ship0.png"));
-        this.textures.addBase64("ship1", require("@/assets/ships/ship1.png"));
-        this.textures.addBase64("ship2", require("@/assets/ships/ship2.png"));
-        this.textures.addBase64("ship3", require("@/assets/ships/ship3.png"));
-
-        this.textures.addBase64("bullet", require("@/assets/bullet.png"));
+        this.load.image("ship0", "./ships/ship0.png");
+        this.load.image("ship1", "./ships/ship1.png");
+        this.load.image("ship2", "./ships/ship2.png");
+        this.load.image("ship3", "./ships/ship3.png");
+        this.load.image("bullet", "./bullet.png");
 
         let onresize = () => {
             let parent = document.getElementById("players-wrapper");

@@ -14,8 +14,8 @@ export default {
     socket: Object,
   },
   mounted(){
-    this.socket.on(websocketEvents.GAME_MODIFIED, game =>{
-      let parent = document.getElementById("game");
+    this.socket.on(websocketEvents.GAME_MODIFIED, game => {
+      const parent = document.getElementById("game");
       new Phaser.Game(
           config(
               new GameScene(this.socket, game),
@@ -23,7 +23,7 @@ export default {
               800,
               600
           ));
-    });
+    })
   }
 }
 </script>
