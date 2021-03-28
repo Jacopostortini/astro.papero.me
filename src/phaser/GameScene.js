@@ -223,11 +223,13 @@ export default class GameScene extends Phaser.Scene {
 
 
     updateState(data){
+        console.log("state changed", data);
         this.players[data.localId].state = data.state;
     }
 
     onBulletCollision(ship, bullet){
         bullet.destroy();
+        console.log("i have been hit");
         this.players[ship.localId].state--;
         switch (this.players[ship.localId].state){
             case 0:
@@ -248,7 +250,6 @@ export default class GameScene extends Phaser.Scene {
 
 
     reload(data){
-        console.log(data);
         this.players[data.localId].availableBullets = data.availableBullets;
     }
 
