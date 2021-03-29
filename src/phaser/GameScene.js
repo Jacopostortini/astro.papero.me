@@ -13,6 +13,7 @@ export default class GameScene extends Phaser.Scene {
         this.currentPlayer = game.currentPlayer;
         this.settings.maxVelocityLittle = game.settings.velocity+0.5;
         this.settings.accelerationLittle = 0.5;
+        this.settings.respawnTime = 5000;
         this.settings.frictionAir = 0.1;
         this.players = {};
         game.players.forEach(player => {
@@ -102,6 +103,7 @@ export default class GameScene extends Phaser.Scene {
                 );
             }
         });
+        if(this.ships.countActive() <= 1) this.gameOver = true; //TODO: SETUP END OF THE TURN
     }
 
 
@@ -233,10 +235,20 @@ export default class GameScene extends Phaser.Scene {
         this.players[ship.localId].state--;
         switch (this.players[ship.localId].state){
             case 0:
-                ship.destroy();
+                this.ships.killAndHide(ship);
+                this.killedBy = bullet.shotBy;
                 break;
             case 1:
                 ship.setTexture("little"+ship.localId);
+                setTimeout(()=>{
+                    if(ship.state===1){
+                        ship.state = 2;
+                        this.socket.emit(websocketEvents.CHANGE_STATE, {
+                            localId: ship.localId,
+                            state: this.players[ship.localId].state
+                        });
+                    }
+                }, this.settings.respawnTime)
                 break;
             case 2:
                 ship.setTexture("ship"+ship.localId);
@@ -245,7 +257,7 @@ export default class GameScene extends Phaser.Scene {
         this.socket.emit(websocketEvents.CHANGE_STATE, {
             localId: ship.localId,
             state: this.players[ship.localId].state
-        })
+        });
     }
 
 
