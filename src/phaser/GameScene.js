@@ -93,15 +93,15 @@ export default class GameScene extends Phaser.Scene {
         if(this.rotationKey.isDown) this.rotate(delta);
         if(this.accelerateLittleKey.isDown) this.moveLittle(delta);
         Object.values(this.players).forEach(player => {
-            const {x, y} = getVelocity(player.ship.rotation, this.settings.velocity * normalizers.velocity);
+            const {x, y} = getVelocity(player.ship.rotation, player.ship.velocityMagnitude);
             player.ship.setVelocity(x, y);
-            if(player.state === 2){
+            if(player.state === 1){
                 player.ship.velocityMagnitude = Math.max(
                     0, player.ship.velocityMagnitude-this.settings.frictionAir*delta
                 );
             }
         });
-        if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
+        //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
 
@@ -236,17 +236,19 @@ export default class GameScene extends Phaser.Scene {
                 ship.setTexture("little" + this.players[data.localId].color);
                 if(data.localId === this.currentPlayer) {
                     setTimeout(() => {
-                        if (ship.state === 1) {
-                            ship.state = 2;
+                        if (this.players[data.localId].state === 1) {
+                            this.players[data.localId].state = 2;
+
                             this.socket.emit(websocketEvents.CHANGE_STATE, {
                                 localId: this.currentPlayer,
-                                state: ship.state
+                                state: 2
                             });
                         }
                     }, this.settings.respawnTime);
                 }
                 break;
             case 2:
+                ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
                 ship.setTexture("ship" + this.players[data.localId].color);
                 break;
         }
