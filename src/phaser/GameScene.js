@@ -85,7 +85,9 @@ export default class GameScene extends Phaser.Scene {
 
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.input.keyboard.on("keyup-ENTER", this.shoot, this);
+        this.input.keyboard.on("keyup-ENTER", ()=>{
+            if(this.players[this.currentPlayer].state>=2) this.shoot();
+        });
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
     }
 
@@ -207,7 +209,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     shoot(){
-        if(this.players[this.currentPlayer].availableBullets>0 && this.players[this.currentPlayer].state>=2){
+        if(this.players[this.currentPlayer].availableBullets>0){
             const ship = this.players[this.currentPlayer].ship;
             const angle = ship.rotation;
             const data = {
@@ -238,11 +240,11 @@ export default class GameScene extends Phaser.Scene {
                     setTimeout(() => {
                         if (this.players[data.localId].state === 1) {
                             this.players[data.localId].state = 2;
-
                             this.socket.emit(websocketEvents.CHANGE_STATE, {
                                 localId: this.currentPlayer,
                                 state: 2
                             });
+                            console.log("timeout, respawn")
                         }
                     }, this.settings.respawnTime);
                 }
