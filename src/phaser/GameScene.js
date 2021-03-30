@@ -239,7 +239,10 @@ export default class GameScene extends Phaser.Scene {
                 if(data.localId === this.currentPlayer) {
                     setTimeout(() => {
                         if (this.players[data.localId].state === 1) {
-                            this.players[data.localId].state = 2;
+                            this.updateState({
+                                localId: this.currentPlayer,
+                                state: 2
+                            });
                             this.socket.emit(websocketEvents.CHANGE_STATE, {
                                 localId: this.currentPlayer,
                                 state: 2
