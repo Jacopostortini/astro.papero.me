@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
         });
 
-        /*this.settings = defaultSettings;
+/*        this.settings = defaultSettings;
         this.settings.maxVelocityLittle = 2.5;
         this.settings.accelerationLittle = 0.5;
         this.settings.frictionAir = 0.1;
@@ -91,9 +91,7 @@ export default class GameScene extends Phaser.Scene {
 
     update(time, delta){
         if(this.rotationKey.isDown) this.rotate(delta);
-        if(this.players[this.currentPlayer].state === 1){
-            if(this.accelerateLittleKey.isDown) this.moveLittle(delta)
-        }
+        if(this.accelerateLittleKey.isDown) this.moveLittle(delta);
         Object.values(this.players).forEach(player => {
             const {x, y} = getVelocity(player.ship.rotation, this.settings.velocity * normalizers.velocity);
             player.ship.setVelocity(x, y);
@@ -103,7 +101,7 @@ export default class GameScene extends Phaser.Scene {
                 );
             }
         });
-        if(this.ships.countActive() <= 1) this.gameOver = true; //TODO: SETUP END OF THE TURN
+        if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
 
@@ -188,11 +186,13 @@ export default class GameScene extends Phaser.Scene {
 
     moveLittle(delta){
         if(this.players[this.currentPlayer].state === 1){
+            console.log("move little")
             const ship = this.players[this.currentPlayer].ship;
-            if(ship.velocityMagnitude < this.settings.maxVelocityLittle * normalizers.velocity){
-                ship.velocityMagnitude += delta*this.settings.accelerationLittle;
+            const previousMag = ship.velocityMagnitude;
+            if(previousMag < this.settings.maxVelocityLittle * normalizers.velocity){
+                this.players[this.currentPlayer].ship.velocityMagnitude += delta*this.settings.accelerationLittle;
             } else {
-                ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
+                this.players[this.currentPlayer].ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
             }
 
             this.socket.emit(websocketEvents.MOVE_LITTLE, {
@@ -201,8 +201,8 @@ export default class GameScene extends Phaser.Scene {
                     x: ship.x,
                     y: ship.y
                 },
-                velocityMagnitude: ship.velocityMagnitude
-            })
+                velocityMagnitude: this.players[this.currentPlayer].ship.velocityMagnitude
+            });
         }
     }
 

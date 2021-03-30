@@ -24,6 +24,14 @@ export default {
               600
           ));
     })
+    /*const parent = document.getElementById("game");
+      new Phaser.Game(
+          config(
+              new GameScene(null, null),
+              parent,
+              800,
+              600
+          ));*/
   }
 }
 </script>
