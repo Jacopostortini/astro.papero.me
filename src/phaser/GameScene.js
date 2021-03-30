@@ -54,7 +54,7 @@ export default class GameScene extends Phaser.Scene {
                 localId: this.currentPlayer,
                 availableBullets
             };
-            this.socket.emit(websocketEvents.RELOAD, Buffer.from(JSON.stringify(data)));
+            this.socket.emit(websocketEvents.RELOAD, data);
             this.reload(data);
         }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
     }
@@ -77,11 +77,11 @@ export default class GameScene extends Phaser.Scene {
         this.createGroups();
         this.createShips();
 
-        this.socket.on(websocketEvents.ROTATE_SHIP, data => this.onShipRotated(JSON.parse(data.toString())));
-        this.socket.on(websocketEvents.MOVE_LITTLE, data => this.onLittleMoved(JSON.parse(data.toString())));
-        this.socket.on(websocketEvents.SHOOT, data => this.createBullet(JSON.parse(data.toString())));
-        this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(JSON.parse(data.toString())));
-        this.socket.on(websocketEvents.RELOAD, data => this.reload(JSON.parse(data.toString())));
+        this.socket.on(websocketEvents.ROTATE_SHIP, data => this.onShipRotated(data));
+        this.socket.on(websocketEvents.MOVE_LITTLE, data => this.onLittleMoved(data));
+        this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
+        this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
+        this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
 
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -176,15 +176,14 @@ export default class GameScene extends Phaser.Scene {
     //Current players does things
     rotate(delta){
         this.players[this.currentPlayer].ship.rotation += delta * this.settings.angularVelocity * normalizers.angularVelocity;
-        const data = {
+        this.socket.emit(websocketEvents.ROTATE_SHIP, {
             localId: this.currentPlayer,
-            rotation: this.players[this.currentPlayer].ship.rotation.toFixed(4),
+            rotation: this.players[this.currentPlayer].ship.rotation,
             position: {
-                x: this.players[this.currentPlayer].ship.x.toFixed(2),
-                y: this.players[this.currentPlayer].ship.y.toFixed(2)
+                x: this.players[this.currentPlayer].ship.x,
+                y: this.players[this.currentPlayer].ship.y
             }
-        }
-        this.socket.emit(websocketEvents.ROTATE_SHIP, Buffer.from(JSON.stringify(data)));
+        });
     }
 
     moveLittle(delta){
@@ -197,15 +196,14 @@ export default class GameScene extends Phaser.Scene {
                 this.players[this.currentPlayer].ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
             }
 
-            const data = {
+            this.socket.emit(websocketEvents.MOVE_LITTLE, {
                 localId: this.currentPlayer,
                 position: {
-                    x: ship.x.toFixed(2),
-                    y: ship.y.toFixed(2)
+                    x: ship.x,
+                    y: ship.y
                 },
-                velocityMagnitude: this.players[this.currentPlayer].ship.velocityMagnitude.toFixed(2)
-            }
-            this.socket.emit(websocketEvents.MOVE_LITTLE, Buffer.from(JSON.stringify(data)));
+                velocityMagnitude: this.players[this.currentPlayer].ship.velocityMagnitude
+            });
         }
     }
 
@@ -221,7 +219,7 @@ export default class GameScene extends Phaser.Scene {
                 rotation: angle,
                 localId: this.currentPlayer
             };
-            this.socket.emit(websocketEvents.SHOOT, Buffer.from(JSON.stringify(data)));
+            this.socket.emit(websocketEvents.SHOOT, data);
             this.createBullet(data);
         }
     }
@@ -243,11 +241,10 @@ export default class GameScene extends Phaser.Scene {
                                 localId: this.currentPlayer,
                                 state: 2
                             });
-                            const data = {
+                            this.socket.emit(websocketEvents.CHANGE_STATE, {
                                 localId: this.currentPlayer,
                                 state: 2
-                            };
-                            this.socket.emit(websocketEvents.CHANGE_STATE, Buffer.from(JSON.stringify(data)));
+                            });
                         }
                     }, this.settings.respawnTime);
                 }
@@ -263,12 +260,14 @@ export default class GameScene extends Phaser.Scene {
         bullet.destroy();
         const state = this.players[ship.localId].state-1;
         if(state === 0) this.killedBy = bullet.shotBy;
-        const data = {
+        this.socket.emit(websocketEvents.CHANGE_STATE, {
             localId: ship.localId,
             state
-        }
-        this.socket.emit(websocketEvents.CHANGE_STATE, Buffer.from(JSON.stringify(data)));
-        this.updateState(data);
+        });
+        this.updateState({
+            localId: ship.localId,
+            state
+        });
     }
 
 

@@ -41,7 +41,8 @@ const config = (scene, parent, width, height) => {
         parent,
         width,
         height,
-        scene
+        scene,
+        fps: 30
     }
 }
 

@@ -34,7 +34,7 @@ export default class LobbyScene extends Phaser.Scene {
         return angle;
     }
 
-    createNewShip(color, bounce){
+    createNewShip(color){
         let x = Phaser.Math.Between(0, this.width);
         let y = Phaser.Math.Between(0, this.height);
         let ship = this.physics.add.image(x, y, "ship"+color);
@@ -45,7 +45,7 @@ export default class LobbyScene extends Phaser.Scene {
         );
         ship.rotation = angle;
         ship.setCollideWorldBounds(true);
-        if(bounce) ship.setBounce(1, 1);
+        ship.setBounce(1, 1);
         return ship;
     }
 
@@ -102,7 +102,7 @@ export default class LobbyScene extends Phaser.Scene {
                     );
                     newShips[id].setTexture("ship"+this.findPlayerById(id).color);
                 } else {
-                    newShips[id] = this.createNewShip(this.findPlayerById(id).color, id!==game.currentPlayer);
+                    newShips[id] = this.createNewShip(this.findPlayerById(id).color);
                 }
             });
 
