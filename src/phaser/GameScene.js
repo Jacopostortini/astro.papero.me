@@ -227,36 +227,42 @@ export default class GameScene extends Phaser.Scene {
     updateState(data){
         console.log("state changed", data);
         this.players[data.localId].state = data.state;
+        const ship = this.players[data.localId].ship;
+        switch (data.state) {
+            case 0:
+                this.ships.killAndHide(ship);
+                break;
+            case 1:
+                ship.setTexture("little" + this.players[data.localId].color);
+                if(data.localId === this.currentPlayer) {
+                    setTimeout(() => {
+                        if (ship.state === 1) {
+                            ship.state = 2;
+                            this.socket.emit(websocketEvents.CHANGE_STATE, {
+                                localId: this.currentPlayer,
+                                state: ship.state
+                            });
+                        }
+                    }, this.settings.respawnTime);
+                }
+                break;
+            case 2:
+                ship.setTexture("ship" + this.players[data.localId].color);
+                break;
+        }
     }
 
     onBulletCollision(ship, bullet){
         bullet.destroy();
-        console.log("i have been hit");
-        this.players[ship.localId].state--;
-        switch (this.players[ship.localId].state){
-            case 0:
-                this.ships.killAndHide(ship);
-                this.killedBy = bullet.shotBy;
-                break;
-            case 1:
-                ship.setTexture("little"+ship.localId);
-                setTimeout(()=>{
-                    if(ship.state===1){
-                        ship.state = 2;
-                        this.socket.emit(websocketEvents.CHANGE_STATE, {
-                            localId: ship.localId,
-                            state: this.players[ship.localId].state
-                        });
-                    }
-                }, this.settings.respawnTime)
-                break;
-            case 2:
-                ship.setTexture("ship"+ship.localId);
-                break;
-        }
+        const state = this.players[ship.localId].state-1;
+        if(state === 0) this.killedBy = bullet.shotBy;
         this.socket.emit(websocketEvents.CHANGE_STATE, {
             localId: ship.localId,
-            state: this.players[ship.localId].state
+            state
+        });
+        this.updateState({
+            localId: ship.localId,
+            state
         });
     }
 
