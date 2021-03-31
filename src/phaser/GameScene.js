@@ -142,6 +142,19 @@ export default class GameScene extends Phaser.Scene {
                 this.physics.add.overlap(player.ship, this.bullets, (ship, bullet) => {
                     this.onBulletCollision(ship, bullet);
                 });
+                this.physics.add.collider(player.ship, this.ships, (currentShip, ship)=>{
+                    if(this.players[this.currentPlayer].state === 1 && this.players[ship.localId].state >= 2){
+                        this.killedBy = ship.localId;
+                        this.socket.emit(websocketEvents.CHANGE_STATE, {
+                            localId: this.currentPlayer,
+                            state: 0
+                        });
+                        this.updateState({
+                            localId: this.currentPlayer,
+                            state: 0
+                        });
+                    }
+                })
             }
 
             index++;
@@ -172,12 +185,12 @@ export default class GameScene extends Phaser.Scene {
     onShipRotated(data){
         const deltaTime = data[4]-this.players[data[0]].lastTimestamp;
         if(deltaTime<0) return;
-        const maxRotation = deltaTime/1000*this.settings.angularVelocity*normalizers.angularVelocity;
+/*        const maxRotation = deltaTime/1000*this.settings.angularVelocity*normalizers.angularVelocity;
         if(data[1]-this.players[data[0]].ship.rotation > maxRotation){
             this.players[data[0]].ship.rotation += maxRotation;
         } else {
             this.players[data[0]].ship.setRotation(data[1]);
-        }
+        }*/
         const {x, y} = this.physics.velocityFromRotation(data[1]);
         const maxXMovement = deltaTime/1000*x;
         if(data[2][0]-this.players[data[0]].x > maxXMovement){
