@@ -20,6 +20,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId] = player;
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].state = 2;
+            this.players[player.localId].lastTimestamp = 0;
         });
 
 /*        this.settings = defaultSettings;
@@ -122,7 +123,8 @@ export default class GameScene extends Phaser.Scene {
             position: {
                 x: this.players[this.currentPlayer].ship.x,
                 y: this.players[this.currentPlayer].ship.y
-            }
+            },
+            timestamp: time
         });
         /*Object.values(this.players).forEach(player => {
             const {x, y} = getVelocity(player.ship.rotation, player.ship.velocityMagnitude);
@@ -192,8 +194,10 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     onShipRotated(data){
+        if(this.players[data.localId].lastTimestamp>data.timestamp) return;
         this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
         this.players[data.localId].ship.setRotation(data.rotation);
+        this.players[data.localId].lastTimestamp = data.timestamp;
     }
 
     onLittleMoved(data){
