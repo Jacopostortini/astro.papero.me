@@ -175,7 +175,6 @@ export default class GameScene extends Phaser.Scene {
     createBullet(data){
         const {x, y} = this.physics.velocityFromRotation(data.rotation, this.settings.bulletVelocity*normalizers.bulletVelocity);
         const deltaTime = Date.now()-data.timestamp;
-        console.log(deltaTime, {x, y});
         const bullet = this.bullets.create(data.position.x+deltaTime*x/1000, data.position.y+deltaTime*y/1000, "bullet");
         bullet.rotation = data.rotation;
         bullet.setVelocity(x, y);
