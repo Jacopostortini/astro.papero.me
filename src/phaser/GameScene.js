@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
             this.players[player.localId].lastIndex = -1;
         });
-        this.updateFps = 30;
+        this.updateFps = 10;
 
         setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
@@ -166,13 +166,13 @@ export default class GameScene extends Phaser.Scene {
         const player = this.players[data[0]];
 
         if(data[3]<player.lastIndex) return;
+        player.index = data[3];
 
         player.ship.setRotation(data[1]);
-        if(player.ship.expectedPosition){
+        player.ship.setPosition(data[2][0], data[2][1]);
+        /*if(player.ship.expectedPosition){
             player.ship.setPosition(player.ship.expectedPosition.x, player.ship.expectedPosition.y);
         }
-
-        player.index = data[3];
 
         const expectedDeltaTime = 1000/this.updateFps;
         const {x, y} = this.players[data[0]].ship;
@@ -180,7 +180,7 @@ export default class GameScene extends Phaser.Scene {
         player.ship.expectedPosition = {
             x: data[2][0],
             y: data[2][1]
-        }
+        }*/
     }
 
 
