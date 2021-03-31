@@ -91,7 +91,7 @@ export default class GameScene extends Phaser.Scene {
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
 
-        setInterval(()=>{
+/*        setInterval(()=>{
             this.socket.emit(websocketEvents.ROTATE_SHIP, {
                 localId: this.currentPlayer,
                 rotation: this.players[this.currentPlayer].ship.rotation,
@@ -100,7 +100,7 @@ export default class GameScene extends Phaser.Scene {
                     y: this.players[this.currentPlayer].ship.y
                 }
             });
-        }, 1000/20);
+        }, 1000/20);*/
     }
 
     update(time, delta){
@@ -116,6 +116,14 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
             );
         }
+        this.socket.emit(websocketEvents.ROTATE_SHIP, {
+            localId: this.currentPlayer,
+            rotation: this.players[this.currentPlayer].ship.rotation,
+            position: {
+                x: this.players[this.currentPlayer].ship.x,
+                y: this.players[this.currentPlayer].ship.y
+            }
+        });
         /*Object.values(this.players).forEach(player => {
             const {x, y} = getVelocity(player.ship.rotation, player.ship.velocityMagnitude);
             player.ship.setVelocity(x, y);
