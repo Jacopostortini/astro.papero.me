@@ -72,7 +72,6 @@ export default class GameScene extends Phaser.Scene {
                 this.currentPlayer,
                 this.players[this.currentPlayer].ship.rotation,
                 [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
-                this.players[this.currentPlayer].ship.velocityMagnitude,
                 this.time.now
             ]);
         }, 1000/this.updateFps);
@@ -170,7 +169,7 @@ export default class GameScene extends Phaser.Scene {
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
         player.ship.setAngularVelocity( (data[1]-player.ship.rotation) / deltaTime );
 
-        console.log(deltaTime);
+        //console.log(deltaTime);
         player.lastTimestamp = data[3];
     }
 
