@@ -164,7 +164,7 @@ export default class GameScene extends Phaser.Scene {
     //Others do things via the websocket
     onShipRotated(data){
         const player = this.players[data[0]];
-        const deltaTime = data[3]-player.lastTimestamp;
+        const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<0) return;
         player.lastTimestamp = data[3];
 
