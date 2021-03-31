@@ -23,6 +23,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].lastIndex = -1;
         });
         this.updateFps = 10;
+        this.timestamp = 0;
 
         setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
@@ -170,6 +171,8 @@ export default class GameScene extends Phaser.Scene {
 
         player.ship.setRotation(data[1]);
         player.ship.setPosition(data[2][0], data[2][1]);
+        console.log(Date.now()-this.timestamp);
+        this.timestamp = Date.now();
         /*if(player.ship.expectedPosition){
             player.ship.setPosition(player.ship.expectedPosition.x, player.ship.expectedPosition.y);
         }
