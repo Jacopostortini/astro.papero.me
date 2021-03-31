@@ -165,6 +165,7 @@ export default class GameScene extends Phaser.Scene {
     onShipRotated(data){
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp);
+        console.log(deltaTime);
         if(deltaTime<=0) return;
         player.lastTimestamp = data[3];
 
