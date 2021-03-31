@@ -79,7 +79,7 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
             );
         }
-        if(this.players[this.currentPlayer].state>0 && this.updating<2){
+        if(/*this.players[this.currentPlayer].state>0 &&*/ this.updating<2){
             this.socket.emit(websocketEvents.ROTATE_SHIP, [
                 this.currentPlayer,
                 this.players[this.currentPlayer].ship.rotation,
