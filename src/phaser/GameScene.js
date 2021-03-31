@@ -20,9 +20,9 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId] = player;
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].state = 2;
-            this.players[player.localId].lastTimestamp = 0;
+            this.players[player.localId].lastIndex = -1;
         });
-        this.updating = 0;
+        this.updateFps = 40;
 
         setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
@@ -64,6 +64,18 @@ export default class GameScene extends Phaser.Scene {
             if(this.players[this.currentPlayer].state>=2) this.shoot();
         });
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
+
+        let index = 0;
+        setInterval(()=>{
+            this.socket.emit(websocketEvents.ROTATE_SHIP, [
+                this.currentPlayer,
+                this.players[this.currentPlayer].ship.rotation,
+                [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
+                this.players[this.currentPlayer].ship.velocityMagnitude,
+                index
+            ]);
+            index++;
+        }, 1000/this.updateFps);
     }
 
     update(time, delta){
@@ -79,17 +91,6 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude - this.settings.frictionAir * delta
             );
         }
-        if (this.updating < 2) {
-            this.socket.emit(websocketEvents.ROTATE_SHIP, [
-                this.currentPlayer,
-                this.players[this.currentPlayer].ship.rotation,
-                [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
-                this.players[this.currentPlayer].ship.velocityMagnitude,
-                time
-            ]);
-        }
-        this.updating++;
-        this.updating %= 3;
         //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
@@ -114,10 +115,10 @@ export default class GameScene extends Phaser.Scene {
 
             player.ship.localId = player.localId;
             player.ship.setRotation(-Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
-            player.ship.setCollideWorldBounds(true);
             player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
 
             if(player.localId===this.currentPlayer){
+                player.ship.setCollideWorldBounds(true);
                 this.physics.add.overlap(player.ship, this.bullets, (ship, bullet) => {
                     this.onBulletCollision(ship, bullet);
                 });
@@ -162,11 +163,24 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     onShipRotated(data){
-        const deltaTime = data[3]-this.players[data[0]].lastTimestamp;
-        if(deltaTime<0) return;
-        this.players[data[0]].ship.setRotation(data[1]);
-        this.players[data[0]].ship.setPosition(data[2][0], data[2][1]);
-        this.players[data[0]].lastTimestamp = data[3];
+        const player = this.players[data[0]];
+
+        if(data[3]<player.lastIndex) return;
+
+        player.ship.setRotation(data[1]);
+        if(player.ship.expectedPosition){
+            player.ship.setPosition(player.ship.expectedPosition.x, player.ship.expectedPosition.y);
+        }
+
+        player.index = data[3];
+
+        const expectedDeltaTime = 1000/this.updateFps;
+        const {x, y} = this.players[data[0]].ship;
+        player.ship.setVelocity( ( data[2][0]-x ) / expectedDeltaTime, ( data[2][1]-y ) / expectedDeltaTime );
+        player.ship.expectedPosition = {
+            x: data[2][0],
+            y: data[2][1]
+        }
     }
 
 
