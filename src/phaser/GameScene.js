@@ -79,7 +79,7 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
             );
         }
-        if(this.updating<2){
+        if(this.players[this.currentPlayer].ship && this.updating<2){
             this.socket.emit(websocketEvents.ROTATE_SHIP, [
                 this.currentPlayer,
                 this.players[this.currentPlayer].ship.rotation,
@@ -213,7 +213,9 @@ export default class GameScene extends Phaser.Scene {
         const ship = this.players[data.localId].ship;
         switch (data.state) {
             case 0:
-                this.ships.killAndHide(ship);
+                /*this.ships.killAndHide(ship);
+                this.ships.remove(ship);*/
+                ship.destroy();
                 break;
             case 1:
                 ship.setTexture("little" + this.players[data.localId].color);
