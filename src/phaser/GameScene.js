@@ -170,9 +170,27 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     onShipRotated(data){
-        if(this.players[data[0]].lastTimestamp>data[4]) return;
-        this.players[data[0]].ship.setRotation(data[1]);
-        this.players[data[0]].ship.setPosition(data[2][0], data[2][1]);
+        const deltaTime = data[4]-this.players[data[0]].lastTimestamp;
+        if(deltaTime<0) return;
+        const maxRotation = deltaTime/1000*this.settings.angularVelocity*normalizers.angularVelocity;
+        if(data[1]-this.players[data[0]].ship.rotation > maxRotation){
+            this.players[data[0]].ship.rotation += maxRotation;
+        } else {
+            this.players[data[0]].ship.setRotation(data[1]);
+        }
+        const {x, y} = this.physics.velocityFromRotation(data[1]);
+        const maxXMovement = deltaTime/1000*x;
+        if(data[2][0]-this.players[data[0]].x > maxXMovement){
+            this.players[data[0]].ship.x += maxXMovement;
+        } else {
+            this.players[data[0]].ship.x = data[2][0];
+        }
+        const maxYMovement = deltaTime/1000*y;
+        if(data[2][1]-this.players[data[0]].y > maxYMovement){
+            this.players[data[0]].ship.y += maxYMovement;
+        } else {
+            this.players[data[0]].ship.y = data[2][1];
+        }
         this.players[data[0]].ship.velocityMagnitude = data[3];
         this.players[data[0]].lastTimestamp = data[4];
     }
