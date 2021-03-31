@@ -67,29 +67,31 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
-        if(this.rotationKey.isDown) this.rotate(delta);
-        if(this.accelerateLittleKey.isDown) this.moveLittle(delta);
-        const {x, y} = this.physics.velocityFromRotation(
-            this.players[this.currentPlayer].ship.rotation,
-            this.players[this.currentPlayer].ship.velocityMagnitude
-        );
-        this.players[this.currentPlayer].ship.setVelocity(x, y);
-        if(this.players[this.currentPlayer].state === 1){
-            this.players[this.currentPlayer].ship.velocityMagnitude = Math.max(
-                0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
-            );
-        }
-        if(this.players[this.currentPlayer].ship && this.updating<2){
-            this.socket.emit(websocketEvents.ROTATE_SHIP, [
-                this.currentPlayer,
+        if(this.players[this.currentPlayer].ship) {
+            if(this.rotationKey.isDown) this.rotate(delta);
+            if(this.accelerateLittleKey.isDown) this.moveLittle(delta);
+            const {x, y} = this.physics.velocityFromRotation(
                 this.players[this.currentPlayer].ship.rotation,
-                [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
-                this.players[this.currentPlayer].ship.velocityMagnitude,
-                time
-            ]);
+                this.players[this.currentPlayer].ship.velocityMagnitude
+            );
+            this.players[this.currentPlayer].ship.setVelocity(x, y);
+            if (this.players[this.currentPlayer].state === 1) {
+                this.players[this.currentPlayer].ship.velocityMagnitude = Math.max(
+                    0, this.players[this.currentPlayer].ship.velocityMagnitude - this.settings.frictionAir * delta
+                );
+            }
+            if (this.updating < 2) {
+                this.socket.emit(websocketEvents.ROTATE_SHIP, [
+                    this.currentPlayer,
+                    this.players[this.currentPlayer].ship.rotation,
+                    [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
+                    this.players[this.currentPlayer].ship.velocityMagnitude,
+                    time
+                ]);
+            }
+            this.updating++;
+            this.updating %= 3;
         }
-        this.updating++;
-        this.updating %= 3;
         //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
