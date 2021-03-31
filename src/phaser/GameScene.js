@@ -20,13 +20,9 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId] = player;
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].state = 2;
-            this.players[player.localId].lastIndex = -1;
+            this.players[player.localId].lastTimestamp = 0;
         });
         this.updateFps = 10;
-
-
-        this.timestamp = 0;
-        this.sum = 0;
 
 
 
@@ -71,16 +67,14 @@ export default class GameScene extends Phaser.Scene {
         });
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
-        let index = 0;
         setInterval(()=>{
             this.socket.emit(websocketEvents.ROTATE_SHIP, [
                 this.currentPlayer,
                 this.players[this.currentPlayer].ship.rotation,
                 [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
                 this.players[this.currentPlayer].ship.velocityMagnitude,
-                index
+                this.time.now
             ]);
-            index++;
         }, 1000/this.updateFps);
     }
 
@@ -170,26 +164,12 @@ export default class GameScene extends Phaser.Scene {
     //Others do things via the websocket
     onShipRotated(data){
         const player = this.players[data[0]];
+        const deltaTime = data[3]-player.lastTimestamp;
+        if(deltaTime<0) return;
+        player.lastTimestamp = data[3];
 
-        if(data[3]<player.lastIndex) return;
-        player.index = data[3];
-
-        player.ship.setRotation(data[1]);
-        player.ship.setPosition(data[2][0], data[2][1]);
-        this.sum += Math.pow(100 - Date.now()+this.timestamp, 2);
-        console.log(Math.sqrt(this.sum/this.index+1));
-        this.timestamp = Date.now();
-        /*if(player.ship.expectedPosition){
-            player.ship.setPosition(player.ship.expectedPosition.x, player.ship.expectedPosition.y);
-        }
-
-        const expectedDeltaTime = 1000/this.updateFps;
-        const {x, y} = this.players[data[0]].ship;
-        player.ship.setVelocity( ( data[2][0]-x ) / expectedDeltaTime, ( data[2][1]-y ) / expectedDeltaTime );
-        player.ship.expectedPosition = {
-            x: data[2][0],
-            y: data[2][1]
-        }*/
+        player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
+        player.ship.setAngularVelocity( (data[1]-player.ship.rotation) / deltaTime );
     }
 
 
