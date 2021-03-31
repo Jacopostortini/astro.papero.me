@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
             this.players[player.localId].lastIndex = -1;
         });
-        this.updateFps = 40;
+        this.updateFps = 30;
 
         setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
