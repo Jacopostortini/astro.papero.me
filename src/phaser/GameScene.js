@@ -79,7 +79,7 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
             );
         }
-        if(this.players[this.currentPlayer].state!==0 && this.updating<2){
+        if(this.updating<2){
             this.socket.emit(websocketEvents.ROTATE_SHIP, [
                 this.currentPlayer,
                 this.players[this.currentPlayer].ship.rotation,
@@ -166,19 +166,6 @@ export default class GameScene extends Phaser.Scene {
         if(deltaTime<0) return;
         this.players[data[0]].ship.setRotation(data[1]);
         this.players[data[0]].ship.setPosition(data[2][0], data[2][1]);
-        /*const {x, y} = this.physics.velocityFromRotation(data[1]);
-        const maxXMovement = deltaTime/1000*x;
-        if(data[2][0]-this.players[data[0]].x > maxXMovement){
-            this.players[data[0]].ship.x += maxXMovement;
-        } else {
-            this.players[data[0]].ship.x = data[2][0];
-        }
-        const maxYMovement = deltaTime/1000*y;
-        if(data[2][1]-this.players[data[0]].y > maxYMovement){
-            this.players[data[0]].ship.y += maxYMovement;
-        } else {
-            this.players[data[0]].ship.y = data[2][1];
-        }*/
         this.players[data[0]].lastTimestamp = data[3];
     }
 
