@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
-import {gameDimensions, getVelocity, normalizers, sceneKeys} from "../constants/gameSettings";
+import {gameDimensions, normalizers, sceneKeys} from "../constants/gameSettings";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -165,9 +165,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBullet(data){
-        const bullet = this.bullets.create(data.position.x, data.position.y, "bullet");
+        const {x, y} = this.physics.velocityFromRotation(data.rotation, this.settings.bulletVelocity*normalizers.bulletVelocity);
+        const deltaTime = Date.now()-data.timestamp;
+        const bullet = this.bullets.create(data.position.x+deltaTime*x, data.position.y+deltaTime*y, "bullet");
         bullet.rotation = data.rotation;
-        const {x, y} = getVelocity(data.rotation, this.settings.bulletVelocity*normalizers.bulletVelocity);
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
         bullet.setCollideWorldBounds(true);
@@ -239,7 +240,8 @@ export default class GameScene extends Phaser.Scene {
                     y: ship.y + ship.width*Math.sin(angle)
                 },
                 rotation: angle,
-                localId: this.currentPlayer
+                localId: this.currentPlayer,
+                timestamp: Date.now()
             };
             this.socket.emit(websocketEvents.SHOOT, data);
             this.createBullet(data);

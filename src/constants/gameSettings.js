@@ -23,11 +23,4 @@ const normalizers = {
     bulletVelocity: 200
 }
 
-const getVelocity = (angle, mag) => {
-    return {
-        x: mag * Math.cos(angle),
-        y: mag * Math.sin(angle)
-    }
-}
-
-export { sceneKeys, gameDimensions, defaultSettings, normalizers, getVelocity }
+export { sceneKeys, gameDimensions, defaultSettings, normalizers }
