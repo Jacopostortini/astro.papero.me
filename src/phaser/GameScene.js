@@ -79,7 +79,6 @@ export default class GameScene extends Phaser.Scene {
         this.createShips();
 
         this.socket.on(websocketEvents.ROTATE_SHIP, data => this.onShipRotated(data));
-        //this.socket.on(websocketEvents.MOVE_LITTLE, data => this.onLittleMoved(data));
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
@@ -90,18 +89,6 @@ export default class GameScene extends Phaser.Scene {
             if(this.players[this.currentPlayer].state>=2) this.shoot();
         });
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
-
-
-/*        setInterval(()=>{
-            this.socket.emit(websocketEvents.ROTATE_SHIP, {
-                localId: this.currentPlayer,
-                rotation: this.players[this.currentPlayer].ship.rotation,
-                position: {
-                    x: this.players[this.currentPlayer].ship.x,
-                    y: this.players[this.currentPlayer].ship.y
-                }
-            });
-        }, 1000/20);*/
     }
 
     update(time, delta){
@@ -117,24 +104,13 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
             );
         }
-        this.socket.emit(websocketEvents.ROTATE_SHIP, {
-            localId: this.currentPlayer,
-            rotation: this.players[this.currentPlayer].ship.rotation,
-            position: {
-                x: this.players[this.currentPlayer].ship.x,
-                y: this.players[this.currentPlayer].ship.y
-            },
-            timestamp: time
-        });
-        /*Object.values(this.players).forEach(player => {
-            const {x, y} = getVelocity(player.ship.rotation, player.ship.velocityMagnitude);
-            player.ship.setVelocity(x, y);
-            if(player.state === 1){
-                player.ship.velocityMagnitude = Math.max(
-                    0, player.ship.velocityMagnitude-this.settings.frictionAir*delta
-                );
-            }
-        });*/
+        this.socket.emit(websocketEvents.ROTATE_SHIP, [
+            this.currentPlayer,
+            this.players[this.currentPlayer].ship.rotation,
+            [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
+            this.players[this.currentPlayer].ship.velocityMagnitude,
+            time
+        ]);
         //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
@@ -194,15 +170,11 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     onShipRotated(data){
-        if(this.players[data.localId].lastTimestamp>data.timestamp) return;
-        this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
-        this.players[data.localId].ship.setRotation(data.rotation);
-        this.players[data.localId].lastTimestamp = data.timestamp;
-    }
-
-    onLittleMoved(data){
-        this.players[data.localId].ship.setPosition(data.position.x, data.position.y);
-        this.players[data.localId].ship.velocityMagnitude = data.velocityMagnitude;
+        if(this.players[data[0]].lastTimestamp>data[4]) return;
+        this.players[data[0]].ship.setRotation(data[1]);
+        this.players[data[0]].ship.setPosition(data[2][0], data[2][1]);
+        this.players[data[0]].ship.velocityMagnitude = data[3];
+        this.players[data[0]].lastTimestamp = data[4];
     }
 
 
@@ -211,14 +183,6 @@ export default class GameScene extends Phaser.Scene {
     //Current players does things
     rotate(delta){
         this.players[this.currentPlayer].ship.rotation += delta * this.settings.angularVelocity * normalizers.angularVelocity;
-        /*this.socket.emit(websocketEvents.ROTATE_SHIP, {
-            localId: this.currentPlayer,
-            rotation: this.players[this.currentPlayer].ship.rotation,
-            position: {
-                x: this.players[this.currentPlayer].ship.x,
-                y: this.players[this.currentPlayer].ship.y
-            }
-        });*/
     }
 
     moveLittle(delta){
@@ -230,15 +194,6 @@ export default class GameScene extends Phaser.Scene {
             } else {
                 this.players[this.currentPlayer].ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
             }
-
-            this.socket.emit(websocketEvents.MOVE_LITTLE, {
-                localId: this.currentPlayer,
-                position: {
-                    x: ship.x,
-                    y: ship.y
-                },
-                velocityMagnitude: this.players[this.currentPlayer].ship.velocityMagnitude
-            });
         }
     }
 
