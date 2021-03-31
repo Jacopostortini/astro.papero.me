@@ -22,32 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
             this.players[player.localId].lastTimestamp = 0;
         });
-
-/*        this.settings = defaultSettings;
-        this.settings.maxVelocityLittle = 2.5;
-        this.settings.accelerationLittle = 0.5;
-        this.settings.frictionAir = 0.1;
-        this.currentPlayer = 0;
-        this.players = { //STATE: 0=dead 1=little 2=ship 3=shield(?)
-            '0': {
-                localId: 0,
-                color: 0,
-                availableBullets: 3,
-                state: 2
-            },
-            '1': {
-                localId: 1,
-                color: 1,
-                availableBullets: 3,
-                state: 2
-            },
-            '2': {
-                localId: 2,
-                color: 2,
-                availableBullets: 3,
-                state: 2
-            }
-        };*/
+        this.forceUpdate = false;
 
         setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
@@ -104,13 +79,16 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude-this.settings.frictionAir*delta
             );
         }
-        this.socket.emit(websocketEvents.ROTATE_SHIP, [
-            this.currentPlayer,
-            this.players[this.currentPlayer].ship.rotation,
-            [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
-            this.players[this.currentPlayer].ship.velocityMagnitude,
-            time
-        ]);
+        if(this.forceUpdate){
+            this.socket.emit(websocketEvents.ROTATE_SHIP, [
+                this.currentPlayer,
+                this.players[this.currentPlayer].ship.rotation,
+                [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
+                this.players[this.currentPlayer].ship.velocityMagnitude,
+                time
+            ]);
+            this.forceUpdate = false;
+        } else this.forceUpdate = true;
         //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
@@ -185,13 +163,9 @@ export default class GameScene extends Phaser.Scene {
     onShipRotated(data){
         const deltaTime = data[4]-this.players[data[0]].lastTimestamp;
         if(deltaTime<0) return;
-/*        const maxRotation = deltaTime/1000*this.settings.angularVelocity*normalizers.angularVelocity;
-        if(data[1]-this.players[data[0]].ship.rotation > maxRotation){
-            this.players[data[0]].ship.rotation += maxRotation;
-        } else {
-            this.players[data[0]].ship.setRotation(data[1]);
-        }*/
-        const {x, y} = this.physics.velocityFromRotation(data[1]);
+        this.players[data[0]].ship.setRotation(data[1]);
+        this.players[data[0]].ship.setPosition(data[2][0], data[2][1]);
+        /*const {x, y} = this.physics.velocityFromRotation(data[1]);
         const maxXMovement = deltaTime/1000*x;
         if(data[2][0]-this.players[data[0]].x > maxXMovement){
             this.players[data[0]].ship.x += maxXMovement;
@@ -203,7 +177,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[data[0]].ship.y += maxYMovement;
         } else {
             this.players[data[0]].ship.y = data[2][1];
-        }
+        }*/
         this.players[data[0]].ship.velocityMagnitude = data[3];
         this.players[data[0]].lastTimestamp = data[4];
     }
