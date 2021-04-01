@@ -70,8 +70,8 @@ export default class GameScene extends Phaser.Scene {
         setInterval(()=>{
             this.socket.emit(websocketEvents.ROTATE_SHIP, [
                 this.currentPlayer,
-                this.players[this.currentPlayer].ship.rotation,
-                [this.players[this.currentPlayer].ship.x, this.players[this.currentPlayer].ship.y],
+                this.players[this.currentPlayer].ship.rotation.toFixed(5),
+                [this.players[this.currentPlayer].ship.x.toFixed(2), this.players[this.currentPlayer].ship.y.toFixed(2)],
                 this.time.now
             ]);
         }, 1000/this.updateFps);
@@ -166,13 +166,12 @@ export default class GameScene extends Phaser.Scene {
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
 
-        console.log("nuovo angolo:", data[1]);
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
-        const deltaTheta = data[1]-player.ship.rotation;
-        console.log("vecchio angolo: ", player.ship.rotation);
-        console.log("dt: ", deltaTheta);
+        const oldRotation = player.ship.rotation>=0 ? player.ship.rotation : -player.ship.rotation;
+        let newRotation = data[1]>=0 ? data[1] : -data[1];
+        while(newRotation<oldRotation) newRotation += Math.PI * 2;
+        const deltaTheta = newRotation - oldRotation;
         let angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
-        //if (angularVelocity<0) angularVelocity = 180 / Math.PI * (2*Math.PI-deltaTheta) / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
         player.lastTimestamp = data[3];
