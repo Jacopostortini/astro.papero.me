@@ -165,7 +165,6 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     onShipRotated(data){
-        console.log(data);
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
@@ -175,7 +174,7 @@ export default class GameScene extends Phaser.Scene {
         deltaTheta = Number.parseFloat(deltaTheta.toFixed(1));
 
         if(deltaTheta < 0) deltaTheta += 2*Math.PI;
-        console.log(Number.parseFloat(player.ship.rotation.toFixed(1)), deltaTheta);
+        console.log(deltaTheta);
         const angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
