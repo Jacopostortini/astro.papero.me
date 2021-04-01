@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
             this.players[player.localId].lastTimestamp = 0;
         });
-        this.updateFps = 10;
+        this.updateFps = 15;
 
 
 
@@ -174,7 +174,6 @@ export default class GameScene extends Phaser.Scene {
 
         if(deltaTheta < -0.2) deltaTheta += 2*Math.PI;
         else if(deltaTheta < 0) deltaTheta = 0;
-        if (deltaTheta > 3 ) console.log(player.ship.rotation, data[1], deltaTheta);
         const angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
