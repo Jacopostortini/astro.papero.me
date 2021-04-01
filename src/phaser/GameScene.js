@@ -170,6 +170,8 @@ export default class GameScene extends Phaser.Scene {
         let deltaTheta = Number.parseFloat(data[1]).toFixed(3) - player.ship.rotation.toFixed(3);
         console.log(deltaTheta)
         deltaTheta = deltaTheta.toFixed(3);
+        console.log(deltaTheta)
+
         //if( deltaTheta === 0) deltaTheta = 0;
         /*else*/ if(deltaTheta < 0) deltaTheta += 2*Math.PI;
         //console.log(player.ship.rotation.toFixed(2), Number.parseFloat(data[1]).toFixed(2), deltaTheta.toFixed(2));
