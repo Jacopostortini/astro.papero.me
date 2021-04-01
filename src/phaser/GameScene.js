@@ -167,8 +167,9 @@ export default class GameScene extends Phaser.Scene {
         if(deltaTime<=0) return;
 
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
-        const deltaTheta = data[1] - player.ship.rotation;
-        console.log(player.ship.rotation.toFixed(2), Number.parseFloat(data[1]).toFixed(2), deltaTheta.toFixed(2));
+        let deltaTheta = data[1] - player.ship.rotation;
+        //console.log(player.ship.rotation.toFixed(2), Number.parseFloat(data[1]).toFixed(2), deltaTheta.toFixed(2));
+        if(deltaTheta < 0) deltaTheta += 2*Math.PI;
         let angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
