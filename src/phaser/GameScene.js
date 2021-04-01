@@ -172,7 +172,7 @@ export default class GameScene extends Phaser.Scene {
         console.log("vecchio angolo: ", player.ship.rotation);
         console.log("dt: ", deltaTheta);
         let angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
-        if (angularVelocity<0) angularVelocity = 180 / Math.PI * (2*Math.PI-deltaTheta) / deltaTime;
+        //if (angularVelocity<0) angularVelocity = 180 / Math.PI * (2*Math.PI-deltaTheta) / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
         player.lastTimestamp = data[3];
