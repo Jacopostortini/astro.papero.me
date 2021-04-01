@@ -70,8 +70,11 @@ export default class GameScene extends Phaser.Scene {
         setInterval(()=>{
             this.socket.emit(websocketEvents.ROTATE_SHIP, [
                 this.currentPlayer,
-                this.players[this.currentPlayer].ship.rotation.toFixed(5),
-                [this.players[this.currentPlayer].ship.x.toFixed(2), this.players[this.currentPlayer].ship.y.toFixed(2)],
+                Number.parseFloat(this.players[this.currentPlayer].ship.rotation.toFixed(1)),
+                [
+                    Number.parseFloat(this.players[this.currentPlayer].ship.x.toFixed(2)),
+                    Number.parseFloat(this.players[this.currentPlayer].ship.y.toFixed(2))
+                ],
                 this.time.now
             ]);
         }, 1000/this.updateFps);
@@ -162,16 +165,17 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     onShipRotated(data){
+        console.log(data);
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
 
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
-        let deltaTheta = Number.parseFloat(data[1]) - player.ship.rotation;
+        let deltaTheta = data[1] - Number.parseFloat(player.ship.rotation.toFixed(1));
         deltaTheta = Number.parseFloat(deltaTheta.toFixed(1));
 
         if(deltaTheta < 0) deltaTheta += 2*Math.PI;
-        //console.log(player.ship.rotation.toFixed(1), Number.parseFloat(data[1]).toFixed(1), deltaTheta.toFixed(1));
+        console.log(Number.parseFloat(player.ship.rotation.toFixed(1)), deltaTheta);
         const angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
