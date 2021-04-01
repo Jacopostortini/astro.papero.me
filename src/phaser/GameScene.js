@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
             this.players[player.localId].lastTimestamp = 0;
         });
-        this.updateFps = 15;
+        this.updateFps = 10;
 
 
 
@@ -93,6 +93,15 @@ export default class GameScene extends Phaser.Scene {
                 0, this.players[this.currentPlayer].ship.velocityMagnitude - this.settings.frictionAir * delta
             );
         }
+        Object.values(this.players).forEach(player => {
+           if(player.localId!==this.currentPlayer){
+               player.ship.autonomyTime -= delta;
+               if(player.ship.autonomyTime<0) {
+                   player.ship.setVelocity(0);
+                   player.ship.setAngularVelocity(0);
+               }
+           }
+        });
         //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
@@ -118,6 +127,7 @@ export default class GameScene extends Phaser.Scene {
             player.ship.localId = player.localId;
             player.ship.setRotation(-Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
             player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
+            player.ship.autonomyTime = 0;
 
             if(player.localId===this.currentPlayer){
                 player.ship.setCollideWorldBounds(true);
@@ -180,6 +190,7 @@ export default class GameScene extends Phaser.Scene {
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
 
         player.lastTimestamp = data[3];
+        player.ship.autonomyTime = deltaTime*1000;
     }
 
 
