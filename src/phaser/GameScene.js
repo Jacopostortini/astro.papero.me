@@ -166,8 +166,11 @@ export default class GameScene extends Phaser.Scene {
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
 
+        console.log("nuovo angolo:", data[1]);
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
         const deltaTheta = data[1]-player.ship.rotation;
+        console.log("vecchio angolo: ", player.ship.rotation);
+        console.log("dt: ", deltaTheta);
         let angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
         if (angularVelocity<0) angularVelocity = 180 / Math.PI * (2*Math.PI-deltaTheta) / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
@@ -264,6 +267,4 @@ export default class GameScene extends Phaser.Scene {
     reload(data){
         this.players[data.localId].availableBullets = data.availableBullets;
     }
-
-
 }
