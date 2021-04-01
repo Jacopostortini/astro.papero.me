@@ -22,7 +22,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].state = 2;
             this.players[player.localId].lastTimestamp = 0;
         });
-        this.updateFps = 1;
+        this.updateFps = 10;
 
 
 
