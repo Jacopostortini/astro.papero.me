@@ -45,9 +45,10 @@ export default class LobbyScene extends Phaser.Scene {
 
         const onresize = () => {
             const parent = document.getElementById("players-wrapper");
-            const dim = Math.min(parent.offsetWidth, parent.offsetHeight);
-            this.game.scale.resize( window.innerWidth>750 ? dim : window.innerWidth*0.8, dim);
-            this.physics.world.setBounds(0, 0, dim, dim);
+            const height = Math.min(parent.offsetWidth, parent.offsetHeight);
+            const width = window.innerWidth>750 ? height : window.innerWidth*0.8
+            this.game.scale.resize(width, height);
+            this.physics.world.setBounds(0, 0, width, height);
         };
         window.addEventListener("resize", onresize);
         this.events.on("destroy", ()=>{
