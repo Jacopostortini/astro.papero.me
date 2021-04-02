@@ -70,7 +70,7 @@ export default class GameScene extends Phaser.Scene {
         setInterval(()=>{
             this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
-                Number.parseFloat(this.players[this.currentPlayer].ship.rotation.toFixed(2)),
+                Number.parseInt(this.players[this.currentPlayer].ship.angle),
                 [
                     Number.parseFloat(this.players[this.currentPlayer].ship.x.toFixed(2)),
                     Number.parseFloat(this.players[this.currentPlayer].ship.y.toFixed(2))
@@ -83,8 +83,8 @@ export default class GameScene extends Phaser.Scene {
     update(time, delta){
         if(this.rotationKey.isDown) this.rotate(delta);
         if(this.accelerateLittleKey.isDown) this.moveLittle(delta);
-        const {x, y} = this.physics.velocityFromRotation(
-            this.players[this.currentPlayer].ship.rotation,
+        const {x, y} = this.physics.velocityFromAngle(
+            this.players[this.currentPlayer].ship.angle,
             this.players[this.currentPlayer].ship.velocityMagnitude
         );
         this.players[this.currentPlayer].ship.setVelocity(x, y);
@@ -125,7 +125,7 @@ export default class GameScene extends Phaser.Scene {
             )
 
             player.ship.localId = player.localId;
-            player.ship.setRotation(-Math.PI / 4  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
+            player.ship.setAngle(-45  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
             player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
             player.ship.autonomyTime = 0;
 
@@ -137,16 +137,14 @@ export default class GameScene extends Phaser.Scene {
                 this.physics.add.collider(player.ship, this.ships, (currentShip, ship)=>{
                     if(this.players[this.currentPlayer].state === 1 && this.players[ship.localId].state >= 2){
                         this.killedBy = ship.localId;
-                        this.socket.emit(websocketEvents.CHANGE_STATE, {
+                        const data = {
                             localId: this.currentPlayer,
                             state: 0
-                        });
-                        this.updateState({
-                            localId: this.currentPlayer,
-                            state: 0
-                        });
+                        };
+                        this.socket.emit(websocketEvents.CHANGE_STATE, data);
+                        this.updateState(data);
                     }
-                })
+                });
             }
 
             index++;
@@ -156,10 +154,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBullet(data){
-        const {x, y} = this.physics.velocityFromRotation(data.rotation, this.settings.bulletVelocity*normalizers.bulletVelocity);
+        const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*normalizers.bulletVelocity);
         const deltaTime = Date.now()-data.timestamp;
         const bullet = this.bullets.create(data.position.x+deltaTime*x/1000, data.position.y+deltaTime*y/1000, "bullet");
-        bullet.rotation = data.rotation;
+        bullet.angle = data.angle;
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
         bullet.setCollideWorldBounds(true);
@@ -179,12 +177,11 @@ export default class GameScene extends Phaser.Scene {
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
 
-        let deltaTheta = data[1] - Number.parseFloat(player.ship.rotation.toFixed(2));
-        deltaTheta = Number.parseFloat(deltaTheta.toFixed(2));
+        let deltaTheta = data[1] - Number.parseInt(player.ship.angle);
 
-        if(deltaTheta < -0.2) deltaTheta += 2*Math.PI;
+        if(deltaTheta < -10) deltaTheta += 360;
         else if(deltaTheta < 0) deltaTheta = 0;
-        const angularVelocity = 180 / Math.PI * deltaTheta / deltaTime;
+        const angularVelocity = deltaTheta / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
@@ -198,7 +195,7 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Current players does things
     rotate(delta){
-        this.players[this.currentPlayer].ship.rotation += delta * this.settings.angularVelocity * normalizers.angularVelocity;
+        this.players[this.currentPlayer].ship.angle += delta * this.settings.angularVelocity * normalizers.angularVelocity;
     }
 
     moveLittle(delta){
@@ -216,13 +213,13 @@ export default class GameScene extends Phaser.Scene {
     shoot(){
         if(this.players[this.currentPlayer].availableBullets>0){
             const ship = this.players[this.currentPlayer].ship;
-            const angle = ship.rotation;
+            const angle = ship.angle;
             const data = {
                 position: {
-                    x: ship.x + ship.width*Math.cos(angle),
-                    y: ship.y + ship.width*Math.sin(angle)
+                    x: ship.x + ship.width*Math.cos(angle * Math.PI / 180),
+                    y: ship.y + ship.width*Math.sin(angle * Math.PI / 180)
                 },
-                rotation: angle,
+                angle: angle,
                 localId: this.currentPlayer,
                 timestamp: Date.now()
             };
@@ -245,14 +242,12 @@ export default class GameScene extends Phaser.Scene {
                 if(data.localId === this.currentPlayer) {
                     setTimeout(() => {
                         if (this.players[data.localId].state === 1) {
-                            this.updateState({
+                            const data = {
                                 localId: this.currentPlayer,
                                 state: 2
-                            });
-                            this.socket.emit(websocketEvents.CHANGE_STATE, {
-                                localId: this.currentPlayer,
-                                state: 2
-                            });
+                            };
+                            this.updateState(data);
+                            this.socket.emit(websocketEvents.CHANGE_STATE, data);
                         }
                     }, this.settings.respawnTime);
                 }
@@ -268,14 +263,12 @@ export default class GameScene extends Phaser.Scene {
         bullet.destroy();
         const state = this.players[ship.localId].state-1;
         if(state === 0) this.killedBy = bullet.shotBy;
-        this.socket.emit(websocketEvents.CHANGE_STATE, {
+        const data = {
             localId: ship.localId,
             state
-        });
-        this.updateState({
-            localId: ship.localId,
-            state
-        });
+        };
+        this.socket.emit(websocketEvents.CHANGE_STATE, data);
+        this.updateState(data);
     }
 
 
