@@ -81,13 +81,13 @@ export default {
   grid-area: settings;
   display: flex;
   flex-flow: column;
-  min-width: 90%;
-  height: 95%;
+  width: 100%;
+  height: 100%;
   @media (max-width: 751px) {
     height: 500px;
   }
   overflow-y: scroll;
-  margin-left: 10px;
+  margin-left: 20px;
   margin-top: -40px;
 
   .admin-reserved{

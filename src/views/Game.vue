@@ -4,7 +4,6 @@
                      @toggle-show="showHamburgerMenu=$event"/>
   <Lobby v-if="status === 0 && socket"
          :socket="socket"/>
-<!--TODO: CHANGE HERE-->
   <GameScene v-if="status === 1 && socket"
              :socket="socket"/>
 </template>
@@ -36,7 +35,7 @@ export default {
   mounted() {
     this.socket = io(urls.baseUrl, {
       path: urls.socketPath,
-      autoConnect: true //TODO: CHANGE HERE
+      autoConnect: true
     });
 
     this.socket.on("connect", ()=>{

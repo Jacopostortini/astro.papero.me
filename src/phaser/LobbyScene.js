@@ -116,6 +116,7 @@ export default class LobbyScene extends Phaser.Scene {
         this.lobby = {...game};
 
         const newShips = {};
+        const oldShips = {...this.ships};
         currentlyPlayingIds.forEach(id => {
             if(previousPlayingIds.includes(id)){
                 newShips[id] = this.ships[id];
@@ -126,6 +127,8 @@ export default class LobbyScene extends Phaser.Scene {
                 newShips[id] = this.createNewShip(this.findPlayerById(id).color);
             }
         });
+        const idsToRemove = previousPlayingIds.filter(x => !currentlyPlayingIds.includes(x));
+        idsToRemove.forEach(id => {oldShips[id].destroy()});
 
         this.ships = newShips;
     }

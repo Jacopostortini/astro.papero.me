@@ -100,7 +100,7 @@ export default {
   @media (max-width: 751px) {
     grid-template-rows: auto 300px auto auto;
     grid-template-columns: 1fr;
-    grid-template-areas: "title" "phaser" "infos" "settings";
+    grid-template-areas: "title" "phaser" "settings" "info";
     overflow: scroll;
   }
 
