@@ -51,6 +51,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     create(){
         //Event lobby-modified
+        this.socket.emit(websocketEvents.LOBBY_MODIFIED);
         this.socket.on(websocketEvents.LOBBY_MODIFIED, game => this.onLobbyModified(game));
 
         //Setting up rotation and shooting

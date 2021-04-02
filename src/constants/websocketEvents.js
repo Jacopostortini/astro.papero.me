@@ -19,7 +19,7 @@ export default {
 
     START_GAME: "start-game",
     GAME_MODIFIED: "game-modified",
-    UPDATE_SHIP: "move-big",
+    UPDATE_SHIP: "update-ship",
     SHOOT: "shoot",
     CHANGE_STATE: "change-state",
     RELOAD: "reload"
