@@ -7,6 +7,7 @@ import Phaser from "phaser";
 import {config} from "../../constants/constants";
 import GameScene from "../../phaser/GameScene";
 import {gameDimensions} from "../../constants/gameSettings";
+import websocketEvents from "../../constants/websocketEvents";
 
 export default {
   name: "GameScene",
@@ -14,14 +15,17 @@ export default {
     socket: Object,
   },
   mounted(){
-    const parent = document.getElementById("game");
+    this.socket.on(websocketEvents.GAME_MODIFIED, game => {
+      const parent = document.getElementById("game");
       new Phaser.Game(
           config(
-              new GameScene(this.socket),
+              new GameScene(this.socket, game),
               parent,
               gameDimensions.width,
               gameDimensions.height
           ));
+    });
+    this.socket.emit(websocketEvents.GAME_MODIFIED);
   }
 }
 </script>
