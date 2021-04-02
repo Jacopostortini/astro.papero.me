@@ -5,23 +5,28 @@ import {gameDimensions, normalizers, sceneKeys} from "../constants/gameSettings"
 
 export default class GameScene extends Phaser.Scene {
 
-    constructor(socket, game) {
+    constructor(socket) {
         super({key: sceneKeys.game});
 
         this.socket = socket;
-        this.settings = game.settings;
-        this.currentPlayer = game.currentPlayer;
-        this.settings.maxVelocityLittle = game.settings.velocity+0.5;
-        this.settings.accelerationLittle = 0.5;
-        this.settings.respawnTime = 5000;
-        this.settings.frictionAir = 0.1;
-        this.players = {};
-        game.players.forEach(player => {
-            this.players[player.localId] = player;
-            this.players[player.localId].availableBullets = 3;
-            this.players[player.localId].state = 2;
-            this.players[player.localId].lastTimestamp = 0;
+
+        this.socket.on(websocketEvents.GAME_MODIFIED, game => {
+            this.settings = game.settings;
+            this.currentPlayer = game.currentPlayer;
+            this.settings.maxVelocityLittle = game.settings.velocity+0.5;
+            this.settings.accelerationLittle = 0.5;
+            this.settings.respawnTime = 5000;
+            this.settings.frictionAir = 0.1;
+            this.players = {};
+            game.players.forEach(player => {
+                this.players[player.localId] = player;
+                this.players[player.localId].availableBullets = 3;
+                this.players[player.localId].state = 2;
+                this.players[player.localId].lastTimestamp = 0;
+            });
         });
+        this.socket.emit(websocketEvents.GAME_MODIFIED);
+
         this.updateFps = 15;
 
 
