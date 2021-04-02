@@ -2,11 +2,11 @@
   <div class="change-color">
     <p>{{strings.gameView.lobby.changeColor}}</p>
     <div class="colors-wrapper">
-      <div v-for="color in availableColors"
+      <img v-for="color in availableColors"
            :key="color"
            class="color-available"
            @click="changeColor(color)"
-           :style="{backgroundColor: colors[color]}"/>
+           :src="require('@/assets/ships/ship'+color+'.png')"/>
     </div>
   </div>
 </template>
@@ -40,7 +40,7 @@ export default {
         }
         return av;
       } catch (e) {
-        return colors;
+        return colors.keys();
       }
     }
   },
@@ -73,10 +73,10 @@ export default {
     flex-wrap: wrap;
 
     .color-available{
-      border-radius: 10px;
       width: 40px;
-      height: 40px;
+      height: auto;
       margin: 20px;
+      transform: rotate(-45deg);
     }
   }
 

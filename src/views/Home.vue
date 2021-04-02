@@ -14,7 +14,7 @@
 
 
       <form @submit.prevent="play" v-if="choice!==null">
-        <span @click="choice=null">&#8617;</span>
+        <img @click="choice=null" src="@/assets/arrow-back.png"/>
         <input :placeholder="strings.homeView.joinGameInputPlaceholder" v-model="input" required>
         <button>{{ strings.homeView.play }}</button>
       </form>
@@ -118,8 +118,8 @@ export default {
     display: flex;
     flex-flow: column;
     justify-content: space-between;
-    height: 100%;
     align-items: center;
+    height: 100%;
 
     img{
       margin-top: 10px;
@@ -155,9 +155,12 @@ export default {
         width: 80%;
       }
 
-      span{
+      img{
         position: absolute;
-        font-size: 300%;
+        width: 5%;
+        @media (max-width: 750px){
+          width: 10%;
+        }
         top: 10%;
         left: 10%;
         color: white;
@@ -180,6 +183,12 @@ export default {
         width: 50%;
         @media (max-width: 750px){
           width: 80%;
+        }
+
+        transition: all 0.5s;
+
+        &:focus{
+          border-bottom-color: #9400d3;
         }
       }
     }

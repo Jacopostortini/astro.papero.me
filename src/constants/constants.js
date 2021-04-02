@@ -27,7 +27,7 @@ const strings = {
     }
 }
 
-const colors = ["green", "red", "violet", "blue"];
+const colors = ["green", "red", "white", "orange"];
 
 const config = (scene, parent, width, height) => {
     return {
