@@ -22,7 +22,7 @@ export default {
   components: {UserHamburgerMenu, Lobby, GameScene},
   data(){
     return {
-      status: 0, //TODO: CHANGE HERE
+      status: null, //TODO: CHANGE HERE
       socket: null,
       showHamburgerMenu: false
     }
@@ -33,6 +33,13 @@ export default {
     }
   },
   mounted() {
+    if(window.innerWidth<=750){
+      try {
+        document.documentElement.requestFullscreen();
+      } catch (e) {
+        console.error(e);
+      }
+    }
     this.socket = io(urls.baseUrl, {
       path: urls.socketPath,
       autoConnect: true
