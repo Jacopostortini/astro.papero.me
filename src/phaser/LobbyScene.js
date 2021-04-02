@@ -69,22 +69,22 @@ export default class LobbyScene extends Phaser.Scene {
         });
 
         if(this.touchScreen) {
-            this.rotateButton = this.add.image(0, this.height, "rotate-button");
-            this.rotateButton.setOrigin(0, 1);
+            this.add.image(0, this.height/2, "rotate-button").setOrigin(0, 0.5);
+            this.add.image(this.width, this.height/2, "shoot-button").setOrigin(1, 0.5);
 
-            this.shootButton = this.add.image(this.width, this.height, "shoot-button");
-            this.shootButton.setOrigin(1, 1);
-            this.shootButton.setInteractive();
+            this.input.addPointer(1);
             this.input.on("pointerup", (pointer) => {
-                if(
-                    pointer.x>this.shootButton.x-this.shootButton.width &&
-                    pointer.x<this.shootButton.x &&
-                    pointer.y<this.shootButton.y &&
-                    pointer.y<this.shootButton.y-this.shootButton.height
-                ) {
-                    if(this.availableBullets>0) this.createBullet();
+                if(pointer.x<this.width/2){
+                    this.rotating = false;
                 }
             });
+            this.input.on("pointerdown", (pointer) => {
+                if(pointer.x<this.width/2){
+                    this.rotating = true;
+                } else {
+                    if(this.availableBullets>0) this.createBullet();
+                }
+            })
         }
 
         this.onLobbyModified({ //TODO: CHANGE HERE
@@ -106,7 +106,7 @@ export default class LobbyScene extends Phaser.Scene {
                 this.ships[player.localId].angle = this.getAngle(x, y);
             });
         }
-        if(this.lobby.currentPlayer!==null && (this.keySpace.isDown || this.pointerDownOnRotateButton())){
+        if(this.lobby.currentPlayer!==null && (this.keySpace.isDown || this.rotating)){
             this.ships[this.lobby.currentPlayer].angle += this.lobby.settings.angularVelocity* normalizers.angularVelocity * delta;
             const {x, y} = this.physics.velocityFromAngle(this.ships[this.lobby.currentPlayer].angle, this.lobby.settings.velocity* normalizers.velocity);
             this.ships[this.lobby.currentPlayer].setVelocity(x, y);
@@ -181,13 +181,5 @@ export default class LobbyScene extends Phaser.Scene {
         const {x, y} = this.physics.velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*normalizers.bulletVelocity);
         bullet.setVelocity(x, y);
         this.availableBullets--;
-    }
-
-    pointerDownOnRotateButton(){
-        if(!this.input.activePointer.isDown) return false;
-        return this.input.activePointer.x>this.rotateButton.x &&
-            this.input.activePointer.x<this.rotateButton.x+this.rotateButton.width &&
-            this.input.activePointer.y+this.height/2<this.rotateButton.y &&
-            this.input.activePointer.y+this.height/2>this.rotateButton.y-this.rotateButton.height;
     }
 }
