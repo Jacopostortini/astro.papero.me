@@ -71,14 +71,14 @@ export default class GameScene extends Phaser.Scene {
         if(this.touchScreen){
             this.input.addPointer(1);
             this.input.on("pointerup", (pointer) => {
-                if(pointer.x<this.width/2){
+                if(pointer.x<gameDimensions.width/2){
                     this.rotating = false;
                 } else {
                     this.accelerating = false;
                 }
             });
             this.input.on("pointerdown", (pointer) => {
-                if(pointer.x<this.width/2){
+                if(pointer.x<gameDimensions.width/2){
                     this.rotating = true;
                 } else {
                     if(this.players[this.currentPlayer].state >= 2){
