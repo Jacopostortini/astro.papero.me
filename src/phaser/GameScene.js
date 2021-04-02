@@ -9,8 +9,10 @@ export default class GameScene extends Phaser.Scene {
         super({key: sceneKeys.game});
 
         this.socket = socket;
+        this.settedUp = false;
 
         this.socket.on(websocketEvents.GAME_MODIFIED, game => {
+            this.settedUp = true;
             this.settings = game.settings;
             this.currentPlayer = game.currentPlayer;
             this.settings.maxVelocityLittle = game.settings.velocity+0.5;
@@ -29,7 +31,9 @@ export default class GameScene extends Phaser.Scene {
 
         this.updateFps = 15;
 
-
+        while(!this.settedUp){
+            continue;
+        }
 
         setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
