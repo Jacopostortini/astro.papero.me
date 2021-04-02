@@ -55,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
         this.createGroups();
         this.createShips();
 
-        this.socket.on(websocketEvents.ROTATE_SHIP, data => this.onShipRotated(data));
+        this.socket.on(websocketEvents.UPDATE_SHIP, data => this.updateShip(data));
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
@@ -68,7 +68,7 @@ export default class GameScene extends Phaser.Scene {
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
         setInterval(()=>{
-            this.socket.emit(websocketEvents.ROTATE_SHIP, [
+            this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
                 Number.parseFloat(this.players[this.currentPlayer].ship.rotation.toFixed(2)),
                 [
@@ -174,7 +174,7 @@ export default class GameScene extends Phaser.Scene {
 
     //=============================================================================
     //Others do things via the websocket
-    onShipRotated(data){
+    updateShip(data){
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;

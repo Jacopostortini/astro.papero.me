@@ -18,7 +18,7 @@ const defaultSettings = {
 
 const normalizers = {
     velocity: 100,
-    angularVelocity: Math.PI/1200,
+    angularVelocity: 0.15,
     reloadingVelocity: 1/2000,
     bulletVelocity: 200
 }

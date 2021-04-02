@@ -31,6 +31,7 @@ import ChangeColor from "./lobbyComponents/ChangeColor";
 import CopyInformation from "./lobbyComponents/CopyInformation";
 import websocketEvents from "../../constants/websocketEvents";
 import GameSettings from "./lobbyComponents/GameSettings";
+import {defaultSettings} from "../../constants/gameSettings";
 export default {
   name: "Lobby",
   components: {GameSettings, CopyInformation, ChangeColor},
@@ -42,19 +43,13 @@ export default {
       strings,
       websocketEvents,
       game: {
-        settings: {
-          totalTurns: 5,
-          velocity: 2,
-          angularVelocity: 2,
-          reloadingVelocity: 2,
-          bulletVelocity: 2
-        }
+        settings: defaultSettings
       },
       phaserScene: null
     }
   },
   mounted() {
-    let parent = document.getElementById("players-wrapper");
+    const parent = document.getElementById("players-wrapper");
     this.phaserScene = new Phaser.Game(
         config(
             new LobbyScene(this.socket),

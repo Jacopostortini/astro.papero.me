@@ -19,8 +19,7 @@ export default {
 
     START_GAME: "start-game",
     GAME_MODIFIED: "game-modified",
-    ROTATE_SHIP: "move-big",
-    MOVE_LITTLE: "move-little",
+    UPDATE_SHIP: "move-big",
     SHOOT: "shoot",
     CHANGE_STATE: "change-state",
     RELOAD: "reload"
