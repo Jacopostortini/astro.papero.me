@@ -34,7 +34,6 @@ export default {
 .copy-information{
   color: white;
   width: 80%;
-  margin: 10%;
   font-size: 50%;
   position: relative;
   text-align: center;

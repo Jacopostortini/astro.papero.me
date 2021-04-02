@@ -16,7 +16,7 @@
     </div>
 
     <div class="infos">
-      <ChangeColor :socket="socket" :players="game.players"/>
+      <ChangeColor v-if="game.currentPlayer!==null" :socket="socket" :players="game.players"/>
       <CopyInformation :msg="strings.gameView.lobby.shareTheLink" :info="link"/>
       <CopyInformation :msg="strings.gameView.lobby.copyTag" :info="gameId"/>
     </div>
@@ -100,12 +100,13 @@ export default {
   @media (max-width: 751px) {
     grid-template-rows: auto 300px auto auto;
     grid-template-columns: 1fr;
-    grid-template-areas: "title" "phaser" "settings" "info";
+    grid-template-areas: "title" "phaser" "settings" "infos";
     overflow: scroll;
   }
 
   h1{
     grid-area: title;
+    padding-bottom: 20px;
   }
 
   .join-button{
@@ -143,6 +144,7 @@ export default {
     display: flex;
     flex-flow: column;
     justify-content: space-evenly;
+    align-items: center;
   }
 }
 

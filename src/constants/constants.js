@@ -21,7 +21,6 @@ const strings = {
             bulletVelocity: "Bullet velocity:",
             joinLobby: "Join",
             startGame: "Start",
-            adminSettings: "Game settings",
             shareTheLink: "Copy link",
             copyTag: "Copy tag",
         }

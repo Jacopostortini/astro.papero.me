@@ -78,7 +78,7 @@ export default {
       flex-flow: column;
       justify-content: space-between;
       align-items: center;
-      margin-left: 5%;
+      margin: 5%;
       height: 30%;
 
       .arrow{

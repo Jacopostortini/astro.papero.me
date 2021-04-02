@@ -1,7 +1,6 @@
 <template>
   <div class="settings">
     <div class="admin-reserved">
-      <span>{{strings.gameView.lobby.adminSettings}}</span>
       <SingleSetting :game="game"
                      :socket="socket"
                      :min="1"
@@ -81,18 +80,17 @@ export default {
   grid-area: settings;
   display: flex;
   flex-flow: column;
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
+  margin: 5%;
   @media (max-width: 751px) {
-    height: 500px;
+    height: fit-content;
   }
-  overflow-y: scroll;
-  margin-left: 20px;
-  margin-top: -40px;
+
 
   .admin-reserved{
+    overflow-y: scroll;
     position: relative;
-    margin-top: 20%;
     border: 1px solid white;
     padding: 2% 2% 5% 2%;
 
