@@ -22,7 +22,7 @@ export default {
   components: {UserHamburgerMenu, Lobby, GameScene},
   data(){
     return {
-      status: null, //TODO: CHANGE HERE
+      status: 0, //TODO: CHANGE HERE
       socket: null,
       showHamburgerMenu: false
     }
