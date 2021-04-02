@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
 import {gameDimensions, normalizers, sceneKeys} from "../constants/gameSettings";
+import {detectTouchScreen} from "../constants/constants";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -24,8 +25,9 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.updateFps = 15;
+        this.touchScreen = detectTouchScreen();
 
-        setInterval(() => {
+        this.reloadInterval = setInterval(() => {
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
             const data = {
                 localId: this.currentPlayer,
@@ -66,7 +68,30 @@ export default class GameScene extends Phaser.Scene {
         });
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
-        setInterval(()=>{
+        if(this.touchScreen){
+            this.input.addPointer(1);
+            this.input.on("pointerup", (pointer) => {
+                if(pointer.x<this.width/2){
+                    this.rotating = false;
+                } else {
+                    this.accelerating = false;
+                }
+            });
+            this.input.on("pointerdown", (pointer) => {
+                if(pointer.x<this.width/2){
+                    this.rotating = true;
+                } else {
+                    if(this.players[this.currentPlayer].state >= 2){
+                        if(this.availableBullets>0) this.shoot();
+                    } else {
+                        this.accelerating = true;
+                    }
+                }
+            });
+        }
+
+
+        this.updateShipInterval = setInterval(()=>{
             this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
                 Number.parseInt(this.players[this.currentPlayer].ship.angle),
@@ -80,8 +105,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
-        if(this.rotationKey.isDown) this.rotate(delta);
-        if(this.accelerateLittleKey.isDown) this.moveLittle(delta);
+        if(this.rotationKey.isDown || this.rotating) this.rotate(delta);
+        if(this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
         const {x, y} = this.physics.velocityFromAngle(
             this.players[this.currentPlayer].ship.angle,
             this.players[this.currentPlayer].ship.velocityMagnitude
@@ -235,6 +260,8 @@ export default class GameScene extends Phaser.Scene {
             case 0:
                 this.ships.killAndHide(ship);
                 this.ships.remove(ship);
+                clearInterval(this.reloadInterval);
+                clearInterval(this.updateShipInterval);
                 break;
             case 1:
                 ship.setTexture("little" + this.players[data.localId].color);

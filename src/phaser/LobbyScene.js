@@ -84,7 +84,7 @@ export default class LobbyScene extends Phaser.Scene {
                 } else {
                     if(this.availableBullets>0) this.createBullet();
                 }
-            })
+            });
         }
 
         this.onLobbyModified({ //TODO: CHANGE HERE

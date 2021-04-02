@@ -5,7 +5,7 @@ const sceneKeys = {
 
 const gameDimensions = {
     width: 600,
-    height: 400
+    height: 300
 }
 
 const defaultSettings = {
