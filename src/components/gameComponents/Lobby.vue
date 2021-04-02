@@ -50,12 +50,14 @@ export default {
   },
   mounted() {
     const parent = document.getElementById("players-wrapper");
+    const height = Math.min(parent.offsetWidth, parent.offsetHeight);
+    const width = window.innerWidth>751 ? height : window.innerWidth*0.8;
     this.phaserScene = new Phaser.Game(
         config(
             new LobbyScene(this.socket),
             parent,
-            Math.min(parent.offsetWidth, parent.offsetHeight),
-            Math.min(parent.offsetWidth, parent.offsetHeight)
+            width,
+            height
         ));
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
       console.log(game);

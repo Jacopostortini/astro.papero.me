@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
 import {defaultSettings, normalizers, sceneKeys} from "../constants/gameSettings";
+import {detectTouchScreen} from "../constants/constants";
 
 export default class LobbyScene extends Phaser.Scene {
 
@@ -12,6 +13,8 @@ export default class LobbyScene extends Phaser.Scene {
             currentPlayer: null,
             settings: defaultSettings
         }
+
+        this.touchScreen = detectTouchScreen();
 
         this.ships = {};
         this.availableBullets = 3;
@@ -35,11 +38,15 @@ export default class LobbyScene extends Phaser.Scene {
         this.load.image("ship2", "./ships/ship2.png");
         this.load.image("ship3", "./ships/ship3.png");
         this.load.image("bullet", "./bullet.png");
+        if(this.touchScreen) {
+            this.load.image("rotate-button", "./rotate-button.png");
+            this.load.image("shoot-button", "./shoot-button.png");
+        }
 
         const onresize = () => {
             const parent = document.getElementById("players-wrapper");
             const dim = Math.min(parent.offsetWidth, parent.offsetHeight);
-            this.game.scale.resize(dim, dim);
+            this.game.scale.resize( window.innerWidth>750 ? dim : window.innerWidth*0.8, dim);
             this.physics.world.setBounds(0, 0, dim, dim);
         };
         window.addEventListener("resize", onresize);
@@ -59,6 +66,36 @@ export default class LobbyScene extends Phaser.Scene {
         this.input.keyboard.on("keyup-ENTER", ()=>{
             if(this.availableBullets>0) this.createBullet();
         });
+
+        if(this.touchScreen) {
+            this.rotateButton = this.add.image(0, this.height, "rotate-button");
+            this.rotateButton.setOrigin(0, 1);
+
+            this.shootButton = this.add.image(this.width, this.height, "shoot-button");
+            this.shootButton.setOrigin(1, 1);
+            this.shootButton.setInteractive();
+            this.input.on("pointerup", (pointer) => {
+                if(
+                    pointer.x>this.shootButton.x-this.shootButton.width &&
+                    pointer.x<this.shootButton.x &&
+                    pointer.y<this.shootButton.y &&
+                    pointer.y<this.shootButton.y-this.shootButton.height
+                ) {
+                    if(this.availableBullets>0) this.createBullet();
+                }
+            });
+        }
+
+        this.onLobbyModified({ //TODO: CHANGE HERE
+            settings: defaultSettings,
+            currentPlayer: 0,
+            players: [
+                {
+                    localId: 0,
+                    color: 0
+                }
+            ]
+        })
     }
 
     update(time, delta){
@@ -68,7 +105,7 @@ export default class LobbyScene extends Phaser.Scene {
                 this.ships[player.localId].angle = this.getAngle(x, y);
             });
         }
-        if(this.lobby.currentPlayer!==null && this.keySpace.isDown){
+        if(this.lobby.currentPlayer!==null && (this.keySpace.isDown || this.pointerDownOnRotateButton())){
             this.ships[this.lobby.currentPlayer].angle += this.lobby.settings.angularVelocity* normalizers.angularVelocity * delta;
             const {x, y} = this.physics.velocityFromAngle(this.ships[this.lobby.currentPlayer].angle, this.lobby.settings.velocity* normalizers.velocity);
             this.ships[this.lobby.currentPlayer].setVelocity(x, y);
@@ -143,5 +180,13 @@ export default class LobbyScene extends Phaser.Scene {
         const {x, y} = this.physics.velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*normalizers.bulletVelocity);
         bullet.setVelocity(x, y);
         this.availableBullets--;
+    }
+
+    pointerDownOnRotateButton(){
+        if(!this.input.activePointer.isDown) return false;
+        return this.input.activePointer.x>this.rotateButton.x &&
+            this.input.activePointer.x<this.rotateButton.x+this.rotateButton.width &&
+            this.input.activePointer.y+this.height/2<this.rotateButton.y &&
+            this.input.activePointer.y+this.height/2>this.rotateButton.y-this.rotateButton.height;
     }
 }

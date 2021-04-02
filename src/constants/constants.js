@@ -45,6 +45,15 @@ const config = (scene, parent, width, height) => {
     }
 }
 
+const detectTouchScreen = ()=>{
+    try{
+        document.createEvent("TouchEvent");
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 let baseUrl = "https://papero.me";
 const urls = {
     baseUrl: "https://papero.me",
@@ -55,4 +64,4 @@ const urls = {
     getGameStatusUrl: baseUrl+"/server/cosmos/games/status_by_id"
 }
 
-export { strings, colors, config, urls }
+export { strings, colors, config, detectTouchScreen, urls }
