@@ -64,7 +64,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.input.keyboard.on("keyup-ENTER", ()=>{
+        this.input.keyboard.on("keydown-ENTER", ()=>{
             if(this.players[this.currentPlayer].state>=2) this.shoot();
         });
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
@@ -198,6 +198,7 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     updateShip(data){
+        console.log("ship updated", data);
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
@@ -262,6 +263,7 @@ export default class GameScene extends Phaser.Scene {
                 this.ships.killAndHide(ship);
                 this.ships.remove(ship);
                 clearInterval(this.reloadInterval);
+                clearInterval(this.updateShipInterval);
                 break;
             case 1:
                 ship.setTexture("little" + this.players[data.localId].color);
