@@ -21,6 +21,11 @@ export default class LobbyScene extends Phaser.Scene {
         let interval;
         const handler = () => {
             this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
+            try{
+                this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
+            } catch (e) {
+                console.error(e);
+            }
             clearInterval(interval)
             interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
         }
@@ -38,6 +43,8 @@ export default class LobbyScene extends Phaser.Scene {
         this.load.image("ship2", "./ships/ship2.png");
         this.load.image("ship3", "./ships/ship3.png");
         this.load.image("bullet", "./bullet.png");
+        this.load.image("bullet-loaded", "./bullet-loaded.png");
+
         if(this.touchScreen) {
             this.load.image("rotate-button", "./rotate-button.png");
             this.load.image("shoot-button", "./shoot-button.png");
@@ -87,23 +94,51 @@ export default class LobbyScene extends Phaser.Scene {
             });
         }
 
-        this.onLobbyModified({ //TODO: CHANGE HERE
+        /*this.onLobbyModified({ //TODO: CHANGE HERE
             settings: defaultSettings,
             currentPlayer: 0,
             players: [
                 {
                     localId: 0,
                     color: 0
+                },
+                {
+                    localId: 1,
+                    color: 1
                 }
             ]
-        })
+        })*/
     }
 
     update(time, delta){
         if(Array.isArray(this.lobby.players) && this.lobby.players.length>0) {
             this.lobby.players.forEach(player => {
-                const {x, y} = this.ships[player.localId].body.velocity;
-                this.ships[player.localId].angle = this.getAngle(x, y);
+                const ship = this.ships[player.localId];
+                const {x, y} = ship.body.velocity;
+                ship.angle = this.getAngle(x, y);
+
+                ship.bulletsLoaded.children.iterate((bullet, index) => {
+                    const topLeft = ship.getTopLeft();
+                    const bottomLeft = ship.getBottomLeft();
+                    const centerLeft = {
+                        x: (topLeft.x + bottomLeft.x) /2,
+                        y: (topLeft.y + bottomLeft.y) /2
+                    }
+                    switch (index){
+                        case 0:
+                            bullet.x = bottomLeft.x - (ship.width/4)*Math.cos(ship.rotation);
+                            bullet.y = bottomLeft.y - (ship.height/4)*Math.sin(ship.rotation);
+                            break;
+                        case 1:
+                            bullet.x = topLeft.x - (ship.width/4)*Math.cos(ship.rotation);
+                            bullet.y = topLeft.y - (ship.height/4)*Math.sin(ship.rotation);
+                            break;
+                        case 2:
+                            bullet.x = centerLeft.x - (ship.width/4)*Math.cos(ship.rotation);
+                            bullet.y = centerLeft.y - (ship.height/4)*Math.sin(ship.rotation);
+                            break;
+                    }
+                });
             });
         }
         if(this.lobby.currentPlayer!==null && (this.keySpace.isDown || this.rotating)){
@@ -126,13 +161,20 @@ export default class LobbyScene extends Phaser.Scene {
     createNewShip(color){
         const posX = Phaser.Math.Between(0, this.width);
         const posY = Phaser.Math.Between(0, this.height);
-        const ship = this.physics.add.image(posX, posY, "ship"+color);
+        const ship = this.physics.add.sprite(posX, posY, "ship"+color);
         const angle = Phaser.Math.Between(45, 135);
         const {x, y} = this.physics.velocityFromAngle(angle, this.lobby.settings.velocity*normalizers.velocity)
         ship.setVelocity(x, y);
         ship.angle = angle;
         ship.setCollideWorldBounds(true);
         ship.setBounce(1, 1);
+        ship.bulletsLoaded = this.physics.add.group({
+            collideWorldBounds: false,
+            key: "bullet-loaded",
+            quantity: 3,
+            visible: true,
+            active: true
+        });
         return ship;
     }
 
@@ -180,6 +222,7 @@ export default class LobbyScene extends Phaser.Scene {
         bullet.angle = this.ships[this.lobby.currentPlayer].angle;
         const {x, y} = this.physics.velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*normalizers.bulletVelocity);
         bullet.setVelocity(x, y);
+        this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
         this.availableBullets--;
     }
 }

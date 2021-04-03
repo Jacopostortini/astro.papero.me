@@ -50,6 +50,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("little2", "./little.png");
         this.load.image("little3", "./little.png");
         this.load.image("bullet", "./bullet.png");
+        this.load.image("bullet-loaded", "./bullet-loaded.png");
 
     }
 
@@ -82,12 +83,8 @@ export default class GameScene extends Phaser.Scene {
                 if(pointer.x<gameDimensions.width/2){
                     this.rotating = true;
                 } else {
-                    if(this.players[this.currentPlayer].state >= 2){
-                        if(this.availableBullets>0) {
-                            alert("shooting");
-                            this.shoot();
-                        }
-                    } else {
+                    if(this.players[this.currentPlayer].state>=2) this.shoot();
+                    else {
                         this.accelerating = true;
                     }
                 }
@@ -122,6 +119,28 @@ export default class GameScene extends Phaser.Scene {
             );
         }
         Object.values(this.players).forEach(player => {
+            player.bulletsLoaded.children.iterate((bullet, index)=>{
+                const topLeft = player.ship.getTopLeft();
+                const bottomLeft = player.ship.getBottomLeft();
+                const centerLeft = {
+                    x: (topLeft.x + bottomLeft.x) /2,
+                    y: (topLeft.y + bottomLeft.y) /2
+                }
+                switch (index){
+                    case 0:
+                        bullet.x = bottomLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation);
+                        bullet.y = bottomLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation);
+                        break;
+                    case 1:
+                        bullet.x = topLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation);
+                        bullet.y = topLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation);
+                        break;
+                    case 2:
+                        bullet.x = centerLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation);
+                        bullet.y = centerLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation);
+                        break;
+                }
+            });
            if(player.localId!==this.currentPlayer){
                player.ship.autonomyTime -= delta;
                if(player.ship.autonomyTime<0) {
@@ -150,7 +169,15 @@ export default class GameScene extends Phaser.Scene {
                 (index<2 ? 0.05 : 0.95) * gameDimensions.width,
                 ( index%2 === 0 ? 0.05 : 0.95 ) * gameDimensions.height,
                 "ship"+player.color
-            )
+            );
+
+            player.bulletsLoaded = this.physics.add.group({
+                collideWorldBounds: false,
+                key: "bullet-loaded",
+                quantity: 3,
+                visible: true,
+                active: true
+            });
 
             player.ship.localId = player.localId;
             player.ship.setAngle(-45  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
@@ -191,6 +218,7 @@ export default class GameScene extends Phaser.Scene {
         bullet.setCollideWorldBounds(true);
         bullet.body.onWorldBounds = true;
         this.players[data.localId].availableBullets--;
+        this.players[data.localId].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
     }
 
 
@@ -201,7 +229,6 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     updateShip(data){
-        console.log("ship updated", data);
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
@@ -307,5 +334,12 @@ export default class GameScene extends Phaser.Scene {
 
     reload(data){
         this.players[data.localId].availableBullets = data.availableBullets;
+        try{
+            while(this.players[data.localId].bulletsLoaded.countActive() < data.availableBullets){
+                this.players[data.localId].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
+            }
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
