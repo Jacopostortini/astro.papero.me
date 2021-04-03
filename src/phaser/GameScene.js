@@ -83,7 +83,10 @@ export default class GameScene extends Phaser.Scene {
                     this.rotating = true;
                 } else {
                     if(this.players[this.currentPlayer].state >= 2){
-                        if(this.availableBullets>0) this.shoot();
+                        if(this.availableBullets>0) {
+                            alert("shooting");
+                            this.shoot();
+                        }
                     } else {
                         this.accelerating = true;
                     }
@@ -262,8 +265,6 @@ export default class GameScene extends Phaser.Scene {
             case 0:
                 this.ships.killAndHide(ship);
                 this.ships.remove(ship);
-                clearInterval(this.reloadInterval);
-                clearInterval(this.updateShipInterval);
                 break;
             case 1:
                 ship.setTexture("little" + this.players[data.localId].color);
@@ -290,7 +291,11 @@ export default class GameScene extends Phaser.Scene {
     onBulletCollision(ship, bullet){
         bullet.destroy();
         const state = this.players[ship.localId].state-1;
-        if(state === 0) this.killedBy = bullet.shotBy;
+        if(state === 0) {
+            this.killedBy = bullet.shotBy;
+            clearInterval(this.reloadInterval);
+            clearInterval(this.updateShipInterval);
+        }
         const data = {
             localId: ship.localId,
             state
