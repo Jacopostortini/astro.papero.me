@@ -307,10 +307,16 @@ export default class GameScene extends Phaser.Scene {
                         }
                     }, this.settings.respawnTime);
                 }
+                while(this.players[data.localId].bulletsLoaded.countActive()>0) {
+                    this.players[data.localId].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
+                }
                 break;
             case 2:
                 ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
                 ship.setTexture("ship" + this.players[data.localId].color);
+                while(this.players[data.localId].bulletsLoaded.countActive()<3) {
+                    this.players[data.localId].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
+                }
                 break;
         }
     }
