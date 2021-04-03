@@ -28,8 +28,7 @@ export default class GameScene extends Phaser.Scene {
         this.touchScreen = detectTouchScreen();
 
         this.reloadInterval = setInterval(() => {
-            if(this.players[this.currentPlayer].availableBullets>=3) return;
-            const availableBullets = this.players[this.currentPlayer].availableBullets + 1;
+            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
             const data = {
                 localId: this.currentPlayer,
                 availableBullets
