@@ -28,7 +28,8 @@ export default class GameScene extends Phaser.Scene {
         this.touchScreen = detectTouchScreen();
 
         this.reloadInterval = setInterval(() => {
-            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
+            if(this.players[this.currentPlayer].availableBullets>=3) return;
+            const availableBullets = this.players[this.currentPlayer].availableBullets + 1;
             const data = {
                 localId: this.currentPlayer,
                 availableBullets
@@ -261,7 +262,6 @@ export default class GameScene extends Phaser.Scene {
                 this.ships.killAndHide(ship);
                 this.ships.remove(ship);
                 clearInterval(this.reloadInterval);
-                clearInterval(this.updateShipInterval);
                 break;
             case 1:
                 ship.setTexture("little" + this.players[data.localId].color);
