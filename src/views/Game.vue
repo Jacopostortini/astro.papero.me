@@ -6,6 +6,8 @@
          :socket="socket"/>
   <GameScene v-if="status === 1 && socket"
              :socket="socket"/>
+  <ResizeComponent v-if="status === 0.5 && socket"
+                   :socket="socket"/>
 </template>
 
 <script>
@@ -17,9 +19,10 @@ import websocketEvents from "../constants/websocketEvents";
 import UserHamburgerMenu from "../components/UserHamburgerMenu";
 import axios from "axios";
 import store from "../store";
+import ResizeComponent from "../components/gameComponents/ResizeComponent";
 export default {
   name: 'Game',
-  components: {UserHamburgerMenu, Lobby, GameScene},
+  components: {ResizeComponent, UserHamburgerMenu, Lobby, GameScene},
   data(){
     return {
       status: null, //TODO: CHANGE HERE
@@ -37,7 +40,7 @@ export default {
       try {
         document.documentElement.requestFullscreen();
       } catch (e) {
-        console.error(e);
+        console.log(e);
       }
     }
     this.socket = io(urls.baseUrl, {

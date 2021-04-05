@@ -23,6 +23,12 @@ const strings = {
             startGame: "Start",
             shareTheLink: "Copy link",
             copyTag: "Copy tag",
+        },
+        resize: {
+            firstDisclaimer: "In order for you to see the whole game you should change the orientation of the device or resize your window to at least:",
+            currentDimension: "Your screen is currently:",
+            playerReady: "Waiting for other players to be ready",
+            secondDisclaimer: "If you resize your screen during the game it won't get paused!"
         }
     }
 }

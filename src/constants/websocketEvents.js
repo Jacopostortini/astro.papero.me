@@ -1,10 +1,4 @@
 export default {
-    QUIT_GAME: "quit-game",
-    KICK_PLAYER: "kick-from-game",
-    GET_GAME: "get-game",
-    END_GAME: "end-game",
-    RESTART_GAME: "restart-game",
-
     CONNECT_TO_GAME: "connect-to-game", // -> status a me + lobby modified se status 0
     STATUS: "status", //number
 
@@ -16,6 +10,7 @@ export default {
     SET_ANGULAR_VELOCITY: "set-angular-velocity", //number -> lobbyModified a tutti
     SET_RELOADING_VELOCITY: "set-reloading-velocity", //number -> lobbyModified a tutti
     SET_BULLET_VELOCITY: "set-bullet-velocity", //number -> lobbyModified a tutti
+    READY_UP: "ready",
 
     START_GAME: "start-game",
     GAME_MODIFIED: "game-modified",

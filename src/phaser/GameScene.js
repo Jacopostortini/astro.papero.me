@@ -20,7 +20,6 @@ export default class GameScene extends Phaser.Scene {
         game.players.forEach(player => {
             this.players[player.localId] = player;
             this.players[player.localId].availableBullets = 3;
-            this.players[player.localId].state = 2;
             this.players[player.localId].lastTimestamp = 0;
         });
 
@@ -323,15 +322,15 @@ export default class GameScene extends Phaser.Scene {
     onBulletCollision(ship, bullet){
         bullet.destroy();
         const state = this.players[ship.localId].state-1;
-        if(state === 0) {
-            this.killedBy = bullet.shotBy;
-            clearInterval(this.reloadInterval);
-            clearInterval(this.updateShipInterval);
-        }
         const data = {
             localId: ship.localId,
             state
         };
+        if(state === 0) {
+            data.killedBy = bullet.shotBy;
+            clearInterval(this.reloadInterval);
+            clearInterval(this.updateShipInterval);
+        }
         this.socket.emit(websocketEvents.CHANGE_STATE, data);
         this.updateState(data);
     }
