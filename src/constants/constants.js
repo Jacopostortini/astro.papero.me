@@ -41,7 +41,7 @@ const config = (scene, parent, width, height, scaleMode=0) => {
         physics: {
             default: 'arcade'
         },
-        canvasStyle: "border: 2px solid white",
+        canvasStyle: "border: 2px solid white; max-width: 98vw",
         transparent: true,
         parent,
         width,
