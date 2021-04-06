@@ -19,6 +19,7 @@ export default class GameScene extends Phaser.Scene {
         this.players = {};
         game.players.forEach(player => {
             this.players[player.localId] = player;
+            this.players[player.localId].state = 2;
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].lastTimestamp = 0;
         });
@@ -150,7 +151,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBullet(data){
-        console.log("creating bullet");
         const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*normalizers.bulletVelocity);
         const deltaTime = Date.now()-data.timestamp;
         const bullet = this.bullets.create(data.position.x+deltaTime*x/1000, data.position.y+deltaTime*y/1000, "bullet");
@@ -209,7 +209,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     shoot(){
-        console.log(this.players);
         if(this.players[this.currentPlayer].availableBullets>0){
             const ship = this.players[this.currentPlayer].ship;
             const angle = ship.angle;
@@ -222,7 +221,6 @@ export default class GameScene extends Phaser.Scene {
                 localId: this.currentPlayer,
                 timestamp: Date.now()
             };
-            console.log("before emitting and creating");
             this.socket.emit(websocketEvents.SHOOT, data);
             this.createBullet(data);
         }
@@ -339,7 +337,7 @@ export default class GameScene extends Phaser.Scene {
     setKeyInputHandlers(){
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.input.keyboard.on("keydown-ENTER", ()=>{
+        this.input.keyboard.on("keyup-ENTER", ()=>{
             if(this.players[this.currentPlayer].state>=2) this.shoot();
         });
     }
