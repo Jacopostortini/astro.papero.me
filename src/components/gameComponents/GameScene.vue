@@ -15,6 +15,16 @@ export default {
     socket: Object,
   },
   mounted(){
+    /*const parent = document.getElementById("game");
+    new Phaser.Game(
+        config(
+            new RankingScene(),
+            parent,
+            gameDimensions.width,
+            gameDimensions.height,
+            Phaser.Scale.FIT
+        ));*/
+
     this.socket.on(websocketEvents.GAME_MODIFIED, game => {
       const parent = document.getElementById("game");
       new Phaser.Game(

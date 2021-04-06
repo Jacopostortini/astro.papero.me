@@ -1,6 +1,7 @@
 const sceneKeys = {
     game: "game",
-    lobby: "lobby"
+    lobby: "lobby",
+    ranking: "ranking"
 }
 
 const gameDimensions = {
@@ -9,7 +10,7 @@ const gameDimensions = {
 }
 
 const defaultSettings = {
-    totalTurns: 5,
+    pointsToWin: 5,
     velocity: 2,
     angularVelocity: 2,
     reloadingVelocity: 2,

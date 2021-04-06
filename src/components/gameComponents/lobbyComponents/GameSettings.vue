@@ -5,8 +5,8 @@
                      :socket="socket"
                      :min="1"
                      :max="10"
-                     :label="strings.gameView.lobby.totalTurns"
-                     setting-key="totalTurns"
+                     :label="strings.gameView.lobby.pointsToWin"
+                     setting-key="pointsToWin"
                      :event="websocketEvents.SET_TOTAL_TURNS"/>
       <SingleSetting :game="game"
                      :socket="socket"

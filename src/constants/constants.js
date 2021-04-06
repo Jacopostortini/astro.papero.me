@@ -14,7 +14,7 @@ const strings = {
     gameView: {
         lobby: {
             changeColor: "Change color:",
-            totalTurns: "Number of turns:",
+            pointsToWin: "Points to win:",
             angularVelocity: "Rotation velocity:",
             velocity: "Ship's velocity:",
             reloadingVelocity: "Reloading velocity:",
