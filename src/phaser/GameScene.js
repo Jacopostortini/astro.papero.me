@@ -19,13 +19,24 @@ export default class GameScene extends Phaser.Scene {
         this.players = {};
         game.players.forEach(player => {
             this.players[player.localId] = player;
-            //this.players[player.localId].state = 2;
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].lastTimestamp = 0;
         });
 
         this.updateFps = 15;
         this.touchScreen = detectTouchScreen();
+        
+        Phaser.Physics.Arcade.Group.prototype.killAll = function () {
+            while(this.countActive()>0){
+                this.getFirstAlive().setActive(false).setVisible(false);
+            }
+        }
+
+        Phaser.Physics.Arcade.Group.prototype.enableAll = function () {
+            while(this.countActive()<3){
+                this.getFirstDead().setActive(true).setVisible(true);
+            }
+        }
     }
 
     preload(){
@@ -64,12 +75,13 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
-        if(this.rotationKey.isDown || this.rotating) this.rotate(delta);
-        if(this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
+        if(this.currentPlayer) {
+            if (this.rotationKey.isDown || this.rotating) this.rotate(delta);
+            if (this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
 
-        this.setCurrentPlayerNewVelocity();
-        if (this.players[this.currentPlayer].state === 1) this.decelerateLittle(delta);
-
+            this.setCurrentPlayerNewVelocity();
+            if (this.players[this.currentPlayer].state === 1) this.decelerateLittle(delta);
+        }
 
         Object.values(this.players).forEach(player => {
             const topLeft = player.ship.getTopLeft();
@@ -113,13 +125,17 @@ export default class GameScene extends Phaser.Scene {
                 ( index%2 === 0 ? 0.05 : 0.95 ) * gameDimensions.height,
                 textures[player.state]+player.color
             );
+            
+            if(player.state === 0) {
+                this.ships.killAndHide(player.ship);
+                this.ships.remove(player.ship);
+            }
 
             player.bulletsLoaded = this.physics.add.group({
-                collideWorldBounds: false,
                 key: "bullet-loaded",
                 quantity: 3,
-                visible: true,
-                active: true
+                visible: player.state!==0,
+                active: player.state!==0
             });
 
             player.ship.localId = player.localId;
@@ -134,10 +150,10 @@ export default class GameScene extends Phaser.Scene {
                 });
                 this.physics.add.collider(player.ship, this.ships, (currentShip, ship)=>{
                     if(this.players[this.currentPlayer].state === 1 && this.players[ship.localId].state >= 2){
-                        this.killedBy = ship.localId;
                         const data = {
                             localId: this.currentPlayer,
-                            state: 0
+                            state: 0,
+                            killedBy: ship.localId
                         };
                         this.socket.emit(websocketEvents.CHANGE_STATE, data);
                         this.updateState(data);
@@ -153,8 +169,6 @@ export default class GameScene extends Phaser.Scene {
 
     createBullet(data){
         const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*normalizers.bulletVelocity);
-        //const deltaTime = Date.now()-data.timestamp;
-        //const bullet = this.bullets.create(data.position.x+deltaTime*x/1000, data.position.y+deltaTime*y/1000, "bullet");
         const bullet = this.bullets.create(data.position.x, data.position.y, "bullet");
         bullet.angle = data.angle;
         bullet.setVelocity(x, y);
@@ -199,20 +213,22 @@ export default class GameScene extends Phaser.Scene {
     }
 
     moveLittle(delta){
-        if(this.players[this.currentPlayer].state === 1){
-            const ship = this.players[this.currentPlayer].ship;
+        const currentPlayer = this.players[this.currentPlayer];
+        if(currentPlayer.state === 1){
+            const ship = currentPlayer.ship;
             const previousMag = ship.velocityMagnitude;
             if(previousMag < this.settings.maxVelocityLittle * normalizers.velocity){
-                this.players[this.currentPlayer].ship.velocityMagnitude += delta*this.settings.accelerationLittle;
+                currentPlayer.ship.velocityMagnitude += delta*this.settings.accelerationLittle;
             } else {
-                this.players[this.currentPlayer].ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
+                currentPlayer.ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
             }
         }
     }
 
     shoot(){
-        if(this.players[this.currentPlayer].availableBullets>0){
-            const ship = this.players[this.currentPlayer].ship;
+        const currentPlayer = this.players[this.currentPlayer];
+        if(currentPlayer.availableBullets>0){
+            const ship = currentPlayer.ship;
             const angle = ship.angle;
             const data = {
                 position: {
@@ -220,8 +236,7 @@ export default class GameScene extends Phaser.Scene {
                     y: ship.y + ship.height*Math.sin(angle * Math.PI / 180)
                 },
                 angle: angle,
-                localId: this.currentPlayer,
-                timestamp: Date.now()
+                localId: this.currentPlayer
             };
             this.socket.emit(websocketEvents.SHOOT, data);
             this.createBullet(data);
@@ -230,16 +245,16 @@ export default class GameScene extends Phaser.Scene {
 
 
     updateState(data){
-        console.log(data);
         this.players[data.localId].state = data.state;
-        const ship = this.players[data.localId].ship;
+        const player = this.players[data.localId];
         switch (data.state) {
             case 0:
-                this.ships.killAndHide(ship);
-                this.ships.remove(ship);
+                this.ships.killAndHide(player.ship);
+                this.ships.remove(player.ship);
                 break;
             case 1:
-                ship.setTexture("little" + this.players[data.localId].color);
+                player.ship.setTexture("little" + this.players[data.localId].color);
+                this.players[data.localId].bulletsLoaded.killAll();
                 if(data.localId === this.currentPlayer) {
                     setTimeout(() => {
                         if (this.players[data.localId].state === 1) {
@@ -252,16 +267,11 @@ export default class GameScene extends Phaser.Scene {
                         }
                     }, this.settings.respawnTime);
                 }
-                while(this.players[data.localId].bulletsLoaded.countActive()>0) {
-                    this.players[data.localId].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
-                }
                 break;
             case 2:
-                ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
-                ship.setTexture("ship" + this.players[data.localId].color);
-                while(this.players[data.localId].bulletsLoaded.countActive()<3) {
-                    this.players[data.localId].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
-                }
+                player.ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
+                player.ship.setTexture("ship" + this.players[data.localId].color);
+                player.bulletsLoaded.enableAll();
                 break;
         }
     }
@@ -337,6 +347,8 @@ export default class GameScene extends Phaser.Scene {
     //On create setup
 
     setKeyInputHandlers(){
+        if(!this.currentPlayer) return;
+
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.input.keyboard.on("keyup-ENTER", ()=>{
@@ -345,19 +357,21 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setTouchInputHandlers(){
+        if(!this.currentPlayer) return;
+
         this.input.addPointer(1);
         this.input.on("pointerup", (pointer) => {
-            if(pointer.x<gameDimensions.width/2){
+            if (pointer.x < gameDimensions.width / 2) {
                 this.rotating = false;
             } else {
                 this.accelerating = false;
             }
         });
         this.input.on("pointerdown", (pointer) => {
-            if(pointer.x<gameDimensions.width/2){
+            if (pointer.x < gameDimensions.width / 2) {
                 this.rotating = true;
             } else {
-                if(this.players[this.currentPlayer].state>=2) this.shoot();
+                if (this.players[this.currentPlayer].state >= 2) this.shoot();
                 else {
                     this.accelerating = true;
                 }
@@ -366,13 +380,16 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setUpdateShipInterval(){
+        if(!this.currentPlayer) return;
+
+        const currentPlayer = this.players[this.currentPlayer];
         this.updateShipInterval = setInterval(()=>{
             this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
-                Number.parseInt(this.players[this.currentPlayer].ship.angle),
+                Number.parseInt(currentPlayer.ship.angle),
                 [
-                    Number.parseFloat(this.players[this.currentPlayer].ship.x.toFixed(2)),
-                    Number.parseFloat(this.players[this.currentPlayer].ship.y.toFixed(2))
+                    Number.parseFloat(currentPlayer.ship.x.toFixed(2)),
+                    Number.parseFloat(currentPlayer.ship.y.toFixed(2))
                 ],
                 this.time.now
             ]);
@@ -380,6 +397,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setReloadInterval(){
+        if(!this.currentPlayer) return;
+
         this.reloadInterval = setInterval(() => {
             if(this.players[this.currentPlayer].state<2) return;
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
@@ -393,6 +412,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setOnDestroy(){
+        if(!this.currentPlayer) return;
+
         this.events.on("destroy", ()=>{
             clearInterval(this.updateShipInterval);
             clearInterval(this.reloadInterval);
