@@ -34,10 +34,10 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("ship1", "./ships/ship1.png");
         this.load.image("ship2", "./ships/ship2.png");
         this.load.image("ship3", "./ships/ship3.png");
-        this.load.image("little0", "./little.png");
-        this.load.image("little1", "./little.png");
-        this.load.image("little2", "./little.png");
-        this.load.image("little3", "./little.png");
+        this.load.image("little0", "./littles/little0.png");
+        this.load.image("little1", "./littles/little1.png");
+        this.load.image("little2", "./littles/little2.png");
+        this.load.image("little3", "./littles/little3.png");
         this.load.image("bullet", "./bullet.png");
         this.load.image("bullet-loaded", "./bullet-loaded.png");
 
@@ -75,8 +75,8 @@ export default class GameScene extends Phaser.Scene {
             const topLeft = player.ship.getTopLeft();
             const bottomLeft = player.ship.getBottomLeft();
             const centerLeft = {
-                x: (topLeft.x + bottomLeft.x) /2,
-                y: (topLeft.y + bottomLeft.y) /2
+                x: (topLeft.x + bottomLeft.x) / 2,
+                y: (topLeft.y + bottomLeft.y) / 2
             }
             player.bulletsLoaded.children.iterate((bullet, index)=>{
                 const {x, y} = this.getLoadedBulletPosition(index, topLeft, bottomLeft, centerLeft, player);
@@ -106,11 +106,12 @@ export default class GameScene extends Phaser.Scene {
 
     createShips(){
         let index = 0;
+        const textures = ["", "little", "ship"];
         Object.values(this.players).forEach(player => {
             player.ship = this.ships.create(
                 (index<2 ? 0.05 : 0.95) * gameDimensions.width,
                 ( index%2 === 0 ? 0.05 : 0.95 ) * gameDimensions.height,
-                "ship"+player.color
+                textures[player.state]+player.color
             );
 
             player.bulletsLoaded = this.physics.add.group({
