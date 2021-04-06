@@ -25,10 +25,9 @@ const strings = {
             copyTag: "Copy tag",
         },
         resize: {
-            firstDisclaimer: "In order for you to see the whole game you should change the orientation of the device or resize your window to at least:",
-            currentDimension: "Your screen is currently:",
+            disclaimer: "In order for you to enjoy the game you should change the orientation of the device or enlarge your window",
+            readyUpButton: "Ignore and get ready",
             playerReady: "Waiting for other players to be ready",
-            secondDisclaimer: "If you resize your screen during the game it won't get paused!"
         }
     }
 }
@@ -41,7 +40,10 @@ const config = (scene, parent, width, height, scaleMode=0) => {
         physics: {
             default: 'arcade'
         },
-        canvasStyle: "border: 2px solid white; max-width: 98vw",
+        canvasStyle:
+            "border: 2px solid white;" +
+            "max-width: 98vw;" +
+            "max-height: 90%;",
         transparent: true,
         parent,
         width,

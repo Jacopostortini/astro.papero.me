@@ -1,32 +1,19 @@
 <template>
   <div class="resize__main-panel">
-    <div v-if="!bigEnough && !ready">
+    <div v-if="!ready">
       <p>
-        {{strings.gameView.resize.firstDisclaimer}}
+        {{strings.gameView.resize.disclaimer}}
         <br>
-        <strong>{{ gameDimensions.width }}px by {{ gameDimensions.height }}px</strong>
-      </p>
-      <p>
-        {{strings.gameView.resize.currentDimension}}
-        <br>
-        <strong>{{ width }}px by {{ height }}px</strong>
+        <button @click="readyUp">{{strings.gameView.resize.readyUpButton}}</button>
       </p>
     </div>
-    <div v-else-if="!bigEnough && ready">
-      <p>
-        <strong style="color: red">Warning!</strong>
-        <br>
-        {{strings.gameView.resize.secondDisclaimer}}
-      </p>
-    </div>
-    <div v-else-if="bigEnough">
+    <div v-else-if="ready">
       <p>{{strings.gameView.resize.playerReady}}{{points}}</p>
     </div>
   </div>
 </template>
 
 <script>
-import {gameDimensions} from "../../constants/gameSettings";
 import websocketEvents from "../../constants/websocketEvents";
 import {strings} from "../../constants/constants";
 
@@ -37,45 +24,41 @@ export default {
   },
   data(){
     return {
-      gameDimensions: gameDimensions,
       strings: strings,
       ready: false,
-      bigEnough: false,
       width: 0,
       height: 0,
       points: ""
     }
   },
+  computed: {
+    checkDimensions: () => this.width>this.height,
+  },
   methods: {
-    checkDimensions(){
-        this.bigEnough = this.width>=gameDimensions.width && this.height>=gameDimensions.height;
+    readyUp(){
+      this.socket.emit(websocketEvents.READY_UP);
+      this.ready = true;
     }
   },
   mounted() {
+
     setInterval(()=>{
       if(this.points.length >= 3) {
         this.points = "";
       } else {
         this.points += ".";
       }
-    }, 1000)
+    }, 1000);
+
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    this.checkDimensions();
-    if(this.bigEnough) {
-      this.socket.emit(websocketEvents.READY_UP);
-      this.ready = true;
-    }
+
+    if(this.checkDimensions) this.readyUp();
+
     window.addEventListener("resize", () => {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
-      this.checkDimensions();
-      if(this.bigEnough){
-        if(!this.ready){
-          this.socket.emit(websocketEvents.READY_UP);
-          this.ready = true;
-        }
-      }
+      if(this.checkDimensions) this.readyUp();
     });
   }
 }
