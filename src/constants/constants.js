@@ -47,7 +47,6 @@ const config = (scene, parent, width, height, scaleMode=0) => {
         width,
         height,
         scene,
-        fps: 30,
         scaleMode
     }
 }

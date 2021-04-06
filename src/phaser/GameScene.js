@@ -75,6 +75,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
+        console.log(this);
         if(this.currentPlayer) {
             if (this.rotationKey.isDown || this.rotating) this.rotate(delta);
             if (this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
