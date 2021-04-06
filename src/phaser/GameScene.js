@@ -300,7 +300,7 @@ export default class GameScene extends Phaser.Scene {
                 this.players[data.localId].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
             }
         } catch (e) {
-            console.error(e);
+            console.log(e);
         }
     }
 

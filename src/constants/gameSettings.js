@@ -4,8 +4,8 @@ const sceneKeys = {
 }
 
 const gameDimensions = {
-    width: 600,
-    height: 300
+    width: 1200,
+    height: 600
 }
 
 const defaultSettings = {

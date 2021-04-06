@@ -35,7 +35,7 @@ const strings = {
 
 const colors = ["green", "red", "white", "orange"];
 
-const config = (scene, parent, width, height) => {
+const config = (scene, parent, width, height, scaleMode=0) => {
     return {
         type: Phaser.AUTO,
         physics: {
@@ -47,7 +47,8 @@ const config = (scene, parent, width, height) => {
         width,
         height,
         scene,
-        fps: 30
+        //fps: 30,
+        scaleMode
     }
 }
 
