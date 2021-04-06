@@ -18,18 +18,6 @@ export default class LobbyScene extends Phaser.Scene {
 
         this.ships = {};
         this.availableBullets = 3;
-        let interval;
-        const handler = () => {
-            this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
-            try{
-                this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
-            } catch (e) {
-                console.error(e);
-            }
-            clearInterval(interval)
-            interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
-        }
-        interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
     }
 
     preload(){
@@ -108,6 +96,18 @@ export default class LobbyScene extends Phaser.Scene {
                 }
             ]
         })*/
+
+        let interval;
+        const handler = () => {
+            this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
+            const firstDead = this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead();
+            if(firstDead) {
+                firstDead.setActive(true).setVisible(true)
+            }
+            clearInterval(interval)
+            interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
+        }
+        interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
     }
 
     update(time, delta){

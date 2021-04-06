@@ -12,8 +12,8 @@ export default class GameScene extends Phaser.Scene {
         this.socket = socket;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
-        this.settings.maxVelocityLittle = game.settings.velocity+0.5;
-        this.settings.accelerationLittle = 0.5;
+        this.settings.maxVelocityLittle = game.settings.velocity+0.2;
+        this.settings.accelerationLittle = 0.4;
         this.settings.respawnTime = 5000;
         this.settings.frictionAir = 0.1;
         this.players = {};
@@ -25,16 +25,6 @@ export default class GameScene extends Phaser.Scene {
 
         this.updateFps = 15;
         this.touchScreen = detectTouchScreen();
-
-        this.reloadInterval = setInterval(() => {
-            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
-            const data = {
-                localId: this.currentPlayer,
-                availableBullets
-            };
-            this.socket.emit(websocketEvents.RELOAD, data);
-            this.reload(data);
-        }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
     }
 
     preload(){
@@ -61,33 +51,21 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
 
-        this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.input.keyboard.on("keydown-ENTER", ()=>{
-            if(this.players[this.currentPlayer].state>=2) this.shoot();
-        });
+        this.setKeyInputHandlers();
+
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
-        if(this.touchScreen){
-            this.input.addPointer(1);
-            this.input.on("pointerup", (pointer) => {
-                if(pointer.x<gameDimensions.width/2){
-                    this.rotating = false;
-                } else {
-                    this.accelerating = false;
-                }
-            });
-            this.input.on("pointerdown", (pointer) => {
-                if(pointer.x<gameDimensions.width/2){
-                    this.rotating = true;
-                } else {
-                    if(this.players[this.currentPlayer].state>=2) this.shoot();
-                    else {
-                        this.accelerating = true;
-                    }
-                }
-            });
-        }
+        if(this.touchScreen) this.setTouchInputHandlers();
+
+        this.reloadInterval = setInterval(() => {
+            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
+            const data = {
+                localId: this.currentPlayer,
+                availableBullets
+            };
+            this.socket.emit(websocketEvents.RELOAD, data);
+            this.reload(data);
+        }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
 
 
         this.updateShipInterval = setInterval(()=>{
@@ -345,5 +323,39 @@ export default class GameScene extends Phaser.Scene {
         } catch (e) {
             console.error(e);
         }
+    }
+
+
+
+    //=============================================================================
+    //On create setup
+
+    setKeyInputHandlers(){
+        this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.input.keyboard.on("keydown-ENTER", ()=>{
+            if(this.players[this.currentPlayer].state>=2) this.shoot();
+        });
+    }
+
+    setTouchInputHandlers(){
+        this.input.addPointer(1);
+        this.input.on("pointerup", (pointer) => {
+            if(pointer.x<gameDimensions.width/2){
+                this.rotating = false;
+            } else {
+                this.accelerating = false;
+            }
+        });
+        this.input.on("pointerdown", (pointer) => {
+            if(pointer.x<gameDimensions.width/2){
+                this.rotating = true;
+            } else {
+                if(this.players[this.currentPlayer].state>=2) this.shoot();
+                else {
+                    this.accelerating = true;
+                }
+            }
+        });
     }
 }
