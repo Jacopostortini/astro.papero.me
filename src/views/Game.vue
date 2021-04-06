@@ -87,7 +87,6 @@ export default {
     } else next();
   },
   beforeUnmount() {
-    alert("disconnecting");
     this.socket.emit(websocketEvents.PRE_DISCONNECT);
   }
 }

@@ -360,13 +360,7 @@ export default class GameScene extends Phaser.Scene {
         if(this.currentPlayer === null) return;
 
         this.input.addPointer(1);
-        this.input.on("pointerup", (pointer) => {
-            if (pointer.x < gameDimensions.width / 2) {
-                this.rotating = false;
-            } else {
-                this.accelerating = false;
-            }
-        });
+
         this.input.on("pointerdown", (pointer) => {
             if (pointer.x < gameDimensions.width / 2) {
                 this.rotating = true;
@@ -375,6 +369,14 @@ export default class GameScene extends Phaser.Scene {
                 else {
                     this.accelerating = true;
                 }
+            }
+        });
+
+        this.input.on("pointerup", (pointer) => {
+            if (pointer.x < gameDimensions.width / 2) {
+                this.rotating = false;
+            } else {
+                this.accelerating = false;
             }
         });
     }

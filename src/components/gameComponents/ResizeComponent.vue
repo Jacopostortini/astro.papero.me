@@ -1,11 +1,8 @@
 <template>
   <div class="resize__main-panel">
     <div v-if="!ready">
-      <p>
-        {{strings.gameView.resize.disclaimer}}
-        <br>
-        <button @click="readyUp">{{strings.gameView.resize.readyUpButton}}</button>
-      </p>
+      <p>{{strings.gameView.resize.disclaimer}}</p>
+      <button @click="readyUp">{{strings.gameView.resize.readyUpButton}}</button>
     </div>
     <div v-else-if="ready">
       <p>{{strings.gameView.resize.playerReady}}{{points}}</p>
@@ -32,7 +29,9 @@ export default {
     }
   },
   computed: {
-    checkDimensions: () => this.width>this.height,
+    checkDimensions: function() {
+      return this.width > this.height;
+    }
   },
   methods: {
     readyUp(){
@@ -81,6 +80,10 @@ export default {
     p{
       margin: 0;
       color: white;
+      font-size: 150%;
+    }
+
+    button{
       font-size: 150%;
     }
   }
