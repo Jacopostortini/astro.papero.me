@@ -14,7 +14,7 @@ export default class GameScene extends Phaser.Scene {
         this.currentPlayer = game.currentPlayer;
         this.settings.maxVelocityLittle = game.settings.velocity+0.2;
         this.settings.accelerationLittle = 0.4;
-        this.settings.respawnTime = 5000;
+        this.settings.respawnTime = 8000;
         this.settings.frictionAir = 0.1;
         this.players = {};
         game.players.forEach(player => {
@@ -380,6 +380,7 @@ export default class GameScene extends Phaser.Scene {
 
     setReloadInterval(){
         this.reloadInterval = setInterval(() => {
+            if(this.players[this.currentPlayer].state<2) return;
             const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
             const data = {
                 localId: this.currentPlayer,
