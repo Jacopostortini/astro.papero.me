@@ -75,8 +75,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
-        console.log(this);
-        if(this.currentPlayer) {
+        if(this.currentPlayer !== null) {
             if (this.rotationKey.isDown || this.rotating) this.rotate(delta);
             if (this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
 
@@ -348,7 +347,7 @@ export default class GameScene extends Phaser.Scene {
     //On create setup
 
     setKeyInputHandlers(){
-        if(!this.currentPlayer) return;
+        if(this.currentPlayer === null) return;
 
         this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -358,7 +357,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setTouchInputHandlers(){
-        if(!this.currentPlayer) return;
+        if(this.currentPlayer === null) return;
 
         this.input.addPointer(1);
         this.input.on("pointerup", (pointer) => {
