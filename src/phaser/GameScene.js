@@ -153,8 +153,9 @@ export default class GameScene extends Phaser.Scene {
 
     createBullet(data){
         const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*normalizers.bulletVelocity);
-        const deltaTime = Date.now()-data.timestamp;
-        const bullet = this.bullets.create(data.position.x+deltaTime*x/1000, data.position.y+deltaTime*y/1000, "bullet");
+        //const deltaTime = Date.now()-data.timestamp;
+        //const bullet = this.bullets.create(data.position.x+deltaTime*x/1000, data.position.y+deltaTime*y/1000, "bullet");
+        const bullet = this.bullets.create(data.position.x, data.position.y, "bullet");
         bullet.angle = data.angle;
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
@@ -215,8 +216,8 @@ export default class GameScene extends Phaser.Scene {
             const angle = ship.angle;
             const data = {
                 position: {
-                    x: ship.x + ship.width*Math.cos(angle * Math.PI / 180),
-                    y: ship.y + ship.width*Math.sin(angle * Math.PI / 180)
+                    x: ship.x + ship.width/2*Math.cos(angle * Math.PI / 180),
+                    y: ship.y + ship.height/2*Math.sin(angle * Math.PI / 180)
                 },
                 angle: angle,
                 localId: this.currentPlayer,
