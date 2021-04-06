@@ -58,29 +58,18 @@ export default class LobbyScene extends Phaser.Scene {
         this.socket.on(websocketEvents.LOBBY_MODIFIED, game => this.onLobbyModified(game));
 
         //Setting up rotation and shooting
-        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.input.keyboard.on("keyup-ENTER", ()=>{
-            if(this.availableBullets>0) this.createBullet();
-        });
+        this.setKeyInputHandlers();
 
         if(this.touchScreen) {
             this.add.image(0, this.height/2, "rotate-button").setOrigin(0, 0.5);
             this.add.image(this.width, this.height/2, "shoot-button").setOrigin(1, 0.5);
 
-            this.input.addPointer(1);
-            this.input.on("pointerup", (pointer) => {
-                if(pointer.x<this.width/2){
-                    this.rotating = false;
-                }
-            });
-            this.input.on("pointerdown", (pointer) => {
-                if(pointer.x<this.width/2){
-                    this.rotating = true;
-                } else {
-                    if(this.availableBullets>0) this.createBullet();
-                }
-            });
+            this.setTouchInputHandlers();
         }
+
+        this.setReloadInterval();
+
+        this.setOnDestroy();
 
         /*this.onLobbyModified({ //TODO: CHANGE HERE
             settings: defaultSettings,
@@ -96,18 +85,6 @@ export default class LobbyScene extends Phaser.Scene {
                 }
             ]
         })*/
-
-        let interval;
-        const handler = () => {
-            this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
-            const firstDead = this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead();
-            if(firstDead) {
-                firstDead.setActive(true).setVisible(true)
-            }
-            clearInterval(interval)
-            interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
-        }
-        interval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
     }
 
     update(time, delta){
@@ -224,5 +201,47 @@ export default class LobbyScene extends Phaser.Scene {
         bullet.setVelocity(x, y);
         this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
         this.availableBullets--;
+    }
+
+    setReloadInterval(){
+        const handler = () => {
+            this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
+            const firstDead = this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead();
+            if(firstDead) {
+                firstDead.setActive(true).setVisible(true)
+            }
+            clearInterval(this.reloadInterval)
+            this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
+        }
+        this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
+    }
+
+    setTouchInputHandlers(){
+        this.input.addPointer(1);
+        this.input.on("pointerup", (pointer) => {
+            if(pointer.x<this.width/2){
+                this.rotating = false;
+            }
+        });
+        this.input.on("pointerdown", (pointer) => {
+            if(pointer.x<this.width/2){
+                this.rotating = true;
+            } else {
+                if(this.availableBullets>0) this.createBullet();
+            }
+        });
+    }
+
+    setKeyInputHandlers(){
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.input.keyboard.on("keyup-ENTER", ()=>{
+            if(this.availableBullets>0) this.createBullet();
+        });
+    }
+
+    setOnDestroy(){
+        this.events.on("destroy", ()=>{
+            clearInterval(this.reloadInterval);
+        });
     }
 }

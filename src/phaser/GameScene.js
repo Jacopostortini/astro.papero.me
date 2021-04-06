@@ -52,70 +52,36 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
 
         this.setKeyInputHandlers();
+        if(this.touchScreen) this.setTouchInputHandlers();
 
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
-        if(this.touchScreen) this.setTouchInputHandlers();
+        this.setReloadInterval();
+        this.setUpdateShipInterval();
 
-        this.reloadInterval = setInterval(() => {
-            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
-            const data = {
-                localId: this.currentPlayer,
-                availableBullets
-            };
-            this.socket.emit(websocketEvents.RELOAD, data);
-            this.reload(data);
-        }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
-
-
-        this.updateShipInterval = setInterval(()=>{
-            this.socket.emit(websocketEvents.UPDATE_SHIP, [
-                this.currentPlayer,
-                Number.parseInt(this.players[this.currentPlayer].ship.angle),
-                [
-                    Number.parseFloat(this.players[this.currentPlayer].ship.x.toFixed(2)),
-                    Number.parseFloat(this.players[this.currentPlayer].ship.y.toFixed(2))
-                ],
-                this.time.now
-            ]);
-        }, 1000/this.updateFps);
+        this.setOnDestroy();
     }
 
     update(time, delta){
         if(this.rotationKey.isDown || this.rotating) this.rotate(delta);
         if(this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
-        const {x, y} = this.physics.velocityFromAngle(
-            this.players[this.currentPlayer].ship.angle,
-            this.players[this.currentPlayer].ship.velocityMagnitude
-        );
-        this.players[this.currentPlayer].ship.setVelocity(x, y);
-        if (this.players[this.currentPlayer].state === 1) {
-            this.players[this.currentPlayer].ship.velocityMagnitude = Math.max(
-                0, this.players[this.currentPlayer].ship.velocityMagnitude - this.settings.frictionAir * delta
-            );
-        }
+
+        this.setCurrentPlayerNewVelocity();
+        if (this.players[this.currentPlayer].state === 1) this.decelerateLittle(delta);
+
+
         Object.values(this.players).forEach(player => {
+            const topLeft = player.ship.getTopLeft();
+            const bottomLeft = player.ship.getBottomLeft();
+            const centerLeft = {
+                x: (topLeft.x + bottomLeft.x) /2,
+                y: (topLeft.y + bottomLeft.y) /2
+            }
             player.bulletsLoaded.children.iterate((bullet, index)=>{
-                const topLeft = player.ship.getTopLeft();
-                const bottomLeft = player.ship.getBottomLeft();
-                const centerLeft = {
-                    x: (topLeft.x + bottomLeft.x) /2,
-                    y: (topLeft.y + bottomLeft.y) /2
-                }
-                switch (index){
-                    case 0:
-                        bullet.x = bottomLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation);
-                        bullet.y = bottomLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation);
-                        break;
-                    case 1:
-                        bullet.x = topLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation);
-                        bullet.y = topLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation);
-                        break;
-                    case 2:
-                        bullet.x = centerLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation);
-                        bullet.y = centerLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation);
-                        break;
-                }
+                const {x, y} = this.getLoadedBulletPosition(index, topLeft, bottomLeft, centerLeft, player);
+                bullet.x = x;
+                bullet.y = y;
+
             });
            if(player.localId!==this.currentPlayer){
                player.ship.autonomyTime -= delta;
@@ -125,7 +91,6 @@ export default class GameScene extends Phaser.Scene {
                }
            }
         });
-        //if(this.ships.countActive() <= 1) console.log("game over") //TODO: SETUP END OF THE TURN
     }
 
 
@@ -262,6 +227,7 @@ export default class GameScene extends Phaser.Scene {
 
 
     updateState(data){
+        console.log(data);
         this.players[data.localId].state = data.state;
         const ship = this.players[data.localId].ship;
         switch (data.state) {
@@ -326,6 +292,43 @@ export default class GameScene extends Phaser.Scene {
     }
 
 
+    //=============================================================================
+    //Game loop functions
+    setCurrentPlayerNewVelocity(){
+        const {x, y} = this.physics.velocityFromAngle(
+            this.players[this.currentPlayer].ship.angle,
+            this.players[this.currentPlayer].ship.velocityMagnitude
+        );
+        this.players[this.currentPlayer].ship.setVelocity(x, y);
+    }
+
+    decelerateLittle(delta){
+        this.players[this.currentPlayer].ship.velocityMagnitude = Math.max(
+            0, this.players[this.currentPlayer].ship.velocityMagnitude - this.settings.frictionAir * delta
+        );
+    }
+
+    getLoadedBulletPosition(index, topLeft, bottomLeft, centerLeft, player){
+        switch (index){
+            case 0:
+                return {
+                    x: bottomLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation),
+                    y: bottomLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation)
+                };
+            case 1:
+                return{
+                    x: topLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation),
+                    y: topLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation)
+                };
+            case 2:
+                return {
+                    x: centerLeft.x - (player.ship.width/4)*Math.cos(player.ship.rotation),
+                    y: centerLeft.y - (player.ship.height/4)*Math.sin(player.ship.rotation)
+                };
+        }
+    }
+
+
 
     //=============================================================================
     //On create setup
@@ -356,6 +359,39 @@ export default class GameScene extends Phaser.Scene {
                     this.accelerating = true;
                 }
             }
+        });
+    }
+
+    setUpdateShipInterval(){
+        this.updateShipInterval = setInterval(()=>{
+            this.socket.emit(websocketEvents.UPDATE_SHIP, [
+                this.currentPlayer,
+                Number.parseInt(this.players[this.currentPlayer].ship.angle),
+                [
+                    Number.parseFloat(this.players[this.currentPlayer].ship.x.toFixed(2)),
+                    Number.parseFloat(this.players[this.currentPlayer].ship.y.toFixed(2))
+                ],
+                this.time.now
+            ]);
+        }, 1000/this.updateFps);
+    }
+
+    setReloadInterval(){
+        this.reloadInterval = setInterval(() => {
+            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
+            const data = {
+                localId: this.currentPlayer,
+                availableBullets
+            };
+            this.socket.emit(websocketEvents.RELOAD, data);
+            this.reload(data);
+        }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
+    }
+
+    setOnDestroy(){
+        this.events.on("destroy", ()=>{
+            clearInterval(this.updateShipInterval);
+            clearInterval(this.reloadInterval);
         });
     }
 }
