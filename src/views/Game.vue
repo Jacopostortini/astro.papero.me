@@ -85,6 +85,9 @@ export default {
     } else if(store.state.username === null && store.state.logged === false){
       createLocalAccount();
     } else next();
+  },
+  unmounted() {
+    this.socket.emit(websocketEvents.PRE_DISCONNECT);
   }
 }
 </script>

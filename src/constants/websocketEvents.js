@@ -17,6 +17,8 @@ export default {
     UPDATE_SHIP: "update-ship",
     SHOOT: "shoot",
     CHANGE_STATE: "change-state",
-    RELOAD: "reload"
+    RELOAD: "reload",
+
+    PRE_DISCONNECT: "pre-disconnect"
 
 }
