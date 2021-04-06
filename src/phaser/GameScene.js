@@ -380,7 +380,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setUpdateShipInterval(){
-        if(!this.currentPlayer) return;
+        if(this.currentPlayer === null) return;
 
         const currentPlayer = this.players[this.currentPlayer];
         this.updateShipInterval = setInterval(()=>{
@@ -397,7 +397,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setReloadInterval(){
-        if(!this.currentPlayer) return;
+        if(this.currentPlayer === null) return;
 
         this.reloadInterval = setInterval(() => {
             if(this.players[this.currentPlayer].state<2) return;
@@ -412,7 +412,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     setOnDestroy(){
-        if(!this.currentPlayer) return;
+        if(this.currentPlayer === null) return;
 
         this.events.on("destroy", ()=>{
             clearInterval(this.updateShipInterval);
