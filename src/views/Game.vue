@@ -86,7 +86,7 @@ export default {
       createLocalAccount();
     } else next();
   },
-  unmounted() {
+  beforeUnmount() {
     alert("disconnecting");
     this.socket.emit(websocketEvents.PRE_DISCONNECT);
   }
