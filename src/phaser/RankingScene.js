@@ -15,7 +15,6 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     init(data){
-        console.log("init",data);
         this.players = data.players;
         this.timer = data.timer;
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
@@ -90,8 +89,6 @@ export default class RankingScene extends Phaser.Scene {
     createShips(){
         this.players.forEach((player, index) => {
             player.ship = this.physics.add.sprite(this.bandWidth * (player.from+0.5), this.lineHeight * (index+0.5), "ship"+player.color);
-            const shipScale = Math.min(this.bandWidth, this.lineHeight) * 0.5 / Math.max(player.ship.width, player.ship.height);
-            player.ship.setScale(shipScale);
         });
     }
 
