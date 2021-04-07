@@ -16,21 +16,11 @@ export default {
     socket: Object,
   },
   mounted(){
-    const parent = document.getElementById("game");
-    new Phaser.Game(
-        config(
-            [new GameScene(this.socket, {}), new RankingScene(10)],
-            parent,
-            gameDimensions.width,
-            gameDimensions.height,
-            Phaser.Scale.FIT
-        ));
-
-    this.socket.once(websocketEvents.GAME_MODIFIED, game => {
+    this.socket.on(websocketEvents.GAME_MODIFIED, game => {
       const parent = document.getElementById("game");
       new Phaser.Game(
           config(
-              [new GameScene(this.socket, game), new RankingScene(game.settings.pointsToWin)],
+              [new GameScene(this.socket, game), new RankingScene(this.socket, game.settings.pointsToWin)],
               parent,
               gameDimensions.width,
               gameDimensions.height,
