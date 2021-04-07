@@ -8,6 +8,7 @@ import {config} from "../../constants/constants";
 import GameScene from "../../phaser/GameScene";
 import {gameDimensions} from "../../constants/gameSettings";
 import websocketEvents from "../../constants/websocketEvents";
+import RankingScene from "../../phaser/RankingScene";
 
 export default {
   name: "GameScene",
@@ -15,21 +16,21 @@ export default {
     socket: Object,
   },
   mounted(){
-    /*const parent = document.getElementById("game");
+    const parent = document.getElementById("game");
     new Phaser.Game(
         config(
-            new RankingScene(),
+            [new GameScene(this.socket, {}), new RankingScene(10)],
             parent,
             gameDimensions.width,
             gameDimensions.height,
             Phaser.Scale.FIT
-        ));*/
+        ));
 
-    this.socket.on(websocketEvents.GAME_MODIFIED, game => {
+    this.socket.once(websocketEvents.GAME_MODIFIED, game => {
       const parent = document.getElementById("game");
       new Phaser.Game(
           config(
-              new GameScene(this.socket, game),
+              [new GameScene(this.socket, game), new RankingScene(game.settings.pointsToWin)],
               parent,
               gameDimensions.width,
               gameDimensions.height,

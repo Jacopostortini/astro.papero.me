@@ -6,10 +6,8 @@ import {detectTouchScreen} from "../constants/constants";
 
 export default class GameScene extends Phaser.Scene {
 
-    constructor(socket, game) {
-        super({key: sceneKeys.game});
-
-        this.socket = socket;
+    setUpGame(game){
+        this.timer = game.timer;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
         this.settings.maxVelocityLittle = game.settings.velocity+0.2;
@@ -22,6 +20,13 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].lastTimestamp = 0;
         });
+    }
+
+    constructor(socket, game) {
+        super({key: sceneKeys.game});
+
+        this.socket = socket;
+        this.setUpGame(game);
 
         this.updateFps = 15;
         this.touchScreen = detectTouchScreen();
@@ -37,6 +42,10 @@ export default class GameScene extends Phaser.Scene {
                 this.getFirstDead().setActive(true).setVisible(true);
             }
         }
+    }
+
+    init(game){
+        this.setUpGame(game);
     }
 
     preload(){
@@ -55,6 +64,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
+        if(this.timer > Date.now()) this.scene.start(sceneKeys.ranking, {
+            players: this.players,
+            timer: this.timer
+        });
+
         this.createGroups();
         this.createShips();
 
@@ -62,6 +76,9 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
+        this.socket.on(websocketEvents.END_TURN, data => {
+            this.scene.start(sceneKeys.ranking, data);
+        });
 
         this.setKeyInputHandlers();
         if(this.touchScreen) this.setTouchInputHandlers();

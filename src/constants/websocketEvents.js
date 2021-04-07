@@ -19,6 +19,10 @@ export default {
     CHANGE_STATE: "change-state",
     RELOAD: "reload",
 
+    START_TURN: "start-turn",
+    READY_TURN: "ready-turn",
+    END_TURN: "end-turn",
+
     PRE_DISCONNECT: "pre-disconnect"
 
 }

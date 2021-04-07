@@ -25,7 +25,7 @@ export default {
   components: {ResizeComponent, UserHamburgerMenu, Lobby, GameScene},
   data(){
     return {
-      status: null, //TODO: CHANGE HERE
+      status: 1, //TODO: CHANGE HERE
       socket: null,
       showHamburgerMenu: false
     }

@@ -1,43 +1,25 @@
 import Phaser from "phaser";
 import {gameDimensions, sceneKeys} from "../constants/gameSettings";
+import websocketEvents from "../constants/websocketEvents";
 
 export default class RankingScene extends Phaser.Scene {
 
-    constructor(/*players, pointsToWin*/) {
+    constructor(socket, pointsToWin) {
         super({key: sceneKeys.ranking});
 
-        this.pointsToWin = 10
-        this.players = [
-            {
-                localId: 0,
-                color: 0,
-                from: 1,
-                to: 0
-            },
-            {
-                localId: 1,
-                color: 1,
-                from: 4,
-                to: 3
-            },
-            {
-                localId: 2,
-                color: 2,
-                from: 1,
-                to: 2
-            },
-            {
-                localId: 3,
-                color: 3,
-                from: 2,
-                to: 2
-            }
-        ];
+        this.socket = socket;
+        this.pointsToWin = pointsToWin;
 
-        this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
-        this.lineHeight = gameDimensions.height / this.players.length;
         this.speed = 300;
         this.angularSpeed = 1200;
+    }
+
+    init(data){
+        this.players = data.players;
+        this.timer = data.timer;
+        this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
+        this.lineHeight = gameDimensions.height / this.players.length;
+        this.playersStopped = 0;
     }
 
     preload(){
@@ -48,6 +30,10 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     create(){
+        this.socket.on(websocketEvents.START_TURN, game => {
+            this.scene.start(sceneKeys.game, game);
+        });
+
         this.drawFinishLine();
 
         this.createShips();
@@ -61,6 +47,10 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
+        if(this.timer>Date.now()) {
+            this.socket.emit(websocketEvents.START_TURN);
+            this.scene.pause();
+        }
         this.players.forEach(player => {
             const target = this.bandWidth * (player.to+0.5);
             if(
@@ -69,8 +59,13 @@ export default class RankingScene extends Phaser.Scene {
             ) {
                 player.ship.setVelocityX(0);
                 player.ship.setAngularVelocity(0);
+                this.playersStopped++;
             }
         });
+        if(this.playersStopped >= this.players.length) {
+            this.scene.pause();
+            this.socket.emit(websocketEvents.READY_TURN);
+        }
     }
 
     drawFinishLine(){
@@ -104,7 +99,7 @@ export default class RankingScene extends Phaser.Scene {
             player.ship.setVelocityX(Math.sign(player.to-player.from) * this.speed);
             if(player.to < player.from){
                 player.ship.setAngularVelocity(this.angularSpeed);
-            }
+            } else if(player.to === player.from) this.playersStopped++;
         });
     }
 }
