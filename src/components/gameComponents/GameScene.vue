@@ -20,7 +20,7 @@ export default {
       const parent = document.getElementById("game");
       new Phaser.Game(
           config(
-              [new GameScene(this.socket, game)/*, new RankingScene(this.socket, game.settings.pointsToWin)*/],
+              new GameScene(this.socket, game)/*, new RankingScene(this.socket, game.settings.pointsToWin)*/,
               parent,
               gameDimensions.width,
               gameDimensions.height,
