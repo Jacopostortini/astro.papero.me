@@ -64,7 +64,10 @@ export default class RankingScene extends Phaser.Scene {
         });
         if(this.playersStopped >= this.players.length) {
             this.scene.pause();
-            this.socket.emit(websocketEvents.READY_TURN);
+            console.log("ready emitted");
+            setTimeout(()=>{
+                this.socket.emit(websocketEvents.READY_TURN);
+            }, 1000);
         }
     }
 
