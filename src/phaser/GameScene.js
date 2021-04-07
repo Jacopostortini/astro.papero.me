@@ -28,7 +28,7 @@ export default class GameScene extends Phaser.Scene {
         this.socket = socket;
         this.setUpGame(game);
 
-        this.updateFps = 15;
+        this.updateFps = 10;
         this.touchScreen = detectTouchScreen();
         
         Phaser.Physics.Arcade.Group.prototype.killAll = function () {
