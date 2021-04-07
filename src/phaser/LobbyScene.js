@@ -185,7 +185,10 @@ export default class LobbyScene extends Phaser.Scene {
             }
         });
         const idsToRemove = previousPlayingIds.filter(x => !currentlyPlayingIds.includes(x));
-        idsToRemove.forEach(id => {oldShips[id].destroy()});
+        idsToRemove.forEach(id => {
+            oldShips.bulletsLoaded.children.iterate(bullet => {bullet.destroy()});
+            oldShips[id].destroy()
+        });
 
         this.ships = newShips;
     }

@@ -24,7 +24,6 @@ export default class GameScene extends Phaser.Scene {
 
     constructor(socket, game) {
         super({key: sceneKeys.game});
-        console.log(game);
 
         this.socket = socket;
         this.setUpGame(game);
@@ -80,7 +79,6 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
         this.socket.on(websocketEvents.END_TURN, data => {
-            console.log(data);
             clearInterval(this.updateShipInterval);
             clearInterval(this.reloadInterval);
             setTimeout(()=>{
@@ -202,7 +200,10 @@ export default class GameScene extends Phaser.Scene {
         bullet.setCollideWorldBounds(true);
         bullet.body.onWorldBounds = true;
         this.players[data.localId].availableBullets--;
-        this.players[data.localId].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
+        const firstAlive = this.players[data.localId].bulletsLoaded.getFirstAlive();
+        if(firstAlive){
+            firstAlive.setActive(false).setVisible(false);
+        }
     }
 
 
