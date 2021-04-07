@@ -15,6 +15,7 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     init(data){
+        console.log("init",data);
         this.players = data.players;
         this.timer = data.timer;
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
