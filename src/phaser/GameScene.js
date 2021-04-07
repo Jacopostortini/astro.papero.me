@@ -46,7 +46,8 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init(game){
-        if(JSON.stringify(game)!=="{}"){
+        console.log("init gamescene", game)
+        if(game!=={}){
             this.setUpGame(game);
         }
     }
