@@ -7,6 +7,7 @@ import {detectTouchScreen} from "../constants/constants";
 export default class GameScene extends Phaser.Scene {
 
     setUpGame(game){
+        console.log(game)
         this.timer = game.timer;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
