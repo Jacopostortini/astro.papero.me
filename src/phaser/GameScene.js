@@ -45,11 +45,11 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    init(game){
+/*    init(game){
         if(JSON.stringify(game)!=="{}"){
             this.setUpGame(game);
         }
-    }
+    }*/
 
     preload(){
 
@@ -67,10 +67,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        if(this.timer > Date.now()) this.scene.start(sceneKeys.ranking, {
+        /*if(this.timer > Date.now()) this.scene.start(sceneKeys.ranking, {
             players: this.players,
             timer: this.timer
-        });
+        });*/
 
         this.createGroups();
         this.createShips();
