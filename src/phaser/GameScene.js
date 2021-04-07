@@ -45,7 +45,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init(game){
-        this.setUpGame(game);
+        if(game){
+            this.setUpGame(game);
+        }
     }
 
     preload(){
