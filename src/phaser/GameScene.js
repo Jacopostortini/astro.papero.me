@@ -44,8 +44,6 @@ export default class GameScene extends Phaser.Scene {
                 this.getFirstDead().setActive(true).setVisible(true);
             }
         }
-
-        console.log("game scene constructed: ", _.cloneDeep(this));
     }
 
     init(game){

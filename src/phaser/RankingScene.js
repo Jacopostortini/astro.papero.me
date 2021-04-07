@@ -13,7 +13,6 @@ export default class RankingScene extends Phaser.Scene {
 
         this.speed = 300;
         this.angularSpeed = 1200;
-        console.log("ranking scene constructed: ", _.cloneDeep(this));
     }
 
     init(data){
@@ -22,8 +21,6 @@ export default class RankingScene extends Phaser.Scene {
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
         this.lineHeight = gameDimensions.height / this.players.length;
         this.playersStopped = 0;
-
-        console.log("ranking scene init, scene:", _.cloneDeep(this));
     }
 
     preload(){
@@ -34,10 +31,10 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     create(){
-        /*this.socket.on(websocketEvents.START_TURN, game => {
-            console.log("start turn event", {...game});
-            this.scene.start(sceneKeys.game, {...game});
-        });*/
+        this.socket.on(websocketEvents.START_TURN, game => {
+            console.log("start turn event", _.cloneDeep(game));
+            this.scene.start(sceneKeys.game, _.cloneDeep(game));
+        });
 
         this.drawFinishLine();
 
@@ -52,10 +49,11 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
-        /*if(this.timer>Date.now()) {
-            this.socket.emit(websocketEvents.START_TURN);
+        if(this.timer>Date.now()) {
+            console.log("timeout");
             this.scene.pause();
-        }*/
+            this.socket.emit(websocketEvents.START_TURN);
+        }
         this.players.forEach(player => {
             const target = this.bandWidth * (player.to+0.5);
             if(
@@ -67,13 +65,13 @@ export default class RankingScene extends Phaser.Scene {
                 this.playersStopped++;
             }
         });
-        if(this.playersStopped >= this.players.length) {
+        /*if(this.playersStopped >= this.players.length) {
             this.scene.pause();
             console.log("ready emitted");
             setTimeout(()=>{
                 this.socket.emit(websocketEvents.READY_TURN);
             }, 1000);
-        }
+        }*/
     }
 
     drawFinishLine(){

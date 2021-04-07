@@ -60,7 +60,6 @@ export default {
             height
         ));
     this.socket.on(websocketEvents.LOBBY_MODIFIED, (game)=>{
-      console.log(game);
       this.game = {...game};
     });
   },
