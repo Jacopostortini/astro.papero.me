@@ -24,6 +24,7 @@ export default class GameScene extends Phaser.Scene {
 
     constructor(socket, game) {
         super({key: sceneKeys.game});
+        console.log(game);
 
         this.socket = socket;
         this.setUpGame(game);
@@ -44,11 +45,10 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
-    init(...args){
-        console.log(args);
-        /*if(game){
+    init(game){
+        if(JSON.stringify(game)!=="{}"){
             this.setUpGame(game);
-        }*/
+        }
     }
 
     preload(){
