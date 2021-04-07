@@ -2,12 +2,13 @@ import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
 import {gameDimensions, normalizers, sceneKeys} from "../constants/gameSettings";
 import {detectTouchScreen} from "../constants/constants";
+import _ from "lodash";
 
 
 export default class GameScene extends Phaser.Scene {
 
     setUpGame(game){
-        console.log("setup game: players:", game.players)
+        console.log("setup game: players:", _.cloneDeep(game));
         this.timer = game.timer;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
@@ -17,7 +18,7 @@ export default class GameScene extends Phaser.Scene {
         this.settings.frictionAir = 0.1;
         this.players = {};
         game.players.forEach(player => {
-            this.players[player.localId] = player;
+            this.players[player.localId] = _.cloneDeep(player);
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].lastTimestamp = 0;
         });
@@ -43,16 +44,15 @@ export default class GameScene extends Phaser.Scene {
                 this.getFirstDead().setActive(true).setVisible(true);
             }
         }
+
+        console.log("game scene constructed: ", _.cloneDeep(this));
     }
 
     init(game){
-        console.log("init gamescene", {...game})
-        Object.prototype.isEmpty = function(){
-            return Object.entries(this).length<=0;
-        }
-        if(!game.isEmpty()){
-            this.setUpGame({...game});
-        }
+        if(Object.entries(game).length>0){
+            console.log("init gamescene, setting up with:", _.cloneDeep(game))
+            this.setUpGame(game);
+        } else console.log("init gamescene, empty game, skipping...");
     }
 
     preload(){
@@ -71,10 +71,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        if(this.timer > Date.now()) this.scene.start(sceneKeys.ranking, {
+/*        if(this.timer > Date.now()) this.scene.start(sceneKeys.ranking, {
             players: this.players,
             timer: this.timer
-        });
+        });*/
 
         this.createGroups();
         this.createShips();
@@ -84,11 +84,12 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
         this.socket.on(websocketEvents.END_TURN, data => {
+            console.log("turn ended with data:", _.cloneDeep(data));
             clearInterval(this.updateShipInterval);
             clearInterval(this.reloadInterval);
             setTimeout(()=>{
-                this.scene.pause();
-                this.scene.start(sceneKeys.ranking, data);
+                this.scene.stop();
+                this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
             }, 2000);
         });
 

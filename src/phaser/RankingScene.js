@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import {gameDimensions, sceneKeys} from "../constants/gameSettings";
 import websocketEvents from "../constants/websocketEvents";
+import _ from "lodash";
 
 export default class RankingScene extends Phaser.Scene {
 
@@ -12,14 +13,17 @@ export default class RankingScene extends Phaser.Scene {
 
         this.speed = 300;
         this.angularSpeed = 1200;
+        console.log("ranking scene constructed: ", _.cloneDeep(this));
     }
 
     init(data){
-        this.players = data.players;
+        this.players = _.cloneDeep(data.players);
         this.timer = data.timer;
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
         this.lineHeight = gameDimensions.height / this.players.length;
         this.playersStopped = 0;
+
+        console.log("ranking scene init, scene:", _.cloneDeep(this));
     }
 
     preload(){
@@ -30,10 +34,10 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     create(){
-        this.socket.on(websocketEvents.START_TURN, game => {
+        /*this.socket.on(websocketEvents.START_TURN, game => {
             console.log("start turn event", {...game});
             this.scene.start(sceneKeys.game, {...game});
-        });
+        });*/
 
         this.drawFinishLine();
 
@@ -48,10 +52,10 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
-        if(this.timer>Date.now()) {
+        /*if(this.timer>Date.now()) {
             this.socket.emit(websocketEvents.START_TURN);
             this.scene.pause();
-        }
+        }*/
         this.players.forEach(player => {
             const target = this.bandWidth * (player.to+0.5);
             if(
