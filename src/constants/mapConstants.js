@@ -16,9 +16,36 @@ const getStartingPrisons = () => {
         }
     }
     return objs;
-
 }
 
-//getStartingPrisons();
+const getCenteredSquare = (side) => {
+    let objs = [];
+    for(let line = 0; line < side; line++){
+        for(let col = 0; col < side; col++){
+            if(line===0 || line === side-1){
+                objs.push({
+                   texture: "block1",
+                   killable: true,
+                   positions: {
+                       x: 32+(gameDimensions.width/2-side/2*64)+64*col,
+                       y: 32+(gameDimensions.height/2-side/2*64)+64*line
+                   }
+                });
+            } else {
+                if(col===0 || col===side-1){
+                    objs.push({
+                        texture: "block1",
+                        killable: true,
+                        positions: {
+                            x: 32+(gameDimensions.width/2-side/2*64)+64*col,
+                            y: 32+(gameDimensions.height/2-side/2*64)+64*line
+                        }
+                    });
+                }
+            }
+        }
+    }
+    return objs;
+}
 
-export { getStartingPrisons };
+export { getStartingPrisons, getCenteredSquare };
