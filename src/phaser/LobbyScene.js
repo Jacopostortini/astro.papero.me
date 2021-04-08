@@ -33,6 +33,9 @@ export default class LobbyScene extends Phaser.Scene {
         this.load.image("bullet", "./bullet.png");
         this.load.image("bullet-loaded", "./bullet-loaded.png");
 
+        this.load.image("block1", "./block.png");
+        this.load.image("block2", "./block.png");
+
         if(this.touchScreen) {
             this.load.image("rotate-button", "./rotate-button.png");
             this.load.image("shoot-button", "./shoot-button.png");
@@ -70,21 +73,6 @@ export default class LobbyScene extends Phaser.Scene {
         this.setReloadInterval();
 
         this.setOnDestroy();
-
-        /*this.onLobbyModified({ //TODO: CHANGE HERE
-            settings: defaultSettings,
-            currentPlayer: 0,
-            players: [
-                {
-                    localId: 0,
-                    color: 0
-                },
-                {
-                    localId: 1,
-                    color: 1
-                }
-            ]
-        })*/
     }
 
     update(time, delta){

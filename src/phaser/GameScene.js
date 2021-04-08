@@ -3,6 +3,7 @@ import websocketEvents from "../constants/websocketEvents";
 import {gameDimensions, normalizers, sceneKeys} from "../constants/gameSettings";
 import {detectTouchScreen} from "../constants/constants";
 import _ from "lodash";
+import createMap from "../phaser/maps";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -83,6 +84,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.createGroups();
         this.createShips();
+        createMap(this);
 
         this.setKeyInputHandlers();
         if(this.touchScreen) this.setTouchInputHandlers();
