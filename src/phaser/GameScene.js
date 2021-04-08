@@ -147,8 +147,8 @@ export default class GameScene extends Phaser.Scene {
         const textures = ["", "little", "ship"];
         Object.values(this.players).forEach(player => {
             player.ship = this.ships.create(
-                (index<2 ? 0.05 : 0.95) * gameDimensions.width,
-                ( index%2 === 0 ? 0.05 : 0.95 ) * gameDimensions.height,
+                (index<2 ? 30 : 1170),
+                ( index%2 === 0 ? 30 : 1170 ),
                 textures[player.state]+player.color
             );
             
