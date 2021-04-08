@@ -20,15 +20,17 @@ const getStartingPrisons = () => {
 
 const getCenteredSquare = (side) => {
     let objs = [];
+    const startX = 32+(gameDimensions.width/2-side/2*64);
+    const startY = 32+(gameDimensions.height/2-side/2*64);
     for(let line = 0; line < side; line++){
         for(let col = 0; col < side; col++){
             if(line===0 || line === side-1){
                 objs.push({
                    texture: "block1",
                    killable: true,
-                   positions: {
-                       x: 32+(gameDimensions.width/2-side/2*64)+64*col,
-                       y: 32+(gameDimensions.height/2-side/2*64)+64*line
+                   position: {
+                       x: startX+64*col,
+                       y: startY+64*line
                    }
                 });
             } else {
@@ -36,9 +38,9 @@ const getCenteredSquare = (side) => {
                     objs.push({
                         texture: "block1",
                         killable: true,
-                        positions: {
-                            x: 32+(gameDimensions.width/2-side/2*64)+64*col,
-                            y: 32+(gameDimensions.height/2-side/2*64)+64*line
+                        position: {
+                            x: startX+64*col,
+                            y: startY+64*line
                         }
                     });
                 }
