@@ -49,7 +49,6 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
         this.socket.on(websocketEvents.END_TURN, data => {
-            console.log("turn ended with data:", _.cloneDeep(data));
             setTimeout(()=>{
                 clearInterval(this.updateShipInterval);
                 clearInterval(this.reloadInterval);
@@ -60,10 +59,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init(game){
-        if(Object.entries(game).length>0){
-            console.log("init gamescene, setting up with:", _.cloneDeep(game))
-            this.setUpGame(game);
-        } else console.log("init gamescene, empty game, skipping...");
+        if(Object.entries(game).length>0) this.setUpGame(game);
     }
 
     preload(){

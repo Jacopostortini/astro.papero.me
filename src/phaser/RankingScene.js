@@ -14,7 +14,6 @@ export default class RankingScene extends Phaser.Scene {
         this.speed = 300;
         this.angularSpeed = 1200;
         this.socket.on(websocketEvents.START_TURN, game => {
-            console.log("start turn event");
             this.scene.stop(sceneKeys.game);
             this.scene.start(sceneKeys.game, _.cloneDeep(game));
         });
@@ -26,6 +25,7 @@ export default class RankingScene extends Phaser.Scene {
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
         this.lineHeight = gameDimensions.height / this.players.length;
         this.playersStopped = 0;
+        console.log("timer: "+this.timer, "now: "+Date.now())
     }
 
     preload(){
@@ -50,11 +50,11 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
-        /*if(this.timer>Date.now()) {
+        if(this.timer>Date.now()) {
             console.log("timeout");
             this.scene.pause();
             this.socket.emit(websocketEvents.START_TURN);
-        }*/
+        }
         this.players.forEach(player => {
             const target = this.bandWidth * (player.to+0.5);
             if(
@@ -68,7 +68,6 @@ export default class RankingScene extends Phaser.Scene {
         });
         if(this.playersStopped >= this.players.length) {
             this.scene.pause();
-            console.log("ready emitted");
             setTimeout(()=>{
                 this.socket.emit(websocketEvents.READY_TURN);
             }, 1000);
