@@ -50,7 +50,7 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
-        if(this.timer>Date.now()) {
+        if(this.timer<Date.now()) {
             console.log("timeout");
             this.scene.pause();
             this.socket.emit(websocketEvents.START_TURN);
