@@ -1,7 +1,7 @@
 import {getCenteredSquare, getStartingPrisons} from "../constants/mapConstants";
 
 const maps = [
-    [...getStartingPrisons(), ...getCenteredSquare(5)],
+    getStartingPrisons().concat(getCenteredSquare(5)),
 ];
 
 export default (ctx) => {
