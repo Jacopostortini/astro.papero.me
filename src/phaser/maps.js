@@ -45,7 +45,7 @@ const maps = [
 
         {
             texture: "block1",
-            killable: false,
+            killable: true,
             position: {
                 x: 160,
                 y: 568
@@ -53,7 +53,7 @@ const maps = [
         },
         {
             texture: "block1",
-            killable: false,
+            killable: true,
             position: {
                 x: 160,
                 y: 504
@@ -61,7 +61,7 @@ const maps = [
         },
         {
             texture: "block1",
-            killable: false,
+            killable: true,
             position: {
                 x: 160,
                 y: 440
@@ -69,7 +69,7 @@ const maps = [
         },
         {
             texture: "block1",
-            killable: false,
+            killable: true,
             position: {
                 x: 96,
                 y: 440
@@ -77,10 +77,20 @@ const maps = [
         },
         {
             texture: "block1",
-            killable: false,
+            killable: true,
             position: {
                 x: 32,
                 y: 440
+            }
+        },
+
+
+        {
+            texture: "block2",
+            killable: false,
+            position: {
+                x: 600,
+                y: 300
             }
         }
     ],
