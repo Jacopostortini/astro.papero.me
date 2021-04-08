@@ -1,4 +1,5 @@
 import {gameDimensions} from "./gameSettings";
+//let gameDimensions = {width: 1200, height: 600};
 
 const getStartingPrisons = () => {
     let objs = [];
@@ -8,7 +9,7 @@ const getStartingPrisons = () => {
                 texture: "block1",
                 killable: true,
                 position: {
-                    x: ( 160 - (j>2 ? 64*(j-2) : 0) ) * (1-i%2)   +   (gameDimensions.width-160 + (j>2 ? 64*(j-2) : 0) ) * (1-i%2),
+                    x: ( 160 - (j>2 ? 64*(j-2) : 0) ) * (1-i%2)   +   (gameDimensions.width-160 + (j>2 ? 64*(j-2) : 0) ) * (i%2),
                     y: i<2 ? ( 32 + Math.min(j*64, 128) ) :  (gameDimensions.height-32 - Math.min(j*64, 128))
                 }
             });
@@ -17,5 +18,7 @@ const getStartingPrisons = () => {
     return objs;
 
 }
+
+//getStartingPrisons();
 
 export { getStartingPrisons };
