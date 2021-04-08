@@ -32,7 +32,7 @@ export default class RankingScene extends Phaser.Scene {
 
     create(){
         this.socket.once(websocketEvents.START_TURN, game => {
-            console.log("start turn event", _.cloneDeep(game));
+            console.log("start turn event");
             this.scene.stop(sceneKeys.game);
             this.scene.start(sceneKeys.game, _.cloneDeep(game));
         });

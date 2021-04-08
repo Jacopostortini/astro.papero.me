@@ -8,7 +8,6 @@ import _ from "lodash";
 export default class GameScene extends Phaser.Scene {
 
     setUpGame(game){
-        console.log("setup game: players:", _.cloneDeep(game));
         this.timer = game.timer;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
@@ -282,6 +281,7 @@ export default class GameScene extends Phaser.Scene {
             case 0:
                 this.ships.killAndHide(player.ship);
                 this.ships.remove(player.ship);
+                this.players[data.localId].bulletsLoaded.killAll();
                 break;
             case 1:
                 player.ship.setTexture("little" + this.players[data.localId].color);
