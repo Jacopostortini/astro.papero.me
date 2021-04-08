@@ -74,6 +74,9 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("little3", "./littles/little3.png");
         this.load.image("bullet", "./bullet.png");
         this.load.image("bullet-loaded", "./bullet-loaded.png");
+
+        this.load.image("block1", "./block.png");
+        this.load.image("block2", "./block.png");
     }
 
     create(){

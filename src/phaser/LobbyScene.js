@@ -33,9 +33,6 @@ export default class LobbyScene extends Phaser.Scene {
         this.load.image("bullet", "./bullet.png");
         this.load.image("bullet-loaded", "./bullet-loaded.png");
 
-        this.load.image("block1", "./block.png");
-        this.load.image("block2", "./block.png");
-
         if(this.touchScreen) {
             this.load.image("rotate-button", "./rotate-button.png");
             this.load.image("shoot-button", "./shoot-button.png");
