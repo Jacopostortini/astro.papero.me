@@ -14,7 +14,6 @@ export default class RankingScene extends Phaser.Scene {
         this.speed = 300;
         this.angularSpeed = 1200;
         this.socket.on(websocketEvents.START_TURN, game => {
-            this.scene.stop(sceneKeys.game);
             this.scene.start(sceneKeys.game, _.cloneDeep(game));
         });
     }
