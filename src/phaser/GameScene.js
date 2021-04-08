@@ -43,6 +43,20 @@ export default class GameScene extends Phaser.Scene {
                 this.getFirstDead().setActive(true).setVisible(true);
             }
         }
+
+        this.socket.on(websocketEvents.UPDATE_SHIP, data => this.updateShip(data));
+        this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
+        this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
+        this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
+        this.socket.on(websocketEvents.END_TURN, data => {
+            console.log("turn ended with data:", _.cloneDeep(data));
+            setTimeout(()=>{
+                clearInterval(this.updateShipInterval);
+                clearInterval(this.reloadInterval);
+                this.scene.stop(sceneKeys.ranking);
+                this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
+            }, 2000);
+        });
     }
 
     init(game){
@@ -75,20 +89,6 @@ export default class GameScene extends Phaser.Scene {
 
         this.createGroups();
         this.createShips();
-
-        this.socket.on(websocketEvents.UPDATE_SHIP, data => this.updateShip(data));
-        this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
-        this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
-        this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
-        this.socket.on(websocketEvents.END_TURN, data => {
-            console.log("turn ended with data:", _.cloneDeep(data));
-            setTimeout(()=>{
-                clearInterval(this.updateShipInterval);
-                clearInterval(this.reloadInterval);
-                this.scene.stop(sceneKeys.ranking);
-                this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
-            }, 2000);
-        });
 
         this.setKeyInputHandlers();
         if(this.touchScreen) this.setTouchInputHandlers();
