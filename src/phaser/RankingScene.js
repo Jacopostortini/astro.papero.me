@@ -21,7 +21,7 @@ export default class RankingScene extends Phaser.Scene {
     init(data){
         console.log(_.cloneDeep(data))
         this.players = _.cloneDeep(data.players);
-        this.timer = data.timer;
+        this.timer = data.timer ? data.timer : Infinity;
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
         this.lineHeight = gameDimensions.height / this.players.length;
         this.playersStopped = 0;
@@ -42,7 +42,7 @@ export default class RankingScene extends Phaser.Scene {
 
         this.setShipsMovements();
 
-        this.timerText = this.add.text(gameDimensions.width/2, 20, ((this.timer-Date.now())/1000).toFixed(0));
+        this.timerText = this.add.text(gameDimensions.width/2, 20, ((this.timer-Date.now())/1000).toFixed(0), {fontSize: 30});
         this.scene.pause();
         setTimeout(()=>{
             this.scene.resume();
@@ -51,7 +51,8 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
-        this.timerText.setText(((this.timer-Date.now())/1000).toFixed(0));
+        const text = this.timer===Infinity ? "Game over (F5 to restart)" : ((this.timer-Date.now())/1000).toFixed(0);
+        this.timerText.setText(text);
         if(this.timer<Date.now()) {
             console.log("timeout");
             this.socket.emit(websocketEvents.START_TURN);
