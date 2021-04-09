@@ -66,11 +66,11 @@ const getNotKillableSlalom = (number) => {
     return objs;
 }
 
-const getCenteredCross = (gap) => {
+const getCenteredCross = (gapX, gapY=gapX) => {
     let objs = [];
     //vertical blocks:
-    let horizontalDistance = ( gameDimensions.width - gap ) / 2 - 64 + 32;
-    let verticalDistance = ( gameDimensions.height - gap ) / 2 - 200 + 100;
+    let horizontalDistance = ( gameDimensions.width - gapX ) / 2 - 64 + 32;
+    let verticalDistance = ( gameDimensions.height - gapY ) / 2 - 200 + 100;
     for(let i = 0; i < 4; i++){
         objs.push({
            texture: "block2",
@@ -82,8 +82,8 @@ const getCenteredCross = (gap) => {
         });
     }
 
-    horizontalDistance = ( gameDimensions.width - gap ) / 2 - 200 + 100;
-    verticalDistance = ( gameDimensions.height - gap ) / 2 - 64 + 32;
+    horizontalDistance = ( gameDimensions.width - gapX ) / 2 - 200 + 100;
+    verticalDistance = ( gameDimensions.height - gapY ) / 2 - 64 + 32;
     for(let i = 0; i < 4; i++){
         objs.push({
             texture: "block3",

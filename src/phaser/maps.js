@@ -3,7 +3,7 @@ import {getCenteredCross, getCenteredSquare, getNotKillableSlalom, getStartingPr
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
     [...getNotKillableSlalom(4)],
-    [...getCenteredCross(100)]
+    [...getCenteredCross(300, 100), ...getCenteredSquare(3)]
 ];
 
 export default (ctx) => {
