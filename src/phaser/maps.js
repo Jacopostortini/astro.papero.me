@@ -11,15 +11,9 @@ export default (ctx) => {
     ctx.notKillableMapObjects = ctx.physics.add.staticGroup();
     map.forEach(obj => {
        if(obj.killable){
-           const o = ctx.killableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
-           if(obj.scale){
-               o.setScale(obj.scale.x, obj.scale.y);
-           }
+           ctx.killableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
        } else {
-           /*const o = */ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
-           if(obj.scale){
-               //o.setScale(obj.scale.x, obj.scale.y);
-           }
+           ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
        }
     });
     ctx.physics.add.collider(ctx.killableMapObjects, ctx.ships);
