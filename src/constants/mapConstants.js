@@ -2,7 +2,7 @@ import {gameDimensions} from "./gameSettings";
 //let gameDimensions = {width: 1200, height: 600};
 
 const getStartingPrisons = () => {
-    let objs = [];
+    const objs = [];
     for(let i = 0; i < 4; i++){
         for(let j = 0; j < 5; j++) {
             objs.push({
@@ -19,7 +19,7 @@ const getStartingPrisons = () => {
 }
 
 const getCenteredSquare = (side) => {
-    let objs = [];
+    const objs = [];
     const startX = 32+(gameDimensions.width/2-side/2*64);
     const startY = 32+(gameDimensions.height/2-side/2*64);
     for(let line = 0; line < side; line++){
@@ -51,7 +51,7 @@ const getCenteredSquare = (side) => {
 }
 
 const getNotKillableSlalom = (number) => {
-    let objs = [];
+    const objs = [];
     const gap = (gameDimensions.width-64*number) / (number+1);
     for(let i = 0; i < number; i++){
         objs.push({
@@ -67,7 +67,7 @@ const getNotKillableSlalom = (number) => {
 }
 
 const getCenteredCross = (gapX, gapY=gapX) => {
-    let objs = [];
+    const objs = [];
     //vertical blocks:
     let horizontalDistance = ( gameDimensions.width - gapX ) / 2 - 64 + 32;
     let verticalDistance = ( gameDimensions.height - gapY ) / 2 - 200 + 100;
@@ -98,5 +98,82 @@ const getCenteredCross = (gapX, gapY=gapX) => {
     return objs;
 }
 
+const getMixedCross = () => {
+    const objs = [
+        {
+            texture: "block2",
+            killable: false,
+            position: {
+                x: gameDimensions.width/2,
+                y: 100
+            }
+        },
+        {
+            texture: "block2",
+            killable: false,
+            position: {
+                x: gameDimensions.width/2,
+                y: gameDimensions.height-100
+            }
+        },
+        {
+            texture: "block3",
+            killable: false,
+            position: {
+                x: 100,
+                y: gameDimensions.height/2
+            }
+        },
+        {
+            texture: "block3",
+            killable: false,
+            position: {
+                x: gameDimensions.width-100,
+                y: gameDimensions.height/2
+            }
+        }
+    ];
+    const numberOnX = Math.floor((gameDimensions.width - 400 - 64) / 2 / 64);
+    const numberOnY = Math.floor((gameDimensions.height - 400- 64) / 2 / 64);
+    for(let i = 0; i < numberOnY; i++){
+        objs.push({
+            texture: "block1",
+            killable: true,
+            position: {
+                x: gameDimensions.width/2,
+                y: 200+32+i*64
+            }
+        });
+        objs.push({
+            texture: "block1",
+            killable: true,
+            position: {
+                x: gameDimensions.width/2,
+                y: gameDimensions.height-(200+32+i*64)
+            }
+        });
+    }
+    for(let i = 0; i < numberOnX; i++){
+        objs.push({
+            texture: "block1",
+            killable: true,
+            position: {
+                x: 200+32+i*64,
+                y: gameDimensions.height/2
+            }
+        });
+        objs.push({
+            texture: "block1",
+            killable: true,
+            position: {
+                x: gameDimensions.width - (200+32+i*64),
+                y: gameDimensions.height/2
+            }
+        });
+    }
+
+    return objs;
+}
+
 //console.log(getCenteredCross(100));
-export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross };
+export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross, getMixedCross };
