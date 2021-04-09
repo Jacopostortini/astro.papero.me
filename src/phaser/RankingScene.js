@@ -19,6 +19,7 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     init(data){
+        console.log(_.cloneDeep(data))
         this.players = _.cloneDeep(data.players);
         this.timer = data.timer;
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
@@ -90,7 +91,6 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     createShips(){
-        console.log(_.cloneDeep(this.players));
         this.players.forEach((player, index) => {
             player.ship = this.physics.add.sprite(this.bandWidth * (player.from+0.5), this.lineHeight * (index+0.5), "ship"+player.color);
         });

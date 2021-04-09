@@ -6,7 +6,7 @@ const maps = [
 ];
 
 export default (ctx) => {
-    const map = maps[0];
+    const map = maps[1];
     ctx.killableMapObjects = ctx.physics.add.staticGroup();
     ctx.notKillableMapObjects = ctx.physics.add.staticGroup();
     map.forEach(obj => {
