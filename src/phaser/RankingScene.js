@@ -43,6 +43,7 @@ export default class RankingScene extends Phaser.Scene {
         this.setShipsMovements();
 
         this.timerText = this.add.text(gameDimensions.width/2, 20, ((this.timer-Date.now())/1000).toFixed(0), {fontSize: 30});
+        this.timerText.setOrigin(0.5);
         this.scene.pause();
         setTimeout(()=>{
             this.scene.resume();

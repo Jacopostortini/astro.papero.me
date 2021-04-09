@@ -81,15 +81,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        /*if(this.timer > Date.now()){
-            clearInterval(this.updateShipInterval);
-            clearInterval(this.reloadInterval);
-            this.scene.start(sceneKeys.ranking, _.cloneDeep({
-                players: _.cloneDeep(this.players),
-                timer: this.timer
-            }));
-        }*/
-
         this.createGroups();
         this.createShips();
         createMap(this);
@@ -103,6 +94,16 @@ export default class GameScene extends Phaser.Scene {
         this.setUpdateShipInterval();
 
         this.setOnDestroy();
+
+        if(this.timer > Date.now()){
+            clearInterval(this.updateShipInterval);
+            clearInterval(this.reloadInterval);
+            this.scene.stop();
+            this.scene.start(sceneKeys.ranking, _.cloneDeep({
+                players: _.cloneDeep(this.players),
+                timer: this.timer
+            }));
+        }
     }
 
     update(time, delta){
