@@ -56,17 +56,18 @@ export default class GameScene extends Phaser.Scene {
                 this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
             }, 2000);
         });
-
-        if(this.timer > Date.now()){
-            this.scene.start(sceneKeys.ranking, _.cloneDeep({
-                players: _.cloneDeep(this.players),
-                timer: this.timer
-            }));
-        }
     }
 
     init(game){
         if(Object.entries(game).length>0) this.setUpGame(game);
+        else {
+            if(this.timer > Date.now()){
+                this.scene.start(sceneKeys.ranking, _.cloneDeep({
+                    players: _.cloneDeep(this.players),
+                    timer: this.timer
+                }));
+            }
+        }
     }
 
     preload(){
