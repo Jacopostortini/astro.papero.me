@@ -98,7 +98,7 @@ const getCenteredCross = (gapX, gapY=gapX) => {
     return objs;
 }
 
-const getMixedHorizontalLine = () => {
+const getMixedCross = () => {
     const objs = [
         {
             texture: "block3",
@@ -118,7 +118,7 @@ const getMixedHorizontalLine = () => {
         }
     ];
     const numberOnX = Math.floor((gameDimensions.width - 400 - 64) / 2 / 64);
-    for(let i = 0; i < numberOnX; i++){
+    for(let i = 1; i < numberOnX; i++){
         objs.push({
             texture: "block1",
             killable: true,
@@ -152,4 +152,4 @@ const getMixedHorizontalLine = () => {
 }
 
 //console.log(getCenteredCross(100));
-export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross, getMixedHorizontalLine };
+export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross, getMixedCross };
