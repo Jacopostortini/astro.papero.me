@@ -60,7 +60,7 @@ const getNotKillableSlalom = (number, coverRatio) => {
             texture: "block2",
             killable: false,
             position: {
-                x: gap*i+32,
+                x: gap*(i+1)+64*i+32,
                 y: i%2 * (height/2) + (1-i%2) * (gameDimensions.height-height/2)
             },
             scale: {

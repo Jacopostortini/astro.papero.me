@@ -16,9 +16,9 @@ export default (ctx) => {
                o.setScale(obj.scale.x, obj.scale.y);
            }
        } else {
-           const o = ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
+           /*const o = */ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
            if(obj.scale){
-               o.setScale(obj.scale.x, obj.scale.y);
+               //o.setScale(obj.scale.x, obj.scale.y);
            }
        }
     });
