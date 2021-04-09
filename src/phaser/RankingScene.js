@@ -41,6 +41,8 @@ export default class RankingScene extends Phaser.Scene {
         this.createShips();
 
         this.setShipsMovements();
+
+        this.timerText = this.add.text(gameDimensions.width/2, 20, ((this.timer-Date.now())/1000).toFixed(0));
         this.scene.pause();
         setTimeout(()=>{
             this.scene.resume();
@@ -49,6 +51,7 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     update(){
+        this.timerText.setText(((this.timer-Date.now())/1000).toFixed(0));
         if(this.timer<Date.now()) {
             console.log("timeout");
             this.socket.emit(websocketEvents.START_TURN);
@@ -65,7 +68,6 @@ export default class RankingScene extends Phaser.Scene {
             }
         });
         if(this.playersStopped >= this.players.length) {
-            this.scene.pause();
             setTimeout(()=>{
                 this.socket.emit(websocketEvents.READY_TURN);
             }, 1000);
