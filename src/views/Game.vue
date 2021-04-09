@@ -4,7 +4,7 @@
                      @toggle-show="showHamburgerMenu=$event"/>
   <Lobby v-if="status === 0 && socket"
          :socket="socket"/>
-  <GameScene v-if="status === 1 && socket"
+  <GameScene v-if="status >= 1 && socket"
              :socket="socket"/>
   <ResizeComponent v-if="status === 0.5 && socket"
                    :socket="socket"/>
