@@ -115,14 +115,6 @@ const getMixedHorizontalLine = () => {
                 x: gameDimensions.width-100,
                 y: gameDimensions.height/2
             }
-        },
-        {
-            texture: "block1",
-            killable: true,
-            position: {
-                x: gameDimensions.width/2,
-                y: gameDimensions.height/2
-            }
         }
     ];
     const numberOnX = Math.floor((gameDimensions.width - 400 - 64) / 2 / 64);
@@ -141,6 +133,17 @@ const getMixedHorizontalLine = () => {
             position: {
                 x: gameDimensions.width - (200+32+i*64),
                 y: gameDimensions.height/2
+            }
+        });
+    }
+    const numberOnY = Math.floor(gameDimensions.height/64);
+    for(let i = 0; i < numberOnY; i++){
+        objs.push({
+            texture: "block1",
+            killable: true,
+            position: {
+                x: gameDimensions.width/2,
+                y: 32+64*i
             }
         });
     }
