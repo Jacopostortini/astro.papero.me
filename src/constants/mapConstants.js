@@ -98,24 +98,8 @@ const getCenteredCross = (gapX, gapY=gapX) => {
     return objs;
 }
 
-const getMixedCross = () => {
+const getMixedHorizontalLine = () => {
     const objs = [
-        {
-            texture: "block2",
-            killable: false,
-            position: {
-                x: gameDimensions.width/2,
-                y: 100
-            }
-        },
-        {
-            texture: "block2",
-            killable: false,
-            position: {
-                x: gameDimensions.width/2,
-                y: gameDimensions.height-100
-            }
-        },
         {
             texture: "block3",
             killable: false,
@@ -131,28 +115,17 @@ const getMixedCross = () => {
                 x: gameDimensions.width-100,
                 y: gameDimensions.height/2
             }
+        },
+        {
+            texture: "block1",
+            killable: true,
+            position: {
+                x: gameDimensions.width/2,
+                y: gameDimensions.height/2
+            }
         }
     ];
     const numberOnX = Math.floor((gameDimensions.width - 400 - 64) / 2 / 64);
-    const numberOnY = Math.floor((gameDimensions.height - 400- 64) / 2 / 64);
-    for(let i = 0; i < numberOnY; i++){
-        objs.push({
-            texture: "block1",
-            killable: true,
-            position: {
-                x: gameDimensions.width/2,
-                y: 200+32+i*64
-            }
-        });
-        objs.push({
-            texture: "block1",
-            killable: true,
-            position: {
-                x: gameDimensions.width/2,
-                y: gameDimensions.height-(200+32+i*64)
-            }
-        });
-    }
     for(let i = 0; i < numberOnX; i++){
         objs.push({
             texture: "block1",
@@ -176,4 +149,4 @@ const getMixedCross = () => {
 }
 
 //console.log(getCenteredCross(100));
-export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross, getMixedCross };
+export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross, getMixedHorizontalLine };
