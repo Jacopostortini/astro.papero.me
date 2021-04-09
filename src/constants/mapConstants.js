@@ -61,7 +61,7 @@ const getNotKillableSlalom = (number, coverRatio) => {
             killable: false,
             position: {
                 x: gap*i+32,
-                y: i%2 * (height/2) + (1-i%2) * (gameDimensions-height/2)
+                y: i%2 * (height/2) + (1-i%2) * (gameDimensions.height-height/2)
             },
             scale: {
                 x: 1,
@@ -72,4 +72,5 @@ const getNotKillableSlalom = (number, coverRatio) => {
     return objs;
 }
 
+//console.log(getNotKillableSlalom(4, 0.5));
 export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom };
