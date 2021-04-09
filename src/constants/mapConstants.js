@@ -59,7 +59,7 @@ const getNotKillableSlalom = (number) => {
             killable: false,
             position: {
                 x: gap*(i+1)+64*i+32,
-                y: i%2 * 100 + (1-i%2) * (gameDimensions.height/2-100)
+                y: i%2 * 100 + (1-i%2) * (gameDimensions.height-100)
             }
         });
     }
