@@ -50,4 +50,26 @@ const getCenteredSquare = (side) => {
     return objs;
 }
 
-export { getStartingPrisons, getCenteredSquare };
+const getNotKillableSlalom = (number, coverRatio) => {
+    let objs = [];
+    const gap = (gameDimensions.width-64*number) / (number+1);
+    const height = gameDimensions.height*coverRatio;
+    const scaleY = height/64;
+    for(let i = 0; i < number; i++){
+        objs.push({
+            texture: "block2",
+            killable: false,
+            position: {
+                x: gap*i+32,
+                y: i%2 * (height/2) + (1-i%2) * (gameDimensions-height/2)
+            },
+            scale: {
+                x: 1,
+                y: scaleY
+            }
+        });
+    }
+    return objs;
+}
+
+export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom };
