@@ -18,6 +18,7 @@ export default {
   mounted(){
     this.socket.on(websocketEvents.GAME_MODIFIED, game => {
       const parent = document.getElementById("game");
+      console.log(game);
       new Phaser.Game(
           config(
               [new GameScene(this.socket, game), new RankingScene(this.socket, game.settings.pointsToWin)],

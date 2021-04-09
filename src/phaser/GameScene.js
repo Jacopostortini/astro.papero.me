@@ -80,10 +80,14 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        /*if(this.timer > Date.now()) this.scene.start(sceneKeys.ranking, {
-            players: this.players,
-            timer: this.timer
-        });*/
+        if(this.timer > Date.now()){
+            clearInterval(this.updateShipInterval);
+            clearInterval(this.reloadInterval);
+            this.scene.start(sceneKeys.ranking, _.cloneDeep({
+                players: _.cloneDeep(this.players),
+                timer: this.timer
+            }));
+        }
 
         this.createGroups();
         this.createShips();
