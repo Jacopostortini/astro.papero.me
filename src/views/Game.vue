@@ -49,10 +49,11 @@ export default {
     });
 
     this.socket.on("connect", ()=>{
-      this.socket.emit(websocketEvents.CONNECT_TO_GAME, {gameId: this.gameId})
+      this.socket.emit(websocketEvents.CONNECT_TO_GAME, {gameId: this.gameId});
     });
 
     this.socket.on(websocketEvents.STATUS, status => {
+      console.log(status);
       this.status = status;
     });
   },
