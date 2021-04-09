@@ -2,7 +2,7 @@ import {getCenteredSquare, getNotKillableSlalom, getStartingPrisons} from "../co
 
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
-    [...getNotKillableSlalom(4, 0.5)]
+    [...getNotKillableSlalom(4)]
 ];
 
 export default (ctx) => {
