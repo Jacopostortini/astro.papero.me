@@ -6,7 +6,7 @@ const maps = [
 ];
 
 export default (ctx) => {
-    const map = maps[Math.floor(Math.random()*maps.length)];
+    const map = maps[0]//maps[Math.floor(Math.random()*maps.length)];
     ctx.killableMapObjects = ctx.physics.add.staticGroup();
     ctx.notKillableMapObjects = ctx.physics.add.staticGroup();
     map.forEach(obj => {
