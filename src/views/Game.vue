@@ -53,7 +53,6 @@ export default {
     });
 
     this.socket.on(websocketEvents.STATUS, status => {
-      console.log(status);
       this.status = status;
     });
   },
