@@ -66,5 +66,37 @@ const getNotKillableSlalom = (number) => {
     return objs;
 }
 
-//console.log(getNotKillableSlalom(4, 0.5));
-export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom };
+const getCenteredCross = (gap) => {
+    let objs = [];
+    //vertical blocks:
+    let horizontalDistance = ( gameDimensions.width - gap ) / 2 - 64 + 32;
+    let verticalDistance = ( gameDimensions.height - gap ) / 2 - 200 + 100;
+    for(let i = 0; i < 4; i++){
+        objs.push({
+           texture: "block2",
+           killable: false,
+           position: {
+               x: (1-i%2) * horizontalDistance + i%2 * (gameDimensions.width-horizontalDistance),
+               y: i<2 ? verticalDistance : gameDimensions.height-verticalDistance
+           }
+        });
+    }
+
+    horizontalDistance = ( gameDimensions.width - gap ) / 2 - 200 + 100;
+    verticalDistance = ( gameDimensions.height - gap ) / 2 - 64 + 32;
+    for(let i = 0; i < 4; i++){
+        objs.push({
+            texture: "block3",
+            killable: false,
+            position: {
+                x: (1-i%2) * horizontalDistance + i%2 * (gameDimensions.width-horizontalDistance),
+                y: i<2 ? verticalDistance : gameDimensions.height-verticalDistance
+            }
+        });
+    }
+
+    return objs;
+}
+
+//console.log(getCenteredCross(100));
+export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross };

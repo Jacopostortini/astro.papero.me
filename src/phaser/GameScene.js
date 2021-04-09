@@ -75,16 +75,18 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("ship1", "./ships/ship1.png");
         this.load.image("ship2", "./ships/ship2.png");
         this.load.image("ship3", "./ships/ship3.png");
+
         this.load.image("little0", "./littles/little0.png");
         this.load.image("little1", "./littles/little1.png");
         this.load.image("little2", "./littles/little2.png");
         this.load.image("little3", "./littles/little3.png");
+
         this.load.image("bullet", "./bullet.png");
         this.load.image("bullet-loaded", "./bullet-loaded.png");
 
-        this.load.image("block1", "./block1.png");
-        this.load.image("block2", "./block2.png");
-        //this.load.image("block3", "./block3.png");
+        this.load.image("block1", "./blocks/block1.png");
+        this.load.image("block2", "./blocks/block2.png");
+        this.load.image("block3", "./blocks/block3.png");
     }
 
     create(){
@@ -169,7 +171,7 @@ export default class GameScene extends Phaser.Scene {
             });
 
             player.ship.localId = player.localId;
-            player.ship.setAngle(-45  * ( index < 2 ? 1 : 3) * ( ( index % 2 ) * 2 - 1 ));
+            player.ship.setAngle(-45  * ( order[index] < 2 ? 1 : 3) * ( ( order[index] % 2 ) * 2 - 1 ));
             player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
             player.ship.autonomyTime = 0;
             player.ship.setCollideWorldBounds(true);

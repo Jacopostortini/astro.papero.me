@@ -1,12 +1,13 @@
-import {getCenteredSquare, getNotKillableSlalom, getStartingPrisons} from "../constants/mapConstants";
+import {getCenteredCross, getCenteredSquare, getNotKillableSlalom, getStartingPrisons} from "../constants/mapConstants";
 
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
-    [...getNotKillableSlalom(4)]
+    [...getNotKillableSlalom(4)],
+    [...getCenteredCross(100)]
 ];
 
 export default (ctx) => {
-    const map = maps[0]//maps[Math.floor(Math.random()*maps.length)];
+    const map = maps[2];
     ctx.killableMapObjects = ctx.physics.add.staticGroup();
     ctx.notKillableMapObjects = ctx.physics.add.staticGroup();
     map.forEach(obj => {
