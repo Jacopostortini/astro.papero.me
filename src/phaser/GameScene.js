@@ -491,7 +491,7 @@ export default class GameScene extends Phaser.Scene {
             }
             this.socket.emit(websocketEvents.POWER_UP, data);
             this.powerUpEvent(data);
-        });
+        }, 5000);
     }
 
     setOnDestroy(){
