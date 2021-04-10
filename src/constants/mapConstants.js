@@ -50,7 +50,7 @@ const getCenteredSquare = (side) => {
     return objs;
 }
 
-const getNotKillableSlalom = (number) => {
+const getMovingSlalom = (number) => {
     const objs = [];
     const gap = (gameDimensions.width-64*number) / (number+1);
     for(let i = 0; i < number; i++){
@@ -60,6 +60,11 @@ const getNotKillableSlalom = (number) => {
             position: {
                 x: gap*(i+1)+64*i+32,
                 y: i%2 * 100 + (1-i%2) * (gameDimensions.height-100)
+            },
+            bounce: 1,
+            velocity: {
+                x: 0,
+                y: 20
             }
         });
     }
@@ -152,4 +157,4 @@ const getMixedCross = () => {
 }
 
 //console.log(getCenteredCross(100));
-export { getStartingPrisons, getCenteredSquare, getNotKillableSlalom, getCenteredCross, getMixedCross };
+export { getStartingPrisons, getCenteredSquare, getMovingSlalom, getCenteredCross, getMixedCross };

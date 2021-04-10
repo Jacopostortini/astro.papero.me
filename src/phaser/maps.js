@@ -1,8 +1,8 @@
-import {getCenteredCross, getCenteredSquare, getNotKillableSlalom, getStartingPrisons, getMixedCross} from "../constants/mapConstants";
+import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons, getMixedCross} from "../constants/mapConstants";
 
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
-    [...getNotKillableSlalom(4)],
+    [...getMovingSlalom(4)],
     [...getCenteredCross(300, 100), ...getCenteredSquare(3)],
     [...getMixedCross()]
 ];
@@ -10,11 +10,14 @@ const maps = [
 export default (ctx) => {
     const map = maps[ctx.map];
     map.forEach(obj => {
+        let o;
        if(obj.killable){
-           ctx.killableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
+           o = ctx.killableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
        } else {
-           ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
+           o = ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
        }
+       if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
+       if(obj.bounce) o.setBounce(obj.bounce);
     });
     ctx.physics.add.collider(ctx.killableMapObjects, ctx.ships);
     ctx.physics.add.collider(ctx.notKillableMapObjects, ctx.ships);
