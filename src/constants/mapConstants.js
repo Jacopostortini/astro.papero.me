@@ -1,5 +1,4 @@
 import {gameDimensions} from "./gameSettings";
-//let gameDimensions = {width: 1200, height: 600};
 
 const getStartingPrisons = () => {
     const objs = [];
@@ -165,5 +164,4 @@ const getMovingVertical = (n) => {
     return objs;
 }
 
-//console.log(getCenteredCross(100));
 export { getStartingPrisons, getCenteredSquare, getMovingSlalom, getCenteredCross, getMovingVertical, getMixedOrizontalLine };

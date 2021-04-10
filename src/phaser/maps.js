@@ -1,10 +1,10 @@
-import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons, getMixedCross} from "../constants/mapConstants";
+import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons, getMovingVertical, getMixedOrizontalLine} from "../constants/mapConstants";
 
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
     [...getMovingSlalom(4)],
     [...getCenteredCross(500, 100), ...getCenteredSquare(3)],
-    [...getMixedCross()]
+    [...getMovingVertical(3), ...getMixedOrizontalLine()]
 ];
 
 export default (ctx) => {
