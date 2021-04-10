@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
-import {gameDimensions, normalizers, sceneKeys} from "../constants/gameSettings";
+import {gameDimensions, normalizers, powerUps, sceneKeys} from "../constants/gameSettings";
 import {detectTouchScreen} from "../constants/constants";
 import _ from "lodash";
 import createMap from "../phaser/maps";
@@ -12,10 +12,14 @@ export default class GameScene extends Phaser.Scene {
         this.timer = game.timer;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
+        this.admin = game.admin;
+        this.map = game.map;
         this.settings.maxVelocityLittle = game.settings.velocity+0.2;
         this.settings.accelerationLittle = 0.4;
         this.settings.respawnTime = 8000;
         this.settings.frictionAir = 0.1;
+        this.settings.powerUpVelocity = 10;
+        this.settings.powerUpAngularVelocity = 10;
         this.players = {};
         game.players.forEach(player => {
             this.players[player.localId] = _.cloneDeep(player);
@@ -32,6 +36,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.updateFps = 10;
         this.touchScreen = detectTouchScreen();
+        this.powerUpIds = 0;
         
         Phaser.Physics.Arcade.Group.prototype.killAll = function () {
             while(this.countActive()>0){
@@ -49,10 +54,10 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
         this.socket.on(websocketEvents.CHANGE_STATE, data => this.updateState(data));
         this.socket.on(websocketEvents.RELOAD, data => this.reload(data));
+        this.socket.on(websocketEvents.POWER_UP, data => this.powerUpEvent(data));
         this.socket.on(websocketEvents.END_TURN, data => {
             setTimeout(()=>{
-                clearInterval(this.updateShipInterval);
-                clearInterval(this.reloadInterval);
+                this.clearIntervals();
                 this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
             }, 2000);
         });
@@ -88,6 +93,9 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("block1", "./blocks/block1.png");
         this.load.image("block2", "./blocks/block2.png");
         this.load.image("block3", "./blocks/block3.png");
+
+        this.load.image("laser", "./powerUps/laser.png");
+        this.load.image("reverse", "./powerUps/reverse.png");
     }
 
     create(){
@@ -102,6 +110,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.setReloadInterval();
         this.setUpdateShipInterval();
+        if(this.admin === this.currentPlayer) this.setPowerUpInterval();
 
         this.setOnDestroy();
     }
@@ -146,6 +155,13 @@ export default class GameScene extends Phaser.Scene {
     createGroups(){
         this.ships = this.physics.add.group();
         this.bullets = this.physics.add.group();
+        this.powerUps = this.physics.add.group({
+            collideWorldBounds: true,
+            bounceX: 1,
+            bounceY: 1
+        });
+        this.killableMapObjects = this.physics.add.staticGroup();
+        this.notKillableMapObjects = this.physics.add.staticGroup();
     }
 
     createShips(){
@@ -215,6 +231,14 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 
+    createPowerUp(data){
+        const powerUp = this.powerUps.create(data.position.x, data.position.y, data.powerUp);
+        const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.powerUpVelocity);
+        powerUp.setVelocity(x, y);
+        powerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
+        powerUp.id = data.id;
+    }
+
 
 
 
@@ -238,6 +262,10 @@ export default class GameScene extends Phaser.Scene {
 
         player.lastTimestamp = data[3];
         player.ship.autonomyTime = deltaTime*1000;
+    }
+
+    powerUpEvent(data){
+        if(data.type === "create") this.createPowerUp(data);
     }
 
 
@@ -322,8 +350,7 @@ export default class GameScene extends Phaser.Scene {
         };
         if(state === 0) {
             data.killedBy = bullet.shotBy;
-            clearInterval(this.reloadInterval);
-            clearInterval(this.updateShipInterval);
+            this.clearIntervals(false);
         }
         this.socket.emit(websocketEvents.CHANGE_STATE, data);
         this.updateState(data);
@@ -450,12 +477,34 @@ export default class GameScene extends Phaser.Scene {
         }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
     }
 
+    setPowerUpInterval(){
+        this.powerUpInterval = setInterval(()=>{
+            const data = {
+                type: "create",
+                powerUp: powerUps[Math.floor(Math.random()*powerUps.length)],
+                position: {
+                    x: Phaser.Math.FloatBetween(0, gameDimensions.width),
+                    y: Phaser.Math.FloatBetween(0, gameDimensions.height)
+                },
+                angle: Phaser.Math.FloatBetween(0, 360),
+                id: ++this.powerUpIds
+            }
+            this.socket.emit(websocketEvents.POWER_UP, data);
+            this.powerUpEvent(data);
+        });
+    }
+
     setOnDestroy(){
         if(this.currentPlayer === null) return;
 
         this.events.on("destroy", ()=>{
-            clearInterval(this.updateShipInterval);
-            clearInterval(this.reloadInterval);
+            this.clearIntervals(true);
         });
+    }
+
+    clearIntervals(powerUp){
+        clearInterval(this.updateShipInterval);
+        clearInterval(this.reloadInterval);
+        if(powerUp) clearInterval(this.powerUpInterval);
     }
 }

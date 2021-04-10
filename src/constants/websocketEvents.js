@@ -18,6 +18,7 @@ export default {
     SHOOT: "shoot",
     CHANGE_STATE: "change-state",
     RELOAD: "reload",
+    POWER_UP: "power-up",
 
     START_TURN: "start-turn",
     READY_TURN: "ready-turn",

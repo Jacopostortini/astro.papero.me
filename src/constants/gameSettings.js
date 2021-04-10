@@ -24,4 +24,6 @@ const normalizers = {
     bulletVelocity: 200
 }
 
-export { sceneKeys, gameDimensions, defaultSettings, normalizers }
+const powerUps = ["laser", "reverse"];
+
+export { sceneKeys, gameDimensions, defaultSettings, normalizers, powerUps }
