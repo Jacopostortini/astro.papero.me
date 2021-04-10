@@ -278,15 +278,16 @@ export default class GameScene extends Phaser.Scene {
     powerUpEvent(data){
         console.log(data);
         if(data.type === "create") this.createPowerUp(data);
-
         else if(data.type === "get") {
-            this.powerUps.children.iterate(child => {
-                console.log(child);
+            const children = this.powerUps.getChildren();
+            for(let i=0; i<children.length; i++){
+                const child = children[i];
                 if(child.id === data.id){
                     this.powerUps.remove(child);
                     child.destroy();
+                    break;
                 }
-            });
+            }
             if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
         }
     }
