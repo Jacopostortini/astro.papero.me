@@ -58,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
         this.socket.on(websocketEvents.POWER_UP, data => this.powerUpEvent(data));
         this.socket.on(websocketEvents.END_TURN, data => {
             setTimeout(()=>{
-                this.clearIntervals();
+                this.clearIntervals(true);
                 this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
             }, 2000);
         });
