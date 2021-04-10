@@ -205,7 +205,7 @@ export default class GameScene extends Phaser.Scene {
                 });
 
                 this.physics.add.overlap(player.ship, this.powerUps, (ship, powerUp)=>{
-                    this.onPowerUpOverlap(powerUp, ship);
+                    this.onPowerUpOverlap(ship, powerUp);
                 });
 
                 this.physics.add.collider(player.ship, this.ships, (currentShip, ship)=>{
@@ -280,8 +280,12 @@ export default class GameScene extends Phaser.Scene {
         if(data.type === "create") this.createPowerUp(data);
 
         else if(data.type === "get") {
-            this.powerUps.remove(this.powerUpsObjects[data.id]);
-            this.powerUpsObjects[data.id].destroy();
+            this.powerUps.children.iterate(child => {
+                if(child.id === data.id){
+                    this.powerUps.remove(child);
+                    child.destroy();
+                }
+            });
             if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
         }
     }
@@ -387,7 +391,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onPowerUpOverlap(ship, powerUp){
-        if(this.players[this.currentPlayer].state < 2 ) return;
+        if(this.players[ship.localId].state < 2 ) return;
         const data = {
             type: "get",
             localId: ship.localId,
