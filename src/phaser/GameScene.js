@@ -161,8 +161,8 @@ export default class GameScene extends Phaser.Scene {
             bounceX: 1,
             bounceY: 1
         });
-        this.killableMapObjects = this.physics.add.staticGroup();
-        this.notKillableMapObjects = this.physics.add.staticGroup();
+        this.killableMapObjects = this.physics.add.group();
+        this.notKillableMapObjects = this.physics.add.group();
 
         this.physics.add.collider(this.powerUps, this.powerUps);
     }
