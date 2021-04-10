@@ -276,10 +276,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     powerUpEvent(data){
+        console.log(data);
         if(data.type === "create") this.createPowerUp(data);
 
         else if(data.type === "get") {
-            console.log("got power up")
             this.powerUps.remove(this.powerUpsObjects[data.id]);
             this.powerUpsObjects[data.id].destroy();
             if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
@@ -509,7 +509,7 @@ export default class GameScene extends Phaser.Scene {
 
     setPowerUpInterval(){
         this.powerUpInterval = setInterval(()=>{
-            if(Math.random()<0.5) return;
+            //if(Math.random()<0.5) return;
             const data = {
                 type: "create",
                 powerUp: powerUps[Math.floor(Math.random()*powerUps.length)],
