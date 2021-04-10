@@ -3,7 +3,7 @@ import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
     [...getMovingSlalom(4)],
-    [...getCenteredCross(300, 100), ...getCenteredSquare(3)],
+    [...getCenteredCross(500, 100), ...getCenteredSquare(3)],
     [...getMixedCross()]
 ];
 

@@ -64,7 +64,7 @@ const getMovingSlalom = (number) => {
             bounce: 1,
             velocity: {
                 x: 0,
-                y: 20
+                y: 30
             }
         });
     }
@@ -103,7 +103,7 @@ const getCenteredCross = (gapX, gapY=gapX) => {
     return objs;
 }
 
-const getMixedCross = () => {
+const getMixedOrizontalLine = () => {
     const objs = [
         {
             texture: "block3",
@@ -122,8 +122,8 @@ const getMixedCross = () => {
             }
         }
     ];
-    const numberOnX = Math.floor((gameDimensions.width - 400 - 64) / 2 / 64);
-    for(let i = 1; i < numberOnX; i++){
+    const n = Math.floor((gameDimensions.width - 400 - 64) / 2 / 64);
+    for(let i = 1; i < n; i++){
         objs.push({
             texture: "block1",
             killable: true,
@@ -141,15 +141,24 @@ const getMixedCross = () => {
             }
         });
     }
-    const numberOnY = Math.floor(gameDimensions.height/64);
-    for(let i = 0; i < numberOnY; i++){
+    return objs;
+}
+
+const getMovingVertical = (n) => {
+    const objs = [];
+    for(let i = 0; i < n; i++){
         objs.push({
             texture: "block1",
             killable: true,
             position: {
                 x: gameDimensions.width/2,
                 y: 32+64*i
-            }
+            },
+            velocity: {
+                x: 0,
+                y: 30
+            },
+            bounce: 1
         });
     }
 
@@ -157,4 +166,4 @@ const getMixedCross = () => {
 }
 
 //console.log(getCenteredCross(100));
-export { getStartingPrisons, getCenteredSquare, getMovingSlalom, getCenteredCross, getMixedCross };
+export { getStartingPrisons, getCenteredSquare, getMovingSlalom, getCenteredCross, getMovingVertical, getMixedOrizontalLine };
