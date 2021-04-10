@@ -26,6 +26,7 @@ export default class GameScene extends Phaser.Scene {
             this.players[player.localId].availableBullets = 3;
             this.players[player.localId].lastTimestamp = 0;
         });
+        this.powerUpsObjects = {};
     }
 
     constructor(socket, game) {
@@ -241,12 +242,12 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createPowerUp(data){
-        const powerUp = this.powerUps.create(data.position.x, data.position.y, data.powerUp);
+        this.powerUpsObjects[data.id] = this.powerUps.create(data.position.x, data.position.y, data.powerUp);
         const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.powerUpVelocity);
-        powerUp.setVelocity(x, y);
-        powerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
-        powerUp.id = data.id;
-        powerUp.powerUp = data.powerUp;
+        this.powerUpsObjects[data.id].setVelocity(x, y);
+        this.powerUpsObjects[data.id].setAngularVelocity(this.settings.powerUpAngularVelocity);
+        this.powerUpsObjects[data.id].id = data.id;
+        this.powerUpsObjects[data.id].powerUp = data.powerUp;
     }
 
 
@@ -278,12 +279,9 @@ export default class GameScene extends Phaser.Scene {
         if(data.type === "create") this.createPowerUp(data);
 
         else if(data.type === "get") {
-            this.powerUps.children.iterate(child => {
-                if(child.id === data.id) {
-                    this.powerUps.remove(child);
-                    child.destroy();
-                }
-            });
+            console.log("got power up")
+            this.powerUps.remove(this.powerUpsObjects[data.id]);
+            this.powerUpsObjects[data.id].destroy();
             if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
         }
     }
@@ -389,10 +387,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onPowerUpOverlap(ship, powerUp){
-        if(this.players[this.currentPlayer].state < 2 ) {
-            console.log(this.players[this.currentPlayer].state)
-            return;
-        }
+        if(this.players[this.currentPlayer].state < 2 ) return;
         const data = {
             type: "get",
             localId: ship.localId,
