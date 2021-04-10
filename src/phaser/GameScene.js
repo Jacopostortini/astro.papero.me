@@ -18,8 +18,8 @@ export default class GameScene extends Phaser.Scene {
         this.settings.accelerationLittle = 0.4;
         this.settings.respawnTime = 8000;
         this.settings.frictionAir = 0.1;
-        this.settings.powerUpVelocity = 10;
-        this.settings.powerUpAngularVelocity = 10;
+        this.settings.powerUpVelocity = 20;
+        this.settings.powerUpAngularVelocity = 20;
         this.players = {};
         game.players.forEach(player => {
             this.players[player.localId] = _.cloneDeep(player);
@@ -153,8 +153,12 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Creating things
     createGroups(){
-        this.ships = this.physics.add.group();
-        this.bullets = this.physics.add.group();
+        this.ships = this.physics.add.group({
+            collideWorldBounds: true
+        });
+        this.bullets = this.physics.add.group({
+            collideWorldBounds: true
+        });
         this.powerUps = this.physics.add.group({
             collideWorldBounds: true,
             bounceX: 1,
@@ -162,6 +166,8 @@ export default class GameScene extends Phaser.Scene {
         });
         this.killableMapObjects = this.physics.add.staticGroup();
         this.notKillableMapObjects = this.physics.add.staticGroup();
+
+        this.physics.add.collider(this.powerUps, this.powerUps);
     }
 
     createShips(){
@@ -191,12 +197,16 @@ export default class GameScene extends Phaser.Scene {
             player.ship.setAngle(-45  * ( order[index] < 2 ? 1 : 3) * ( ( order[index] % 2 ) * 2 - 1 ));
             player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
             player.ship.autonomyTime = 0;
-            player.ship.setCollideWorldBounds(true);
 
             if(player.localId===this.currentPlayer){
                 this.physics.add.overlap(player.ship, this.bullets, (ship, bullet) => {
                     this.onBulletCollision(ship, bullet);
                 });
+
+                this.physics.add.overlap(player.ship, this.powerUps, (ship, powerUp)=>{
+                    this.onPowerUpOverlap(powerUp, ship);
+                });
+
                 this.physics.add.collider(player.ship, this.ships, (currentShip, ship)=>{
                     if(this.players[this.currentPlayer].state === 1 && this.players[ship.localId].state >= 2){
                         const data = {
@@ -222,7 +232,6 @@ export default class GameScene extends Phaser.Scene {
         bullet.angle = data.angle;
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
-        bullet.setCollideWorldBounds(true);
         bullet.body.onWorldBounds = true;
         this.players[data.localId].availableBullets--;
         const firstAlive = this.players[data.localId].bulletsLoaded.getFirstAlive();
@@ -237,6 +246,7 @@ export default class GameScene extends Phaser.Scene {
         powerUp.setVelocity(x, y);
         powerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
         powerUp.id = data.id;
+        powerUp.powerUp = data.powerUp;
     }
 
 
@@ -266,6 +276,16 @@ export default class GameScene extends Phaser.Scene {
 
     powerUpEvent(data){
         if(data.type === "create") this.createPowerUp(data);
+
+        else if(data.type === "get") {
+            this.powerUps.children.iterate(child => {
+                if(child.id === data.id) {
+                    this.powerUps.remove(child);
+                    child.destroy();
+                }
+            });
+            if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
+        }
     }
 
 
@@ -366,6 +386,18 @@ export default class GameScene extends Phaser.Scene {
         } catch (e) {
             console.log(e);
         }
+    }
+
+    onPowerUpOverlap(ship, powerUp){
+        if(this.players[ship.localId].state < 2 ) return;
+        const data = {
+            type: "get",
+            localId: ship.localId,
+            powerUp: powerUp.powerUp,
+            id: powerUp.id
+        }
+        this.socket.emit(websocketEvents.POWER_UP, data);
+        this.powerUpEvent(data);
     }
 
 
@@ -479,6 +511,7 @@ export default class GameScene extends Phaser.Scene {
 
     setPowerUpInterval(){
         this.powerUpInterval = setInterval(()=>{
+            if(Math.random()<0.5) return;
             const data = {
                 type: "create",
                 powerUp: powerUps[Math.floor(Math.random()*powerUps.length)],
