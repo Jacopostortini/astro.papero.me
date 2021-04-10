@@ -8,7 +8,7 @@ const maps = [
 ];
 
 export default (ctx) => {
-    const map = maps[3];
+    const map = maps[ctx.map];
     map.forEach(obj => {
        if(obj.killable){
            ctx.killableMapObjects.create(obj.position.x, obj.position.y, obj.texture);

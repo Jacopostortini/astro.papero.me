@@ -260,8 +260,8 @@ export default class GameScene extends Phaser.Scene {
 
         let deltaTheta = data[1] - Number.parseInt(player.ship.angle);
 
-        if(deltaTheta < -10) deltaTheta += 360;
-        else if(deltaTheta < 0) deltaTheta = 0;
+        if(deltaTheta*Math.sign(this.settings.angularVelocity) < -10) deltaTheta += 360*Math.sign(this.settings.angularVelocity);
+        else if(deltaTheta*Math.sign(this.settings.angularVelocity) < 0) deltaTheta = 0;
         const angularVelocity = deltaTheta / deltaTime;
         player.ship.setAngularVelocity(angularVelocity);
 
