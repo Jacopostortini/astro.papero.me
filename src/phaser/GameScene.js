@@ -77,16 +77,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload(){
-
-        this.load.image("ship0", "./ships/ship0.png");
-        this.load.image("ship1", "./ships/ship1.png");
-        this.load.image("ship2", "./ships/ship2.png");
-        this.load.image("ship3", "./ships/ship3.png");
-
-        this.load.image("little0", "./littles/little0.png");
-        this.load.image("little1", "./littles/little1.png");
-        this.load.image("little2", "./littles/little2.png");
-        this.load.image("little3", "./littles/little3.png");
+        for(let i = 0; i < 4; i++){
+            this.load.image("ship"+i, "./ships/ship"+i+".png");
+            this.load.image("little"+i, "./littles/little"+i+".png");
+            this.load.image("shielded"+i, "./shielded/shielded"+i+".png");
+        }
 
         this.load.image("bullet", "./bullet.png");
         this.load.image("bullet-loaded", "./bullet-loaded.png");
@@ -95,8 +90,9 @@ export default class GameScene extends Phaser.Scene {
         this.load.image("block2", "./blocks/block2.png");
         this.load.image("block3", "./blocks/block3.png");
 
-        this.load.image("laser", "./powerUps/laser.png");
-        this.load.image("reverse", "./powerUps/reverse.png");
+        for(let i = 0; i < powerUps.length; i++){
+            this.load.image(powerUps[i], "./powerUps/"+ powerUps[i] +".png");
+        }
     }
 
     create(){
@@ -289,6 +285,14 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
             if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
+            else if(data.powerUp === "shield") {
+                const dataState = {
+                    localId: data.localId,
+                    state: 3
+                }
+                this.socket.emit(websocketEvents.CHANGE_STATE, dataState);
+                this.updateState(dataState);
+            }
         }
     }
 
@@ -361,6 +365,10 @@ export default class GameScene extends Phaser.Scene {
                 player.ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
                 player.ship.setTexture("ship" + this.players[data.localId].color);
                 player.bulletsLoaded.enableAll();
+                break;
+            case 3:
+                player.ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
+                player.ship.setTexture("shielded" + this.players[data.localId].color);
                 break;
         }
     }
