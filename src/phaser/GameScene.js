@@ -278,7 +278,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     powerUpEvent(data){
-        console.log(data);
         if(data.type === "create") this.createPowerUp(data);
         else if(data.type === "get") {
             const children = this.powerUps.getChildren();
@@ -298,6 +297,13 @@ export default class GameScene extends Phaser.Scene {
                 }
                 this.socket.emit(websocketEvents.CHANGE_STATE, dataState);
                 this.updateState(dataState);
+            } else if(data.powerUp === "reload"){
+                const data = {
+                    localId: data.localId,
+                    availableBullets: 3
+                };
+                this.socket.emit(websocketEvents.RELOAD, data);
+                this.reload(data);
             }
         }
     }
@@ -529,7 +535,7 @@ export default class GameScene extends Phaser.Scene {
 
     setPowerUpInterval(){
         this.powerUpInterval = setInterval(()=>{
-            //if(Math.random()<0.5) return;
+            if(Math.random()<0.5) return;
             const data = {
                 type: "create",
                 powerUp: powerUps[Math.floor(Math.random()*powerUps.length)],
