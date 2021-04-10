@@ -110,6 +110,8 @@ export default class GameScene extends Phaser.Scene {
         if(this.admin === this.currentPlayer) this.setPowerUpInterval();
 
         this.setOnDestroy();
+
+        this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 2);
     }
 
     update(time, delta){
@@ -252,7 +254,22 @@ export default class GameScene extends Phaser.Scene {
         this.powerUpsObjects[data.id].powerUp = data.powerUp;
     }
 
-
+    generatePowerUp({x, y}, n=1){
+        for(let i = 0; i < n; i++){
+            const data = {
+                type: "create",
+                powerUp: powerUps[Math.floor(Math.random()*powerUps.length)],
+                position: {
+                    x: x || Phaser.Math.FloatBetween(0, gameDimensions.width),
+                    y: y || Phaser.Math.FloatBetween(0, gameDimensions.height)
+                },
+                angle: Phaser.Math.FloatBetween(0, 360),
+                id: ++this.powerUpIds
+            }
+            this.socket.emit(websocketEvents.POWER_UP, data);
+            this.powerUpEvent(data);
+        }
+    }
 
 
 
@@ -298,12 +315,12 @@ export default class GameScene extends Phaser.Scene {
                 this.socket.emit(websocketEvents.CHANGE_STATE, dataState);
                 this.updateState(dataState);
             } else if(data.powerUp === "reload"){
-                const data = {
+                const dataReload = {
                     localId: data.localId,
                     availableBullets: 3
                 };
-                this.socket.emit(websocketEvents.RELOAD, data);
-                this.reload(data);
+                this.socket.emit(websocketEvents.RELOAD, dataReload);
+                this.reload(dataReload);
             }
         }
     }
@@ -536,18 +553,7 @@ export default class GameScene extends Phaser.Scene {
     setPowerUpInterval(){
         this.powerUpInterval = setInterval(()=>{
             if(Math.random()<0.5) return;
-            const data = {
-                type: "create",
-                powerUp: powerUps[Math.floor(Math.random()*powerUps.length)],
-                position: {
-                    x: Phaser.Math.FloatBetween(0, gameDimensions.width),
-                    y: Phaser.Math.FloatBetween(0, gameDimensions.height)
-                },
-                angle: Phaser.Math.FloatBetween(0, 360),
-                id: ++this.powerUpIds
-            }
-            this.socket.emit(websocketEvents.POWER_UP, data);
-            this.powerUpEvent(data);
+            this.generatePowerUp({});
         }, 5000);
     }
 
