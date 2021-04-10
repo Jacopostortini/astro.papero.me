@@ -552,9 +552,8 @@ export default class GameScene extends Phaser.Scene {
 
     setPowerUpInterval(){
         this.powerUpInterval = setInterval(()=>{
-            if(Math.random()<0.5) return;
-            this.generatePowerUp({});
-        }, 5000);
+            this.generatePowerUp({}, 2);
+        }, 7000);
     }
 
     setOnDestroy(){

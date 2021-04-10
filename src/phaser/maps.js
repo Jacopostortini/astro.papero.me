@@ -21,6 +21,8 @@ export default (ctx) => {
     });
     ctx.physics.add.collider(ctx.killableMapObjects, ctx.ships);
     ctx.physics.add.collider(ctx.notKillableMapObjects, ctx.ships);
+    ctx.physics.add.collider(ctx.killableMapObjects, ctx.powerUps);
+    ctx.physics.add.collider(ctx.notKillableMapObjects, ctx.powerUps);
     ctx.physics.add.overlap(ctx.killableMapObjects, ctx.bullets, (obj, bullet) => {
         obj.destroy();
         bullet.destroy();
