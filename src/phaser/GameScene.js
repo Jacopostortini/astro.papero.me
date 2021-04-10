@@ -389,7 +389,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onPowerUpOverlap(ship, powerUp){
-        if(this.players[this.currentPlayer].state < 2 ) return;
+        if(this.players[this.currentPlayer].state < 2 ) {
+            console.log(this.players[this.currentPlayer].state)
+            return;
+        }
         const data = {
             type: "get",
             localId: ship.localId,
