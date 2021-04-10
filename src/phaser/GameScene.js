@@ -281,6 +281,7 @@ export default class GameScene extends Phaser.Scene {
 
         else if(data.type === "get") {
             this.powerUps.children.iterate(child => {
+                console.log(child);
                 if(child.id === data.id){
                     this.powerUps.remove(child);
                     child.destroy();
