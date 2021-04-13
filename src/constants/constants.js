@@ -34,11 +34,17 @@ const strings = {
 
 const colors = ["green", "red", "white", "orange"];
 
-const config = (scene, parent, width, height, scaleMode=0) => {
+const config = (scene, parent, width, height, scaleMode=0, defaultPhysics = "arcade") => {
     return {
         type: Phaser.AUTO,
         physics: {
-            default: 'arcade'
+            default: defaultPhysics,
+            arcade: {
+                debug: true
+            },
+            matter: {
+                debug: true
+            }
         },
         canvasStyle:
             "border: 2px solid white;" +
