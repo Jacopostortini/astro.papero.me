@@ -220,7 +220,7 @@ export default class GameScene extends Phaser.Scene {
         newPowerUp.setCollisionCategory(this.powerUpsCategory);
         newPowerUp.id = data.id;
         this.matter.body.setInertia(newPowerUp.body, Infinity);
-
+        console.log(newPowerUp);
         this.powerUpsObjects.push(newPowerUp);
     }
 
@@ -400,6 +400,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onCurrentShipCollision(collision) {
+        console.log("collision:", collision);
         const player = this.players[this.currentPlayer];
         const body = getBodyFromCollision(player.ship, collision);
         if(body.collisionFilter.category === this.bulletsCategory){
