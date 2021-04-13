@@ -1,10 +1,16 @@
 import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
-import {gameDimensions, arcadeNormalizers, powerUps, sceneKeys} from "../constants/gameSettings";
-import {detectTouchScreen} from "../constants/constants";
+import {gameDimensions, arcadeNormalizers, powerUps, sceneKeys, matterNormalizers} from "../constants/gameSettings";
+import {detectTouchScreen, removeFromArray} from "../constants/constants";
 import _ from "lodash";
-import createMap from "../phaser/maps";
-import {loadImages, setInputHandlers} from "./scene";
+//import createMap from "../phaser/maps";
+import {
+    createBulletsLoadedObject,
+    getBodyFromCollision,
+    loadImages,
+    setInputHandlers,
+    velocityFromAngle
+} from "./scene";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -24,10 +30,10 @@ export default class GameScene extends Phaser.Scene {
         this.players = {};
         game.players.forEach(player => {
             this.players[player.localId] = _.cloneDeep(player);
-            this.players[player.localId].availableBullets = 3;
+            this.players[player.localId].availableBullets = this.maxBullets;
             this.players[player.localId].lastTimestamp = 0;
         });
-        this.powerUpsObjects = {};
+        this.powerUpsObjects = [];
     }
 
     constructor(socket, game) {
@@ -38,19 +44,11 @@ export default class GameScene extends Phaser.Scene {
 
         this.updateFps = 10;
         this.touchScreen = detectTouchScreen();
+        this.defaultImageOptions = {friction: 0, frictionAir: 0, frictionStatic: 0, ignoreGravity: true};
+        this.maxBullets = 3;
         this.powerUpIds = 0;
-        
-        Phaser.Physics.Arcade.Group.prototype.killAll = function () {
-            while(this.countActive()>0){
-                this.getFirstAlive().setActive(false).setVisible(false);
-            }
-        }
+        this.powerUpGenerationTime = 10000;
 
-        Phaser.Physics.Arcade.Group.prototype.enableAll = function () {
-            while(this.countActive()<3){
-                this.getFirstDead().setActive(true).setVisible(true);
-            }
-        }
 
         this.socket.on(websocketEvents.UPDATE_SHIP, data => this.updateShip(data));
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
@@ -82,13 +80,20 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        this.createGroups();
+        Phaser.Physics.Matter.Image.prototype.shapedSetOnCollide = function (callback) {
+            if (this.body && this.body.parts && this.body.parts.length) {
+                for (let part of this.body.parts) {
+                    part.onCollideCallback = callback;
+                }
+            }
+            return this.setOnCollide(callback);
+        }
+
+        this.createCategories();
         this.createShips();
-        createMap(this);
+        //createMap(this); TODO: REDO MAPS
 
         setInputHandlers(this, sceneKeys.game);
-
-        this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
         this.setReloadInterval();
         this.setUpdateShipInterval();
@@ -121,13 +126,13 @@ export default class GameScene extends Phaser.Scene {
                 bullet.y = y;
 
             });
-           if(player.localId!==this.currentPlayer){
-               player.ship.autonomyTime -= delta;
-               if(player.ship.autonomyTime<0) {
-                   player.ship.setVelocity(0);
-                   player.ship.setAngularVelocity(0);
-               }
-           }
+            if(player.localId!==this.currentPlayer){
+                player.ship.autonomyTime -= delta;
+                if(player.ship.autonomyTime<0) {
+                    player.ship.setVelocity(0);
+                    player.ship.setAngularVelocity(0);
+                }
+            }
         });
     }
 
@@ -136,28 +141,14 @@ export default class GameScene extends Phaser.Scene {
 
     //=============================================================================
     //Creating things
-    createGroups(){
-        this.ships = this.physics.add.group({
-            collideWorldBounds: true
-        });
-        this.bullets = this.physics.add.group({
-            collideWorldBounds: true
-        });
-        this.powerUps = this.physics.add.group({
-            collideWorldBounds: true,
-            bounceX: 1,
-            bounceY: 1
-        });
-        this.killableMapObjects = this.physics.add.group({
-            collideWorldBounds: true,
-            immovable: true
-        });
-        this.notKillableMapObjects = this.physics.add.group({
-            collideWorldBounds: true,
-            immovable: true
-        });
+    createCategories(){
+        this.shipsCategory = this.matter.world.nextCategory();
+        this.bulletsCategory = this.matter.world.nextCategory();
 
-        this.physics.add.collider(this.powerUps, this.powerUps);
+        this.powerUpsCategory = this.matter.world.nextCategory();
+
+        this.killableMapObjectCategory = this.matter.world.nextCategory();
+        this.notKillableMapObjectCategory = this.matter.world.nextCategory();
     }
 
     createShips(){
@@ -165,78 +156,64 @@ export default class GameScene extends Phaser.Scene {
         let index = 0;
         const textures = ["", "little", "ship", "shielded"];
         Object.values(this.players).forEach(player => {
-            player.ship = this.ships.create(
+            if(player.state === 0) return;
+
+            player.ship = this.matter.add.image(
                 (order[index]<2 ? 30 : gameDimensions.width-30),
                 ( order[index]%2 === 0 ? 30 : gameDimensions.height-30 ),
-                textures[player.state]+player.color
+                textures[player.state]+player.color,
+                null,
+                this.defaultImageOptions
             );
-            
-            if(player.state === 0) {
-                this.ships.killAndHide(player.ship);
-                this.ships.remove(player.ship);
-            }
-
-            player.bulletsLoaded = this.physics.add.group({
-                key: "bullet-loaded",
-                quantity: 3,
-                visible: player.state!==0,
-                active: player.state!==0
-            });
-
-            player.ship.localId = player.localId;
+            player.ship.setCollisionCategory(this.shipsCategory);
             player.ship.setAngle(-45  * ( order[index] < 2 ? 1 : 3) * ( ( order[index] % 2 ) * 2 - 1 ));
-            player.ship.velocityMagnitude = this.settings.velocity*arcadeNormalizers.velocity;
+            player.ship.velocityMagnitude = this.settings.velocity*matterNormalizers.velocity;
+            player.ship.localId = player.localId;
             player.ship.autonomyTime = 0;
+            this.matter.body.setInertia(player.ship.body, Infinity);
+
+            player.bulletsLoaded = createBulletsLoadedObject(this);
 
             if(player.localId===this.currentPlayer){
-                this.physics.add.overlap(player.ship, this.bullets, (ship, bullet) => {
-                    this.onBulletCollision(ship, bullet);
-                });
-
-                this.physics.add.overlap(player.ship, this.powerUps, (ship, powerUp)=>{
-                    this.onPowerUpOverlap(ship, powerUp);
-                });
-
-                this.physics.add.collider(player.ship, this.ships, (currentShip, ship)=>{
-                    if(this.players[this.currentPlayer].state === 1 && this.players[ship.localId].state >= 2){
-                        const data = {
-                            localId: this.currentPlayer,
-                            state: 0,
-                            killedBy: ship.localId
-                        };
-                        this.socket.emit(websocketEvents.CHANGE_STATE, data);
-                        this.updateState(data);
-                    }
+                player.ship.shapedSetOnCollide(collision => {
+                   this.onCurrentShipCollision(collision);
                 });
             }
 
             index++;
         });
-
-        this.physics.add.collider(this.ships, this.ships);
     }
 
     createBullet(data){
-        const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*arcadeNormalizers.bulletVelocity);
-        const bullet = this.bullets.create(data.position.x, data.position.y, "bullet");
-        bullet.angle = data.angle;
+        const {x, y} = velocityFromAngle(data.angle, this.settings.bulletVelocity*matterNormalizers.bulletVelocity);
+        const bullet = this.matter.add.image(
+            data.position.x,
+            data.position.y,
+            "bullet",
+            null,
+            this.defaultImageOptions
+        );
+        bullet.setCollisionCategory(this.bulletsCategory);
+        bullet.setCollidesWith([this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
+        bullet.setAngle(data.angle);
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
-        bullet.body.onWorldBounds = true;
         this.players[data.localId].availableBullets--;
-        const firstAlive = this.players[data.localId].bulletsLoaded.getFirstAlive();
-        if(firstAlive){
-            firstAlive.setActive(false).setVisible(false);
-        }
+        this.players[data.localId].bulletsLoaded.killFirstAlive();
+        this.matter.body.setInertia(bullet.body, Infinity);
     }
 
     createPowerUp(data){
-        this.powerUpsObjects[data.id] = this.powerUps.create(data.position.x, data.position.y, data.powerUp);
-        const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.powerUpVelocity);
-        this.powerUpsObjects[data.id].setVelocity(x, y);
-        this.powerUpsObjects[data.id].setAngularVelocity(this.settings.powerUpAngularVelocity);
-        this.powerUpsObjects[data.id].id = data.id;
-        this.powerUpsObjects[data.id].powerUp = data.powerUp;
+        const newPowerUp = this.matter.add.image(data.position.x, data.position.y, data.powerUp, null, this.defaultImageOptions);
+        const {x, y} = velocityFromAngle(data.angle, this.settings.powerUpVelocity);
+        newPowerUp.setVelocity(x, y);
+        newPowerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
+        newPowerUp.powerUp = data.powerUp;
+        newPowerUp.setCollisionCategory(this.powerUpsCategory);
+        newPowerUp.id = data.id;
+        this.matter.body.setInertia(newPowerUp.body, Infinity);
+
+        this.powerUpsObjects.push(newPowerUp);
     }
 
     createLaser(){
@@ -272,7 +249,7 @@ export default class GameScene extends Phaser.Scene {
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
 
-        let deltaTheta = data[1] - Number.parseInt(player.ship.angle);
+        let deltaTheta = data[1] - Math.floor(player.ship.angle);
 
         if(deltaTheta*Math.sign(this.settings.angularVelocity) < -10) deltaTheta += 360*Math.sign(this.settings.angularVelocity);
         else if(deltaTheta*Math.sign(this.settings.angularVelocity) < 0) deltaTheta = 0;
@@ -290,11 +267,10 @@ export default class GameScene extends Phaser.Scene {
         if(data.type === "create") this.createPowerUp(data);
         //Player gets power up
         else if(data.type === "get") {
-            const children = this.powerUps.getChildren();
-            for(let i=0; i<children.length; i++){
-                const child = children[i];
+            for(let i=0; i<this.powerUpsObjects.length; i++){
+                const child = this.powerUpsObjects[i];
                 if(child.id === data.id){
-                    this.powerUps.remove(child);
+                    this.powerUpsObjects = removeFromArray(this.powerUpsObjects, i);
                     child.destroy();
                     break;
                 }
@@ -315,7 +291,7 @@ export default class GameScene extends Phaser.Scene {
                 case "reload":
                     dataToSend = {
                         localId: data.localId,
-                        availableBullets: 3
+                        availableBullets: this.maxBullets
                     };
                     this.socket.emit(websocketEvents.RELOAD, dataToSend);
                     this.reload(dataToSend);
@@ -335,7 +311,9 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Current players does things
     rotate(delta){
-        this.players[this.currentPlayer].ship.angle += delta * this.settings.angularVelocity * arcadeNormalizers.angularVelocity;
+        this.players[this.currentPlayer].ship.setAngle(
+            this.players[this.currentPlayer].ship.angle + delta * this.settings.angularVelocity * matterNormalizers.angularVelocity
+        );
     }
 
     moveLittle(delta){
@@ -343,10 +321,10 @@ export default class GameScene extends Phaser.Scene {
         if(currentPlayer.state === 1){
             const ship = currentPlayer.ship;
             const previousMag = ship.velocityMagnitude;
-            if(previousMag < this.settings.maxVelocityLittle * arcadeNormalizers.velocity){
+            if(previousMag < this.settings.maxVelocityLittle * matterNormalizers.velocity){
                 currentPlayer.ship.velocityMagnitude += delta*this.settings.accelerationLittle;
             } else {
-                currentPlayer.ship.velocityMagnitude = this.settings.maxVelocityLittle * arcadeNormalizers.velocity;
+                currentPlayer.ship.velocityMagnitude = this.settings.maxVelocityLittle * matterNormalizers.velocity;
             }
         }
     }
@@ -363,17 +341,17 @@ export default class GameScene extends Phaser.Scene {
             angle: angle,
             localId: this.currentPlayer
         };
-        if(currentPlayer.ship.hasLaser){
+        /*if(currentPlayer.ship.hasLaser){
             data.type = "use";
             data.powerUp = "laser";
             this.socket.emit(websocketEvents.POWER_UP, data);
             this.createLaser(data);
-        } else {
+        } else {*/
             if(currentPlayer.availableBullets>0){
                 this.socket.emit(websocketEvents.SHOOT, data);
                 this.createBullet(data);
             }
-        }
+        //}
     }
 
 
@@ -382,8 +360,7 @@ export default class GameScene extends Phaser.Scene {
         const player = this.players[data.localId];
         switch (data.state) {
             case 0:
-                this.ships.killAndHide(player.ship);
-                this.ships.remove(player.ship);
+                player.ship.destroy();
                 this.players[data.localId].bulletsLoaded.killAll();
                 break;
             case 1:
@@ -403,14 +380,37 @@ export default class GameScene extends Phaser.Scene {
                 }
                 break;
             case 2:
-                player.ship.velocityMagnitude = this.settings.velocity * arcadeNormalizers.velocity;
+                player.ship.velocityMagnitude = this.settings.velocity * matterNormalizers.velocity;
                 player.ship.setTexture("ship" + this.players[data.localId].color);
                 player.bulletsLoaded.enableAll();
                 break;
             case 3:
-                player.ship.velocityMagnitude = this.settings.velocity * arcadeNormalizers.velocity;
+                player.ship.velocityMagnitude = this.settings.velocity * matterNormalizers.velocity;
                 player.ship.setTexture("shielded" + this.players[data.localId].color);
                 break;
+        }
+    }
+
+    onCurrentShipCollision(collision) {
+        const player = this.players[this.currentPlayer];
+        const body = getBodyFromCollision(player.ship, collision);
+        if(body.collisionFilter.category === this.bulletsCategory){
+            //collision with a bullet
+            this.onBulletCollision(player.ship, body.gameObject);
+        } else if(body.collisionFilter.category === this.powerUpsCategory){
+            //Collision with power up
+            this.onPowerUpCollision(player.ship, body.gameObject);
+        } else if(body.collisionFilter.category === this.shipsCategory){
+            //Collision with ship
+            if(this.players[this.currentPlayer].state === 1 && this.players[body.gameObject.localId].state >= 2){
+                const data = {
+                    localId: this.currentPlayer,
+                    state: 0,
+                    killedBy: body.gameObject.localId
+                };
+                this.socket.emit(websocketEvents.CHANGE_STATE, data);
+                this.updateState(data);
+            }
         }
     }
 
@@ -432,16 +432,10 @@ export default class GameScene extends Phaser.Scene {
 
     reload(data){
         this.players[data.localId].availableBullets = data.availableBullets;
-        try{
-            while(this.players[data.localId].bulletsLoaded.countActive() < data.availableBullets){
-                this.players[data.localId].bulletsLoaded.getFirstDead().setActive(true).setVisible(true);
-            }
-        } catch (e) {
-            console.log(e);
-        }
+        this.players[data.localId].bulletsLoaded.enableTo(data.availableBullets);
     }
 
-    onPowerUpOverlap(ship, powerUp){
+    onPowerUpCollision(ship, powerUp){
         if(this.players[ship.localId].state < 2 ) return;
         const data = {
             type: "get",
@@ -457,7 +451,7 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Game loop functions
     setCurrentPlayerNewVelocity(){
-        const {x, y} = this.physics.velocityFromAngle(
+        const {x, y} = velocityFromAngle(
             this.players[this.currentPlayer].ship.angle,
             this.players[this.currentPlayer].ship.velocityMagnitude
         );
@@ -501,7 +495,7 @@ export default class GameScene extends Phaser.Scene {
         this.updateShipInterval = setInterval(()=>{
             this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
-                Number.parseInt(currentPlayer.ship.angle),
+                Math.floor(currentPlayer.ship.angle),
                 [
                     Number.parseFloat(currentPlayer.ship.x.toFixed(2)),
                     Number.parseFloat(currentPlayer.ship.y.toFixed(2))
@@ -516,7 +510,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.reloadInterval = setInterval(() => {
             if(this.players[this.currentPlayer].state<2) return;
-            const availableBullets = Math.min(3, this.players[this.currentPlayer].availableBullets + 1);
+            const availableBullets = Math.min(this.maxBullets, this.players[this.currentPlayer].availableBullets + 1);
             const data = {
                 localId: this.currentPlayer,
                 availableBullets
@@ -529,7 +523,7 @@ export default class GameScene extends Phaser.Scene {
     setPowerUpInterval(){
         this.powerUpInterval = setInterval(()=>{
             this.generatePowerUp({}, 2);
-        }, 10000);
+        }, this.powerUpGenerationTime);
     }
 
     setOnDestroy(){

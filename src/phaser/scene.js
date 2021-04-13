@@ -74,7 +74,62 @@ const setInputHandlers = (ctx, key) => {
     }
 }
 
+const createBulletsLoadedObject = (ctx) => {
+    const obj = {
+        gameObjects: [],
+        killAll() {
+            this.gameObjects.forEach(bullet => {
+                bullet.setVisible(false);
+                bullet.setActive(false);
+            });
+        },
+        enableAll() {
+            this.gameObjects.forEach(bullet => {
+                bullet.setVisible(true);
+                bullet.setActive(true);
+            });
+        },
+        enableFirstDead() {
+            for (let i = 0; i < this.gameObjects.length; i++) {
+                const o = this.gameObjects[i];
+                if (!o.visible && !o.active) {
+                    o.setVisible(true);
+                    o.setActive(true);
+                    return;
+                }
+            }
+        },
+        killFirstAlive() {
+            for (let i = 0; i < this.gameObjects.length; i++) {
+                const o = this.gameObjects[i];
+                if (o.visible && o.active) {
+                    o.setVisible(false);
+                    o.setActive(false);
+                    return;
+                }
+            }
+        },
+        enableTo(number){
+            this.killAll();
+            for(let i = 0; i < number; i++) this.enableFirstDead();
+        }
+    }
+
+    for(let i = 0; i < ctx.maxBullets; i++){
+        const bulletLoaded = ctx.matter.add.image(0, 0, "bullet-loaded", null, this.defaultImageOptions);
+        bulletLoaded.setCollidesWith([]);
+        obj.gameObjects.push(bulletLoaded);
+    }
+
+    return obj;
+}
+
+const getBodyFromCollision = (ship, collision) => {
+    if(Object.is(collision.bodyA, ship)) return collision.bodyB;
+    else return collision.bodyA;
+}
 
 
 
-export { loadImages, velocityFromAngle, setInputHandlers }
+
+export { loadImages, velocityFromAngle, setInputHandlers, createBulletsLoadedObject, getBodyFromCollision }

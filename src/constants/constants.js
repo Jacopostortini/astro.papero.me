@@ -43,7 +43,8 @@ const config = (scene, parent, width, height, scaleMode=0, defaultPhysics = "arc
                 debug: true
             },
             matter: {
-                debug: true
+                debug: true,
+                setBounds: true
             }
         },
         canvasStyle:
@@ -68,6 +69,12 @@ const detectTouchScreen = ()=>{
     }
 }
 
+const removeFromArray = (array, index) => {
+    const a = array.slice(0, index);
+    const b = array.slice(index+1, array.length);
+    return a.concat(b);
+}
+
 let baseUrl = "https://papero.me";
 const urls = {
     baseUrl: "https://papero.me",
@@ -78,4 +85,4 @@ const urls = {
     getGameStatusUrl: baseUrl+"/server/cosmos/games/status_by_id"
 }
 
-export { strings, colors, config, detectTouchScreen, urls }
+export { strings, colors, config, detectTouchScreen, removeFromArray, urls }
