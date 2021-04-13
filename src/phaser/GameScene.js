@@ -89,6 +89,8 @@ export default class GameScene extends Phaser.Scene {
             return this.setOnCollide(callback);
         }
 
+        this.shapes = this.cache.json.get("shape");
+
         this.createCategories();
         this.createShips();
         //createMap(this); TODO: REDO MAPS
@@ -162,7 +164,10 @@ export default class GameScene extends Phaser.Scene {
                 ( order[index]%2 === 0 ? 30 : gameDimensions.height-30 ),
                 textures[player.state]+player.color,
                 null,
-                this.defaultImageOptions
+                {
+                    ...this.defaultImageOptions,
+                    shape: this.shapes.ship
+                }
             );
             player.ship.setCollisionCategory(this.shipsCategory);
             player.ship.setAngle(-45  * ( order[index] < 2 ? 1 : 3) * ( ( order[index] % 2 ) * 2 - 1 ));
@@ -349,6 +354,7 @@ export default class GameScene extends Phaser.Scene {
             this.createLaser(data);
         } else {*/
             if(currentPlayer.availableBullets>0){
+                console.log("shoot1");
                 this.socket.emit(websocketEvents.SHOOT, data);
                 this.createBullet(data);
             }

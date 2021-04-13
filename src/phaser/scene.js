@@ -22,6 +22,8 @@ const loadImages = (ctx, key) => {
     }
 
     if(key === sceneKeys.game){
+        ctx.load.json("shapes", "./shapes.json");
+
         for(let i = 0; i < powerUps.length; i++){
             ctx.load.image(powerUps[i], "./powerUps/"+ powerUps[i] +".png");
         }
