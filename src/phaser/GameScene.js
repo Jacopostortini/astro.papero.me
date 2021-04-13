@@ -25,7 +25,7 @@ export default class GameScene extends Phaser.Scene {
         this.settings.accelerationLittle = 0.4;
         this.settings.respawnTime = 8000;
         this.settings.frictionAir = 0.1;
-        this.settings.powerUpVelocity = 30;
+        this.settings.powerUpVelocity = 5;
         this.settings.powerUpAngularVelocity = 20;
         this.players = {};
         game.players.forEach(player => {

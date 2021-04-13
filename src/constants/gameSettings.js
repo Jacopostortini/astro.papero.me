@@ -26,7 +26,7 @@ const arcadeNormalizers = {
 
 const matterNormalizers = {
     velocity: 1,
-    angularVelocity: 0.005,
+    angularVelocity: 0.15,
     reloadingVelocity: 1/2000,
     bulletVelocity: 2
 }
