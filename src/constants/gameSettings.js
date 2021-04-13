@@ -25,10 +25,10 @@ const arcadeNormalizers = {
 }
 
 const matterNormalizers = {
-    velocity: 100,
-    angularVelocity: 0.15,
+    velocity: 1,
+    angularVelocity: 0.005,
     reloadingVelocity: 1/2000,
-    bulletVelocity: 200
+    bulletVelocity: 2
 }
 
 const powerUps = ["laser", "reverse", "shield", "reload"];
