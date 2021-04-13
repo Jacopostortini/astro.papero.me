@@ -189,7 +189,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBullet(data){
-        console.log("createBullet(", data);
         const {x, y} = velocityFromAngle(data.angle, this.settings.bulletVelocity*matterNormalizers.bulletVelocity);
         const bullet = this.matter.add.image(
             data.position.x,
@@ -339,7 +338,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     shoot(){
-        console.log("shoot");
         const currentPlayer = this.players[this.currentPlayer];
         const ship = currentPlayer.ship;
         const angle = ship.angle;
@@ -357,10 +355,7 @@ export default class GameScene extends Phaser.Scene {
             this.socket.emit(websocketEvents.POWER_UP, data);
             this.createLaser(data);
         } else {
-            console.log("shooting");
-            console.log("current player: ", currentPlayer)
             if(currentPlayer.availableBullets>0){
-                console.log("shoot1");
                 this.socket.emit(websocketEvents.SHOOT, data);
                 this.createBullet(data);
             }

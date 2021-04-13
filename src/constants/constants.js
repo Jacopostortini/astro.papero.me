@@ -39,11 +39,8 @@ const config = (scene, parent, width, height, scaleMode=0, defaultPhysics = "arc
         type: Phaser.AUTO,
         physics: {
             default: defaultPhysics,
-            arcade: {
-                debug: true
-            },
             matter: {
-                debug: true,
+                debug: false,
                 setBounds: true
             }
         },
