@@ -25,7 +25,7 @@ export default class GameScene extends Phaser.Scene {
         this.settings.accelerationLittle = 0.4;
         this.settings.respawnTime = 8000;
         this.settings.frictionAir = 0.1;
-        this.settings.powerUpVelocity = 5;
+        this.settings.powerUpVelocity = 3;
         this.settings.powerUpAngularVelocity = 0.1;
         this.players = {};
         game.players.forEach(player => {
@@ -209,7 +209,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createPowerUp(data){
-        const newPowerUp = this.matter.add.image(data.position.x, data.position.y, data.powerUp, null, this.defaultImageOptions);
+        const newPowerUp = this.matter.add.image(data.position.x, data.position.y, data.powerUp, null,
+            {
+                ...this.defaultImageOptions,
+                shape: this.shapes[data.powerUp]
+            });
         const {x, y} = velocityFromAngle(data.angle, this.settings.powerUpVelocity);
         newPowerUp.setVelocity(x, y);
         newPowerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
@@ -347,18 +351,20 @@ export default class GameScene extends Phaser.Scene {
             angle: angle,
             localId: this.currentPlayer
         };
-        /*if(currentPlayer.ship.hasLaser){
+        if(currentPlayer.ship.hasLaser){
             data.type = "use";
             data.powerUp = "laser";
             this.socket.emit(websocketEvents.POWER_UP, data);
             this.createLaser(data);
-        } else {*/
+        } else {
+            console.log("shooting");
+            console.log("current player: ", currentPlayer)
             if(currentPlayer.availableBullets>0){
                 console.log("shoot1");
                 this.socket.emit(websocketEvents.SHOOT, data);
                 this.createBullet(data);
             }
-        //}
+        }
     }
 
 
