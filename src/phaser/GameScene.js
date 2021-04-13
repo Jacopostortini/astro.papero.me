@@ -40,7 +40,6 @@ export default class GameScene extends Phaser.Scene {
         super({key: sceneKeys.game});
 
         this.socket = socket;
-        this.setUpGame(game);
 
         this.updateFps = 10;
         this.touchScreen = detectTouchScreen();
@@ -49,6 +48,7 @@ export default class GameScene extends Phaser.Scene {
         this.powerUpIds = 0;
         this.powerUpGenerationTime = 10000;
 
+        this.setUpGame(game);
 
         this.socket.on(websocketEvents.UPDATE_SHIP, data => this.updateShip(data));
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
