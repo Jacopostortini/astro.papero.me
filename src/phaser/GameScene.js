@@ -4,6 +4,7 @@ import {gameDimensions, normalizers, powerUps, sceneKeys} from "../constants/gam
 import {detectTouchScreen} from "../constants/constants";
 import _ from "lodash";
 import createMap from "../phaser/maps";
+import {loadImages} from "./scene";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -77,22 +78,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload(){
-        for(let i = 0; i < 4; i++){
-            this.load.image("ship"+i, "./ships/ship"+i+".png");
-            this.load.image("little"+i, "./littles/little"+i+".png");
-            this.load.image("shielded"+i, "./shielded/shielded"+i+".png");
-        }
-
-        this.load.image("bullet", "./bullet.png");
-        this.load.image("bullet-loaded", "./bullet-loaded.png");
-
-        this.load.image("block1", "./blocks/block1.png");
-        this.load.image("block2", "./blocks/block2.png");
-        this.load.image("block3", "./blocks/block3.png");
-
-        for(let i = 0; i < powerUps.length; i++){
-            this.load.image(powerUps[i], "./powerUps/"+ powerUps[i] +".png");
-        }
+        loadImages(this, sceneKeys.game);
     }
 
     create(){
@@ -178,7 +164,7 @@ export default class GameScene extends Phaser.Scene {
     createShips(){
         const order = [0, 3, 2, 1];
         let index = 0;
-        const textures = ["", "little", "ship"];
+        const textures = ["", "little", "ship", "shielded"];
         Object.values(this.players).forEach(player => {
             player.ship = this.ships.create(
                 (order[index]<2 ? 30 : gameDimensions.width-30),
@@ -254,6 +240,12 @@ export default class GameScene extends Phaser.Scene {
         this.powerUpsObjects[data.id].powerUp = data.powerUp;
     }
 
+    createLaser(){
+        //const maxLength = Math.sqrt( Math.pow(gameDimensions.width, 2) + Math.pow(gameDimensions.height, 2) );
+
+
+    }
+
     generatePowerUp({x, y}, n=1){
         for(let i = 0; i < n; i++){
             const data = {
@@ -295,7 +287,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     powerUpEvent(data){
+        //Create power up item
         if(data.type === "create") this.createPowerUp(data);
+        //Player gets power up
         else if(data.type === "get") {
             const children = this.powerUps.getChildren();
             for(let i=0; i<children.length; i++){
@@ -306,22 +300,34 @@ export default class GameScene extends Phaser.Scene {
                     break;
                 }
             }
-            if(data.powerUp === "reverse") this.settings.angularVelocity *= -1;
-            else if(data.powerUp === "shield") {
-                const dataState = {
-                    localId: data.localId,
-                    state: 3
-                }
-                this.socket.emit(websocketEvents.CHANGE_STATE, dataState);
-                this.updateState(dataState);
-            } else if(data.powerUp === "reload"){
-                const dataReload = {
-                    localId: data.localId,
-                    availableBullets: 3
-                };
-                this.socket.emit(websocketEvents.RELOAD, dataReload);
-                this.reload(dataReload);
+            let dataToSend;
+            switch (data.powerUp){
+                case "reverse":
+                    this.settings.angularVelocity *= -1;
+                    break;
+                case "shield":
+                    dataToSend = {
+                        localId: data.localId,
+                        state: 3
+                    }
+                    this.socket.emit(websocketEvents.CHANGE_STATE, dataToSend);
+                    this.updateState(dataToSend);
+                    break;
+                case "reload":
+                    dataToSend = {
+                        localId: data.localId,
+                        availableBullets: 3
+                    };
+                    this.socket.emit(websocketEvents.RELOAD, dataToSend);
+                    this.reload(dataToSend);
+                    break;
+                case "laser":
+                    this.players[data.localId].ship.hasLaser = true;
             }
+        }
+        //Player uses power up
+        else if(data.type === "use") {
+            if (data.powerUp === "laser") this.createLaser(data);
         }
     }
 
@@ -348,19 +354,26 @@ export default class GameScene extends Phaser.Scene {
 
     shoot(){
         const currentPlayer = this.players[this.currentPlayer];
-        if(currentPlayer.availableBullets>0){
-            const ship = currentPlayer.ship;
-            const angle = ship.angle;
-            const data = {
-                position: {
-                    x: ship.x + ship.width*Math.cos(angle * Math.PI / 180),
-                    y: ship.y + ship.height*Math.sin(angle * Math.PI / 180)
-                },
-                angle: angle,
-                localId: this.currentPlayer
-            };
-            this.socket.emit(websocketEvents.SHOOT, data);
-            this.createBullet(data);
+        const ship = currentPlayer.ship;
+        const angle = ship.angle;
+        const data = {
+            position: {
+                x: ship.x + ship.width*Math.cos(angle * Math.PI / 180),
+                y: ship.y + ship.height*Math.sin(angle * Math.PI / 180)
+            },
+            angle: angle,
+            localId: this.currentPlayer
+        };
+        if(currentPlayer.ship.hasLaser){
+            data.type = "use";
+            data.powerUp = "laser";
+            this.socket.emit(websocketEvents.POWER_UP, data);
+            this.createLaser(data);
+        } else {
+            if(currentPlayer.availableBullets>0){
+                this.socket.emit(websocketEvents.SHOOT, data);
+                this.createBullet(data);
+            }
         }
     }
 
