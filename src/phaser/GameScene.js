@@ -89,7 +89,7 @@ export default class GameScene extends Phaser.Scene {
             return this.setOnCollide(callback);
         }
 
-        this.shapes = this.cache.json.get("shape");
+        this.shapes = this.cache.json.get("shapes");
 
         this.createCategories();
         this.createShips();
