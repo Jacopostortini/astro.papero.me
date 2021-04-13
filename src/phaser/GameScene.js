@@ -120,11 +120,10 @@ export default class GameScene extends Phaser.Scene {
                 x: (topLeft.x + bottomLeft.x) / 2,
                 y: (topLeft.y + bottomLeft.y) / 2
             }
-            player.bulletsLoaded.children.iterate((bullet, index)=>{
+            player.bulletsLoaded.gameObjects.forEach((bullet, index)=>{
                 const {x, y} = this.getLoadedBulletPosition(index, topLeft, bottomLeft, centerLeft, player);
                 bullet.x = x;
                 bullet.y = y;
-
             });
             if(player.localId!==this.currentPlayer){
                 player.ship.autonomyTime -= delta;
