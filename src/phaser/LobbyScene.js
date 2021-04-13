@@ -91,7 +91,7 @@ export default class LobbyScene extends Phaser.Scene {
                 });
             });
         }
-        if(this.lobby.currentPlayer!==null && (this.keySpace.isDown || this.rotating)){
+        if(this.lobby.currentPlayer!==null && (this.rotationKey.isDown || this.rotating)){
             this.ships[this.lobby.currentPlayer].angle += this.lobby.settings.angularVelocity* normalizers.angularVelocity * delta;
             const {x, y} = this.physics.velocityFromAngle(this.ships[this.lobby.currentPlayer].angle, this.lobby.settings.velocity* normalizers.velocity);
             this.ships[this.lobby.currentPlayer].setVelocity(x, y);
