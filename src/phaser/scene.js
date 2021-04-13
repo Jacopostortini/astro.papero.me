@@ -45,7 +45,9 @@ const setInputHandlers = (ctx, key) => {
     ctx.rotationKey = ctx.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     ctx.accelerateLittleKey = ctx.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     ctx.input.keyboard.on("keyup-ENTER", ()=>{
-        if(ctx.players[ctx.currentPlayer].state>=2) ctx.shoot();
+        if(key === sceneKeys.game){
+            if(ctx.players[ctx.currentPlayer].state>=2) ctx.shoot();
+        } else if(key === sceneKeys.lobby) ctx.shoot();
     });
 
     if(ctx.touchScreen){
@@ -55,10 +57,10 @@ const setInputHandlers = (ctx, key) => {
             if (pointer.x < width / 2) {
                 ctx.rotating = true;
             } else {
-                if (ctx.players[ctx.currentPlayer].state >= 2) ctx.shoot();
-                else {
-                    ctx.accelerating = true;
-                }
+                if(key === sceneKeys.game){
+                    if(ctx.players[ctx.currentPlayer].state>=2) ctx.shoot();
+                    else ctx.accelerating = true;
+                } else if(key === sceneKeys.lobby) ctx.shoot();
             }
         });
 

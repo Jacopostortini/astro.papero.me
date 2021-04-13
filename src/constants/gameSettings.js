@@ -17,7 +17,14 @@ const defaultSettings = {
     bulletVelocity: 2
 }
 
-const normalizers = {
+const arcadeNormalizers = {
+    velocity: 100,
+    angularVelocity: 0.15,
+    reloadingVelocity: 1/2000,
+    bulletVelocity: 200
+}
+
+const matterNormalizers = {
     velocity: 100,
     angularVelocity: 0.15,
     reloadingVelocity: 1/2000,
@@ -26,4 +33,4 @@ const normalizers = {
 
 const powerUps = ["laser", "reverse", "shield", "reload"];
 
-export { sceneKeys, gameDimensions, defaultSettings, normalizers, powerUps }
+export { sceneKeys, gameDimensions, defaultSettings, arcadeNormalizers, matterNormalizers, powerUps }

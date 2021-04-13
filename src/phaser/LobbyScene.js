@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
-import {defaultSettings, normalizers, sceneKeys} from "../constants/gameSettings";
+import {defaultSettings, arcadeNormalizers, sceneKeys} from "../constants/gameSettings";
 import {detectTouchScreen} from "../constants/constants";
 import {loadImages, setInputHandlers, velocityFromAngle} from "./scene";
 
@@ -91,9 +91,9 @@ export default class LobbyScene extends Phaser.Scene {
                 });
             });
         }
-        if(this.lobby.currentPlayer!==null && (this.keySpace.isDown || this.rotating)){
-            this.ships[this.lobby.currentPlayer].angle += this.lobby.settings.angularVelocity* normalizers.angularVelocity * delta;
-            const {x, y} = this.physics.velocityFromAngle(this.ships[this.lobby.currentPlayer].angle, this.lobby.settings.velocity* normalizers.velocity);
+        if(this.lobby.currentPlayer!==null && (this.rotationKey.isDown || this.rotating)){
+            this.ships[this.lobby.currentPlayer].angle += this.lobby.settings.angularVelocity* arcadeNormalizers.angularVelocity * delta;
+            const {x, y} = this.physics.velocityFromAngle(this.ships[this.lobby.currentPlayer].angle, this.lobby.settings.velocity* arcadeNormalizers.velocity);
             this.ships[this.lobby.currentPlayer].setVelocity(x, y);
         }
     }
@@ -113,7 +113,7 @@ export default class LobbyScene extends Phaser.Scene {
         const posY = Phaser.Math.Between(0, this.height);
         const ship = this.physics.add.sprite(posX, posY, "ship"+color);
         const angle = Phaser.Math.Between(45, 135);
-        const {x, y} = this.physics.velocityFromAngle(angle, this.lobby.settings.velocity*normalizers.velocity)
+        const {x, y} = this.physics.velocityFromAngle(angle, this.lobby.settings.velocity*arcadeNormalizers.velocity)
         ship.setVelocity(x, y);
         ship.angle = angle;
         ship.setCollideWorldBounds(true);
@@ -150,7 +150,7 @@ export default class LobbyScene extends Phaser.Scene {
         currentlyPlayingIds.forEach(id => {
             if(previousPlayingIds.includes(id)){
                 newShips[id] = this.ships[id];
-                const {x, y} = this.physics.velocityFromAngle(newShips[id].angle, this.lobby.settings.velocity * normalizers.velocity);
+                const {x, y} = this.physics.velocityFromAngle(newShips[id].angle, this.lobby.settings.velocity * arcadeNormalizers.velocity);
                 newShips[id].setVelocity(x, y);
                 newShips[id].setTexture("ship"+this.findPlayerById(id).color);
             } else {
@@ -173,7 +173,7 @@ export default class LobbyScene extends Phaser.Scene {
             "bullet"
         );
         bullet.angle = data.angle;
-        const {x, y} = velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*normalizers.bulletVelocity);
+        const {x, y} = velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*arcadeNormalizers.bulletVelocity);
         bullet.setVelocity(x, y);
         this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
         this.availableBullets--;
@@ -204,9 +204,9 @@ export default class LobbyScene extends Phaser.Scene {
                 }
             }
             clearInterval(this.reloadInterval)
-            this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
+            this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*arcadeNormalizers.reloadingVelocity));
         }
-        this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
+        this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*arcadeNormalizers.reloadingVelocity));
     }
 
     setOnDestroy(){

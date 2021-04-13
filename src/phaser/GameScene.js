@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
-import {gameDimensions, normalizers, powerUps, sceneKeys} from "../constants/gameSettings";
+import {gameDimensions, arcadeNormalizers, powerUps, sceneKeys} from "../constants/gameSettings";
 import {detectTouchScreen} from "../constants/constants";
 import _ from "lodash";
 import createMap from "../phaser/maps";
@@ -185,7 +185,7 @@ export default class GameScene extends Phaser.Scene {
 
             player.ship.localId = player.localId;
             player.ship.setAngle(-45  * ( order[index] < 2 ? 1 : 3) * ( ( order[index] % 2 ) * 2 - 1 ));
-            player.ship.velocityMagnitude = this.settings.velocity*normalizers.velocity;
+            player.ship.velocityMagnitude = this.settings.velocity*arcadeNormalizers.velocity;
             player.ship.autonomyTime = 0;
 
             if(player.localId===this.currentPlayer){
@@ -217,7 +217,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBullet(data){
-        const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*normalizers.bulletVelocity);
+        const {x, y} = this.physics.velocityFromAngle(data.angle, this.settings.bulletVelocity*arcadeNormalizers.bulletVelocity);
         const bullet = this.bullets.create(data.position.x, data.position.y, "bullet");
         bullet.angle = data.angle;
         bullet.setVelocity(x, y);
@@ -335,7 +335,7 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Current players does things
     rotate(delta){
-        this.players[this.currentPlayer].ship.angle += delta * this.settings.angularVelocity * normalizers.angularVelocity;
+        this.players[this.currentPlayer].ship.angle += delta * this.settings.angularVelocity * arcadeNormalizers.angularVelocity;
     }
 
     moveLittle(delta){
@@ -343,10 +343,10 @@ export default class GameScene extends Phaser.Scene {
         if(currentPlayer.state === 1){
             const ship = currentPlayer.ship;
             const previousMag = ship.velocityMagnitude;
-            if(previousMag < this.settings.maxVelocityLittle * normalizers.velocity){
+            if(previousMag < this.settings.maxVelocityLittle * arcadeNormalizers.velocity){
                 currentPlayer.ship.velocityMagnitude += delta*this.settings.accelerationLittle;
             } else {
-                currentPlayer.ship.velocityMagnitude = this.settings.maxVelocityLittle * normalizers.velocity;
+                currentPlayer.ship.velocityMagnitude = this.settings.maxVelocityLittle * arcadeNormalizers.velocity;
             }
         }
     }
@@ -403,12 +403,12 @@ export default class GameScene extends Phaser.Scene {
                 }
                 break;
             case 2:
-                player.ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
+                player.ship.velocityMagnitude = this.settings.velocity * arcadeNormalizers.velocity;
                 player.ship.setTexture("ship" + this.players[data.localId].color);
                 player.bulletsLoaded.enableAll();
                 break;
             case 3:
-                player.ship.velocityMagnitude = this.settings.velocity * normalizers.velocity;
+                player.ship.velocityMagnitude = this.settings.velocity * arcadeNormalizers.velocity;
                 player.ship.setTexture("shielded" + this.players[data.localId].color);
                 break;
         }
@@ -523,7 +523,7 @@ export default class GameScene extends Phaser.Scene {
             };
             this.socket.emit(websocketEvents.RELOAD, data);
             this.reload(data);
-        }, 1/(this.settings.reloadingVelocity * normalizers.reloadingVelocity));
+        }, 1/(this.settings.reloadingVelocity * arcadeNormalizers.reloadingVelocity));
     }
 
     setPowerUpInterval(){
