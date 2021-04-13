@@ -1,4 +1,5 @@
-import {powerUps, sceneKeys} from "../constants/gameSettings";
+import {gameDimensions, powerUps, sceneKeys} from "../constants/gameSettings";
+import Phaser from "phaser";
 
 const loadImages = (ctx, key) => {
     for(let i = 0; i < 4; i++){
@@ -37,7 +38,41 @@ const velocityFromAngle = (angle, velocity) => {
     }
 }
 
+const setInputHandlers = (ctx, key) => {
+    const {width} = key === sceneKeys.game ? gameDimensions : ctx;
+    if(ctx.currentPlayer === null && key === sceneKeys.game) return;
+
+    ctx.rotationKey = ctx.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    ctx.accelerateLittleKey = ctx.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+    ctx.input.keyboard.on("keyup-ENTER", ()=>{
+        if(ctx.players[ctx.currentPlayer].state>=2) ctx.shoot();
+    });
+
+    if(ctx.touchScreen){
+        ctx.input.addPointer(1);
+
+        ctx.input.on("pointerdown", (pointer) => {
+            if (pointer.x < width / 2) {
+                ctx.rotating = true;
+            } else {
+                if (ctx.players[ctx.currentPlayer].state >= 2) ctx.shoot();
+                else {
+                    ctx.accelerating = true;
+                }
+            }
+        });
+
+        ctx.input.on("pointerup", (pointer) => {
+            if (pointer.x < width / 2) {
+                ctx.rotating = false;
+            } else {
+                ctx.accelerating = false;
+            }
+        });
+    }
+}
 
 
 
-export { loadImages, velocityFromAngle }
+
+export { loadImages, velocityFromAngle, setInputHandlers }

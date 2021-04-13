@@ -4,7 +4,7 @@ import {gameDimensions, normalizers, powerUps, sceneKeys} from "../constants/gam
 import {detectTouchScreen} from "../constants/constants";
 import _ from "lodash";
 import createMap from "../phaser/maps";
-import {loadImages} from "./scene";
+import {loadImages, setInputHandlers} from "./scene";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -86,8 +86,7 @@ export default class GameScene extends Phaser.Scene {
         this.createShips();
         createMap(this);
 
-        this.setKeyInputHandlers();
-        if(this.touchScreen) this.setTouchInputHandlers();
+        setInputHandlers(this, sceneKeys.game);
 
         this.physics.world.on("worldbounds", (bullet)=>{bullet.gameObject.destroy()});
 
@@ -495,42 +494,6 @@ export default class GameScene extends Phaser.Scene {
 
     //=============================================================================
     //On create setup
-
-    setKeyInputHandlers(){
-        if(this.currentPlayer === null) return;
-
-        this.rotationKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.accelerateLittleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-        this.input.keyboard.on("keyup-ENTER", ()=>{
-            if(this.players[this.currentPlayer].state>=2) this.shoot();
-        });
-    }
-
-    setTouchInputHandlers(){
-        if(this.currentPlayer === null) return;
-
-        this.input.addPointer(1);
-
-        this.input.on("pointerdown", (pointer) => {
-            if (pointer.x < gameDimensions.width / 2) {
-                this.rotating = true;
-            } else {
-                if (this.players[this.currentPlayer].state >= 2) this.shoot();
-                else {
-                    this.accelerating = true;
-                }
-            }
-        });
-
-        this.input.on("pointerup", (pointer) => {
-            if (pointer.x < gameDimensions.width / 2) {
-                this.rotating = false;
-            } else {
-                this.accelerating = false;
-            }
-        });
-    }
-
     setUpdateShipInterval(){
         if(this.currentPlayer === null) return;
 

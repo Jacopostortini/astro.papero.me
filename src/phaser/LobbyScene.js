@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import websocketEvents from "../constants/websocketEvents";
 import {defaultSettings, normalizers, sceneKeys} from "../constants/gameSettings";
 import {detectTouchScreen} from "../constants/constants";
+import {loadImages, setInputHandlers, velocityFromAngle} from "./scene";
 
 export default class LobbyScene extends Phaser.Scene {
 
@@ -26,17 +27,7 @@ export default class LobbyScene extends Phaser.Scene {
         this.width = this.sys.game.canvas.width;
         this.height = this.sys.game.canvas.height;
 
-        this.load.image("ship0", "./ships/ship0.png");
-        this.load.image("ship1", "./ships/ship1.png");
-        this.load.image("ship2", "./ships/ship2.png");
-        this.load.image("ship3", "./ships/ship3.png");
-        this.load.image("bullet", "./bullet.png");
-        this.load.image("bullet-loaded", "./bullet-loaded.png");
-
-        if(this.touchScreen) {
-            this.load.image("rotate-button", "./rotate-button.png");
-            this.load.image("shoot-button", "./shoot-button.png");
-        }
+        loadImages(this, sceneKeys.lobby);
 
         const onresize = () => {
             const parent = document.getElementById("players-wrapper");
@@ -57,14 +48,11 @@ export default class LobbyScene extends Phaser.Scene {
         this.socket.emit(websocketEvents.LOBBY_MODIFIED);
         this.socket.on(websocketEvents.LOBBY_MODIFIED, game => this.onLobbyModified(game));
 
-        //Setting up rotation and shooting
-        this.setKeyInputHandlers();
+        setInputHandlers(this, sceneKeys.lobby);
 
         if(this.touchScreen) {
             this.add.image(0, this.height/2, "rotate-button").setOrigin(0, 0.5);
             this.add.image(this.width, this.height/2, "shoot-button").setOrigin(1, 0.5);
-
-            this.setTouchInputHandlers();
         }
 
         this.setReloadInterval();
@@ -178,53 +166,47 @@ export default class LobbyScene extends Phaser.Scene {
         this.ships = newShips;
     }
 
-    createBullet(){
+    createBullet(data){
         const bullet = this.physics.add.image(
-            this.ships[this.lobby.currentPlayer].x,
-            this.ships[this.lobby.currentPlayer].y,
+            data.position.x,
+            data.position.y,
             "bullet"
         );
-        bullet.angle = this.ships[this.lobby.currentPlayer].angle;
-        const {x, y} = this.physics.velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*normalizers.bulletVelocity);
+        bullet.angle = data.angle;
+        const {x, y} = velocityFromAngle(bullet.angle, this.lobby.settings.bulletVelocity*normalizers.bulletVelocity);
         bullet.setVelocity(x, y);
         this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstAlive().setActive(false).setVisible(false);
         this.availableBullets--;
     }
 
+    shoot(){
+        if(this.availableBullets>0){
+            const ship = this.ships[this.lobby.currentPlayer];
+            const angle = ship.angle;
+            const data = {
+                position: {
+                    x: ship.x + ship.width*Math.cos(angle * Math.PI / 180),
+                    y: ship.y + ship.height*Math.sin(angle * Math.PI / 180)
+                },
+                angle: angle
+            };
+            this.createBullet(data);
+        }
+    }
+
     setReloadInterval(){
         const handler = () => {
-            this.availableBullets = this.availableBullets>=3 ? this.availableBullets : this.availableBullets+1;
-            const firstDead = this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead();
-            if(firstDead) {
-                firstDead.setActive(true).setVisible(true)
+            if(this.lobby.currentPlayer !== null) {
+                this.availableBullets = this.availableBullets >= 3 ? this.availableBullets : this.availableBullets + 1;
+                const firstDead = this.ships[this.lobby.currentPlayer].bulletsLoaded.getFirstDead();
+                if (firstDead) {
+                    firstDead.setActive(true).setVisible(true)
+                }
             }
             clearInterval(this.reloadInterval)
             this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
         }
         this.reloadInterval = setInterval(handler, 1/(this.lobby.settings.reloadingVelocity*normalizers.reloadingVelocity));
-    }
-
-    setTouchInputHandlers(){
-        this.input.addPointer(1);
-        this.input.on("pointerup", (pointer) => {
-            if(pointer.x<this.width/2){
-                this.rotating = false;
-            }
-        });
-        this.input.on("pointerdown", (pointer) => {
-            if(pointer.x<this.width/2){
-                this.rotating = true;
-            } else {
-                if(this.availableBullets>0) this.createBullet();
-            }
-        });
-    }
-
-    setKeyInputHandlers(){
-        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.input.keyboard.on("keyup-ENTER", ()=>{
-            if(this.availableBullets>0) this.createBullet();
-        });
     }
 
     setOnDestroy(){
