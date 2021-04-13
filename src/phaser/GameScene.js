@@ -26,7 +26,7 @@ export default class GameScene extends Phaser.Scene {
         this.settings.respawnTime = 8000;
         this.settings.frictionAir = 0.1;
         this.settings.powerUpVelocity = 5;
-        this.settings.powerUpAngularVelocity = 20;
+        this.settings.powerUpAngularVelocity = 0.1;
         this.players = {};
         game.players.forEach(player => {
             this.players[player.localId] = _.cloneDeep(player);
@@ -330,6 +330,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     shoot(){
+        console.log("shoot");
         const currentPlayer = this.players[this.currentPlayer];
         const ship = currentPlayer.ship;
         const angle = ship.angle;
