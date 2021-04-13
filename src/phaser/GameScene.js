@@ -184,6 +184,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createBullet(data){
+        console.log("createBullet(", data);
         const {x, y} = velocityFromAngle(data.angle, this.settings.bulletVelocity*matterNormalizers.bulletVelocity);
         const bullet = this.matter.add.image(
             data.position.x,
