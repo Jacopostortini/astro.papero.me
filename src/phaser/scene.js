@@ -116,7 +116,7 @@ const createBulletsLoadedObject = (ctx) => {
     }
 
     for(let i = 0; i < ctx.maxBullets; i++){
-        const bulletLoaded = ctx.matter.add.image(0, 0, "bullet-loaded", null, this.defaultImageOptions);
+        const bulletLoaded = ctx.matter.add.image(0, 0, "bullet-loaded", null, ctx.defaultImageOptions);
         bulletLoaded.setCollidesWith([]);
         obj.gameObjects.push(bulletLoaded);
     }
