@@ -89,7 +89,7 @@ export default class GameScene extends Phaser.Scene {
             return this.setOnCollide(callback);
         }
 
-        this.shapes = this.cache.json.get("shapes");
+        this.jsonShapes = this.cache.json.get("shapes");
 
         this.createCategories();
         this.createShips();
@@ -166,7 +166,7 @@ export default class GameScene extends Phaser.Scene {
                 null,
                 {
                     ...this.defaultImageOptions,
-                    shape: this.shapes.ship
+                    shape: this.jsonShapes.ship
                 }
             );
             player.ship.setCollisionCategory(this.shipsCategory);
@@ -211,7 +211,7 @@ export default class GameScene extends Phaser.Scene {
         const newPowerUp = this.matter.add.image(data.position.x, data.position.y, data.powerUp, null,
             {
                 ...this.defaultImageOptions,
-                shape: this.shapes[data.powerUp]
+                shape: this.jsonShapes[data.powerUp]
             });
         const {x, y} = velocityFromAngle(data.angle, this.settings.powerUpVelocity);
         newPowerUp.setVelocity(x, y);
@@ -220,7 +220,6 @@ export default class GameScene extends Phaser.Scene {
         newPowerUp.setCollisionCategory(this.powerUpsCategory);
         newPowerUp.id = data.id;
         this.matter.body.setInertia(newPowerUp.body, Infinity);
-        console.log(newPowerUp);
         this.powerUpsObjects.push(newPowerUp);
     }
 
