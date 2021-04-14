@@ -252,23 +252,22 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     updateShip(data){
-        console.log(data);
         const player = this.players[data[0]];
-        const deltaTime = (data[3]-player.lastTimestamp)/1000*60;
-        if(deltaTime<=0) return;
+        const deltaMilliseconds = (data[3]-player.lastTimestamp);
+        const deltaUnits = deltaMilliseconds/1000*60;
+        if(deltaMilliseconds<=0) return;
 
-        let deltaTheta = data[1] - Math.floor(player.ship.angle);
+        /*let deltaTheta = data[1] - Math.floor(player.ship.angle);
 
         if(deltaTheta*Math.sign(this.settings.angularVelocity) < -10) deltaTheta += 360*Math.sign(this.settings.angularVelocity);
         else if(deltaTheta*Math.sign(this.settings.angularVelocity) < 0) deltaTheta = 0;
-        const angularVelocity = deltaTheta / deltaTime;
-        player.ship.setAngularVelocity(angularVelocity);
+        const angularVelocity = deltaTheta / deltaUnits;
+        player.ship.setAngularVelocity(angularVelocity);*/
 
-        player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaTime, ( data[2][1]-player.ship.y ) / deltaTime );
+        player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaUnits, ( data[2][1]-player.ship.y ) / deltaUnits );
 
         player.lastTimestamp = data[3];
-        player.ship.autonomyTime = deltaTime*1000;
-        console.log(player.ship);
+        player.ship.autonomyTime = deltaMilliseconds*1000;
     }
 
     powerUpEvent(data){
