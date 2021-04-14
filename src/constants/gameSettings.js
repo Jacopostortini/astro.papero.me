@@ -26,7 +26,7 @@ const arcadeNormalizers = {
 
 const matterNormalizers = {
     velocity: arcadeNormalizers.velocity/60,
-    angularVelocity: arcadeNormalizers.angularVelocity/60,
+    angularVelocity: arcadeNormalizers.angularVelocity,
     reloadingVelocity: arcadeNormalizers.reloadingVelocity,
     bulletVelocity: arcadeNormalizers.bulletVelocity/60
 }
