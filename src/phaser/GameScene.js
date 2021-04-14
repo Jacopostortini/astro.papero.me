@@ -101,7 +101,7 @@ export default class GameScene extends Phaser.Scene {
         this.setUpdateShipInterval();
         if(this.admin === this.currentPlayer){
             //this.setPowerUpInterval();
-            //this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 2);
+            this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 1);
         }
 
         this.setOnDestroy();
@@ -151,6 +151,10 @@ export default class GameScene extends Phaser.Scene {
 
         this.killableMapObjectCategory = this.matter.world.nextCategory();
         this.notKillableMapObjectCategory = this.matter.world.nextCategory();
+
+        console.log("ships:", this.shipsCategory)
+        console.log("bullets:", this.bulletsCategory)
+        console.log("powerUps:", this.powerUpsCategory)
     }
 
     createShips(){
@@ -401,10 +405,10 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onCurrentShipCollision(collision) {
-        //console.log("collision:", collision);
         const player = this.players[this.currentPlayer];
         const body = getBodyFromCollision(player.ship, collision);
-        console.log(body);
+        console.log("collision:", body);
+        console.log("body found:", body);
         if(body.collisionFilter.category === this.bulletsCategory){
             //collision with a bullet
             this.onBulletCollision(player.ship, body.gameObject);
