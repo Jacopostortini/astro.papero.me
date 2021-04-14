@@ -184,12 +184,13 @@ export default class GameScene extends Phaser.Scene {
             player.bulletsLoaded = createBulletsLoadedObject(this);
 
             if(player.localId===this.currentPlayer){
-                player.ship.shapedSetOnCollide(collision => {
+                player.ship.shapedSetOnCollide((bodyA, bodyB, collision) => {
                    this.onCurrentShipCollision(collision);
                 });
             }
 
             index++;
+            console.log(player.ship.body.collisionFilter);
         });
     }
 
