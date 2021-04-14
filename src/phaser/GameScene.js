@@ -41,7 +41,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.socket = socket;
 
-        this.updateFps = 10;
+        this.updateFps = 1;
         this.touchScreen = detectTouchScreen();
         this.defaultImageOptions = {friction: 0, frictionAir: 0, frictionStatic: 0, ignoreGravity: true};
         this.maxBullets = 3;
@@ -252,6 +252,7 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Others do things via the websocket
     updateShip(data){
+        console.log(data);
         const player = this.players[data[0]];
         const deltaTime = (data[3]-player.lastTimestamp)/1000;
         if(deltaTime<=0) return;
@@ -267,6 +268,7 @@ export default class GameScene extends Phaser.Scene {
 
         player.lastTimestamp = data[3];
         player.ship.autonomyTime = deltaTime*1000;
+        console.log(player.ship);
     }
 
     powerUpEvent(data){
