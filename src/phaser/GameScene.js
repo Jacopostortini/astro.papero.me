@@ -99,11 +99,12 @@ export default class GameScene extends Phaser.Scene {
 
         this.setReloadInterval();
         this.setUpdateShipInterval();
-        if(this.admin === this.currentPlayer) this.setPowerUpInterval();
+        if(this.admin === this.currentPlayer){
+            this.setPowerUpInterval();
+            //this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 2);
+        }
 
         this.setOnDestroy();
-
-        this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 2);
     }
 
     update(time, delta){
@@ -257,12 +258,12 @@ export default class GameScene extends Phaser.Scene {
         const deltaUnits = deltaMilliseconds/1000*60;
         if(deltaMilliseconds<=0) return;
 
-        /*let deltaTheta = data[1] - Math.floor(player.ship.angle);
+        let deltaTheta = data[1] - Math.floor(player.ship.angle);
 
         if(deltaTheta*Math.sign(this.settings.angularVelocity) < -10) deltaTheta += 360*Math.sign(this.settings.angularVelocity);
         else if(deltaTheta*Math.sign(this.settings.angularVelocity) < 0) deltaTheta = 0;
         const angularVelocity = deltaTheta / deltaUnits;
-        player.ship.setAngularVelocity(angularVelocity);*/
+        player.ship.setAngularVelocity(angularVelocity);
 
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaUnits, ( data[2][1]-player.ship.y ) / deltaUnits );
 
