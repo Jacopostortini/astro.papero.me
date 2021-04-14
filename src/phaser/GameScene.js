@@ -41,7 +41,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.socket = socket;
 
-        this.updateFps = 1;
+        this.updateFps = 10;
         this.touchScreen = detectTouchScreen();
         this.defaultImageOptions = {friction: 0, frictionAir: 0, frictionStatic: 0, ignoreGravity: true};
         this.maxBullets = 3;
@@ -401,7 +401,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onCurrentShipCollision(collision) {
-        console.log("collision:", collision);
+        //console.log("collision:", collision);
         const player = this.players[this.currentPlayer];
         const body = getBodyFromCollision(player.ship, collision);
         if(body.collisionFilter.category === this.bulletsCategory){
