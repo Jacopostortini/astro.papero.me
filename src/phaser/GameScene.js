@@ -100,7 +100,7 @@ export default class GameScene extends Phaser.Scene {
         this.setReloadInterval();
         this.setUpdateShipInterval();
         if(this.admin === this.currentPlayer){
-            this.setPowerUpInterval();
+            //this.setPowerUpInterval();
             //this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 2);
         }
 
@@ -265,7 +265,6 @@ export default class GameScene extends Phaser.Scene {
         else if(deltaTheta*Math.sign(this.settings.angularVelocity) < 0) deltaTheta = 0;
         const angularVelocity = deltaTheta / deltaUnits;
         player.ship.setAngularVelocity(angularVelocity * Math.PI / 180);
-        console.log(angularVelocity * Math.PI / 180);
         player.ship.setVelocity( ( data[2][0]-player.ship.x ) / deltaUnits, ( data[2][1]-player.ship.y ) / deltaUnits );
 
         player.lastTimestamp = data[3];
@@ -405,6 +404,7 @@ export default class GameScene extends Phaser.Scene {
         //console.log("collision:", collision);
         const player = this.players[this.currentPlayer];
         const body = getBodyFromCollision(player.ship, collision);
+        console.log(body);
         if(body.collisionFilter.category === this.bulletsCategory){
             //collision with a bullet
             this.onBulletCollision(player.ship, body.gameObject);
