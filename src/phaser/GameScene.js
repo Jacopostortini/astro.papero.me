@@ -254,7 +254,7 @@ export default class GameScene extends Phaser.Scene {
     updateShip(data){
         console.log(data);
         const player = this.players[data[0]];
-        const deltaTime = (data[3]-player.lastTimestamp)/1000;
+        const deltaTime = (data[3]-player.lastTimestamp)/1000*60;
         if(deltaTime<=0) return;
 
         let deltaTheta = data[1] - Math.floor(player.ship.angle);
