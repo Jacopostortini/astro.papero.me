@@ -233,7 +233,7 @@ export default class GameScene extends Phaser.Scene {
         const laser = this.matter.add.image(data.position.x, data.position.y, "bullet", null, this.defaultImageOptions);
         laser.setScale(maxLength/laser.width, 1);
         laser.setAngle(data.angle);
-        laser.setPosition(laser.x+maxLength*Math.cos(data.angle*Math.PI/180), laser.y+maxLength*Math.sin(data.angle*Math.PI/180));
+        laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
         laser.setCollidesWith([]);
         this.players[data.localId].ship.setVelocity(0, 0);
         setTimeout(()=>{
