@@ -151,10 +151,6 @@ export default class GameScene extends Phaser.Scene {
 
         this.killableMapObjectCategory = this.matter.world.nextCategory();
         this.notKillableMapObjectCategory = this.matter.world.nextCategory();
-
-        console.log("ships:", this.shipsCategory)
-        console.log("bullets:", this.bulletsCategory)
-        console.log("powerUps:", this.powerUpsCategory)
     }
 
     createShips(){
@@ -190,7 +186,6 @@ export default class GameScene extends Phaser.Scene {
             }
 
             index++;
-            console.log(player.ship.body.collisionFilter);
         });
     }
 
@@ -204,7 +199,13 @@ export default class GameScene extends Phaser.Scene {
             this.defaultImageOptions
         );
         bullet.setCollisionCategory(this.bulletsCategory);
-        bullet.setCollidesWith([this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
+        bullet.setCollidesWith([1, this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
+        bullet.setOnCollide(collision => {
+            if(collision.bodyA.collisionFilter.category === 1) {
+                bullet.destroy();
+                console.log("bullet destroyed")
+            }
+        });
         bullet.setAngle(data.angle);
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
