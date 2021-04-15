@@ -12,10 +12,10 @@ export default (ctx) => {
     const map = maps[ctx.map];
     map.forEach(obj => {
         const o = ctx.matter.add.image(obj.position.x, obj.position.y, obj.texture, null, {...ctx.defaultImageOptions});
-        if(obj.killable) o.setCollisionCategory(ctx.killableMapObjectCategory);
-        else o.setCollisionCategory(ctx.notKillableMapObjectCategory);
+        o.setCollisionCategory(ctx.mapObjectCategory);
         if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
         if(obj.bounce) o.setBounce(obj.bounce);
+        o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory]);
         ctx.matter.body.setInertia(o.body, Infinity);
         ctx.matter.body.setMass(o.body, Infinity);
         o.setOnCollide(collision => {

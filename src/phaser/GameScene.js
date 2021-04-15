@@ -150,8 +150,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.powerUpsCategory = this.matter.world.nextCategory();
 
-        this.killableMapObjectCategory = this.matter.world.nextCategory();
-        this.notKillableMapObjectCategory = this.matter.world.nextCategory();
+        this.mapObjectCategory = this.matter.world.nextCategory();
     }
 
     createShips(){
@@ -200,7 +199,7 @@ export default class GameScene extends Phaser.Scene {
             this.defaultImageOptions
         );
         bullet.setCollisionCategory(this.bulletsCategory);
-        bullet.setCollidesWith([1, this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
+        bullet.setCollidesWith([1, this.shipsCategory, this.mapObjectCategory]);
         bullet.setOnCollide(()=>{
             bullet.destroy();
         });
