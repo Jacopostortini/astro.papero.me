@@ -3,7 +3,7 @@ import websocketEvents from "../constants/websocketEvents";
 import {gameDimensions, arcadeNormalizers, powerUps, sceneKeys, matterNormalizers} from "../constants/gameSettings";
 import {detectTouchScreen, removeFromArray} from "../constants/constants";
 import _ from "lodash";
-//import createMap from "../phaser/maps";
+import createMap from "../phaser/maps";
 import {
     createBulletsLoadedObject,
     getBodyFromCollision,
@@ -93,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.createCategories();
         this.createShips();
-        //createMap(this); TODO: REDO MAPS
+        createMap(this); //TODO: REDO MAPS
 
         setInputHandlers(this, sceneKeys.game);
 
@@ -200,7 +200,7 @@ export default class GameScene extends Phaser.Scene {
         );
         bullet.setCollisionCategory(this.bulletsCategory);
         bullet.setCollidesWith([1, this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
-        bullet.setOnCollideEnd(collision => {
+        bullet.setOnCollide(collision => {
             if(
                 collision.bodyA.collisionFilter.category === 1 ||
                 collision.bodyA.collisionFilter.category === this.killableMapObjectCategory ||
