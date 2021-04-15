@@ -228,10 +228,14 @@ export default class GameScene extends Phaser.Scene {
         this.powerUpsObjects.push(newPowerUp);
     }
 
-    createLaser(){
-        //const maxLength = Phaser.Math.Distance.Between(0, 0, gameDimensions.width, gameDimensions.height);
-
-
+    createLaser(data){
+        const maxLength = Phaser.Math.Distance.Between(0, 0, gameDimensions.width, gameDimensions.height);
+        const laser = this.matter.add.rectangle(data.position.x, data.position.y, maxLength, 5).gameObject;
+        laser.angle = data.angle;
+        laser.collisionFilter.mask = 0;
+        setTimeout(()=>{
+            this.matter.world.remove(laser);
+        }, 1000);
     }
 
     generatePowerUp({x, y}, n=1){
@@ -359,6 +363,7 @@ export default class GameScene extends Phaser.Scene {
             data.powerUp = "laser";
             this.socket.emit(websocketEvents.POWER_UP, data);
             this.createLaser(data);
+            currentPlayer.ship.hasLaser = false;
         } else {
             if(currentPlayer.availableBullets>0){
                 this.socket.emit(websocketEvents.SHOOT, data);
@@ -428,7 +433,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onBulletCollision(ship, bullet){
-        bullet.destroy();
         const state = this.players[ship.localId].state-1;
         const data = {
             localId: ship.localId,
