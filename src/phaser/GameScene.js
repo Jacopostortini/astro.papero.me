@@ -230,8 +230,7 @@ export default class GameScene extends Phaser.Scene {
 
     createLaser(data){
         const maxLength = Phaser.Math.Distance.Between(0, 0, gameDimensions.width, gameDimensions.height);
-        const laser = this.matter.add.image(data.position.x, data.position.y, "bullet", null, this.defaultImageOptions);
-        laser.setOrigin(0, 0.5);
+        const laser = this.matter.add.image(data.position.x + maxLength * Math.cos(data.angle), data.position.y, "bullet", null, this.defaultImageOptions);
         laser.setScale(maxLength/laser.width, 1);
         laser.setAngle(data.angle);
         laser.setCollidesWith([]);
