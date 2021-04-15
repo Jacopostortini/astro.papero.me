@@ -22,6 +22,7 @@ export default (ctx) => {
             const body = getBodyFromCollision(o.body.id, collision);
             if(body.gameObject) {
                 if(obj.killable && body.collisionFilter.category === ctx.bulletsCategory){
+                    console.log("destroying:", body, "after collision:", collision);
                     o.destroy();
                 }
             }
