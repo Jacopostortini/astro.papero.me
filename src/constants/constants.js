@@ -40,7 +40,7 @@ const config = (scene, parent, width, height, scaleMode=0, defaultPhysics = "arc
         physics: {
             default: defaultPhysics,
             matter: {
-                debug: true,
+                debug: false,
                 setBounds: true
             }
         },
