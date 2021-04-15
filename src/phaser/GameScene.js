@@ -200,6 +200,9 @@ export default class GameScene extends Phaser.Scene {
         );
         bullet.setCollisionCategory(this.bulletsCategory);
         bullet.setCollidesWith([1, this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
+        bullet.setOnCollide(()=>{
+            bullet.destroy();
+        });
         bullet.setAngle(data.angle);
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
