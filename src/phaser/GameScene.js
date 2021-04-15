@@ -100,8 +100,8 @@ export default class GameScene extends Phaser.Scene {
         this.setReloadInterval();
         this.setUpdateShipInterval();
         if(this.admin === this.currentPlayer){
-            //this.setPowerUpInterval();
-            this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 1);
+            this.setPowerUpInterval();
+            this.generatePowerUp({x: gameDimensions.width/2, y: gameDimensions.height/2}, 2);
         }
 
         this.setOnDestroy();
@@ -444,7 +444,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     onPowerUpCollision(ship, powerUp){
-        console.log("power up collision", ship, powerUp)
         if(this.players[ship.localId].state < 2 ) return;
         const data = {
             type: "get",
