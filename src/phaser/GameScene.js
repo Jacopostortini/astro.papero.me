@@ -3,6 +3,7 @@ import websocketEvents from "../constants/websocketEvents";
 import {gameDimensions, arcadeNormalizers, powerUps, sceneKeys, matterNormalizers} from "../constants/gameSettings";
 import {detectTouchScreen, removeFromArray} from "../constants/constants";
 import _ from "lodash";
+import createMap from "../phaser/maps";
 
 import {
     createBulletsLoadedObject,
@@ -93,7 +94,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.createCategories();
         this.createShips();
-        //createMap(this); //TODO: REDO MAPS
+        createMap(this); //TODO: REDO MAPS
 
         setInputHandlers(this, sceneKeys.game);
 
@@ -234,7 +235,8 @@ export default class GameScene extends Phaser.Scene {
         laser.setScale(maxLength/laser.width, 1);
         laser.setAngle(data.angle);
         laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
-        laser.setCollidesWith([]);
+        laser.setCollidesWith([this.shipsCategory]);
+        this.matter.body.setMass(laser.body, Infinity);
         this.players[data.localId].ship.setToSleep();
         setTimeout(()=>{
             laser.destroy();

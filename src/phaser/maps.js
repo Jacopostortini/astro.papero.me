@@ -20,7 +20,11 @@ export default (ctx) => {
         ctx.matter.body.setMass(o.body, Infinity);
         o.setOnCollide(collision => {
             const body = getBodyFromCollision(o.body.id, collision);
-            if(body.gameObject) body.gameObject.destroy();
+            if(body.gameObject) {
+                if(obj.killable && body.collisionFilter.category === ctx.bulletsCategory){
+                    o.destroy();
+                }
+            }
         });
     });
 };
