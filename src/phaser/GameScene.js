@@ -408,15 +408,13 @@ export default class GameScene extends Phaser.Scene {
     onCurrentShipCollision(collision) {
         const player = this.players[this.currentPlayer];
         const body = getBodyFromCollision(this.currentPlayer, collision);
-        console.log("collision:", collision);
-        console.log("body found:", body);
-        if(body.collisionFilter.category === this.bulletsCategory){
+        if(body.parent.collisionFilter.category === this.bulletsCategory){
             //collision with a bullet
             this.onBulletCollision(player.ship, body.gameObject);
-        } else if(body.collisionFilter.category === this.powerUpsCategory){
+        } else if(body.parent.collisionFilter.category === this.powerUpsCategory){
             //Collision with power up
             this.onPowerUpCollision(player.ship, body.gameObject);
-        } else if(body.collisionFilter.category === this.shipsCategory){
+        } else if(body.parent.collisionFilter.category === this.shipsCategory){
             //Collision with ship
             if(this.players[this.currentPlayer].state === 1 && this.players[body.gameObject.localId].state >= 2){
                 const data = {
@@ -445,13 +443,8 @@ export default class GameScene extends Phaser.Scene {
         this.updateState(data);
     }
 
-
-    reload(data){
-        this.players[data.localId].availableBullets = data.availableBullets;
-        this.players[data.localId].bulletsLoaded.enableTo(data.availableBullets);
-    }
-
     onPowerUpCollision(ship, powerUp){
+        console.log("power up collision", ship, powerUp)
         if(this.players[ship.localId].state < 2 ) return;
         const data = {
             type: "get",
@@ -461,6 +454,11 @@ export default class GameScene extends Phaser.Scene {
         }
         this.socket.emit(websocketEvents.POWER_UP, data);
         this.powerUpEvent(data);
+    }
+
+    reload(data){
+        this.players[data.localId].availableBullets = data.availableBullets;
+        this.players[data.localId].bulletsLoaded.enableTo(data.availableBullets);
     }
 
 
