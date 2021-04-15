@@ -127,7 +127,7 @@ const createBulletsLoadedObject = (ctx) => {
 }
 
 const getBodyFromCollision = (bodyId, collision) => {
-    if(collision.bodyA.id === bodyId) return collision.bodyB;
+    if(collision.bodyA.id === bodyId || collision.bodyA.parent.id === bodyId) return collision.bodyB;
     else return collision.bodyA;
 }
 
