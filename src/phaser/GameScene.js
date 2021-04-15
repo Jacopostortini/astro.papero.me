@@ -222,7 +222,7 @@ export default class GameScene extends Phaser.Scene {
         newPowerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
         newPowerUp.powerUp = data.powerUp;
         newPowerUp.setCollisionCategory(this.powerUpsCategory);
-        newPowerUp.setCollidesWith([1, this.shipsCategory]);
+        newPowerUp.setCollidesWith([1, this.shipsCategory, this.mapObjectCategory]);
         newPowerUp.id = data.id;
         this.matter.body.setInertia(newPowerUp.body, Infinity);
         this.powerUpsObjects.push(newPowerUp);
@@ -235,6 +235,10 @@ export default class GameScene extends Phaser.Scene {
         laser.setAngle(data.angle);
         laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
         laser.setCollidesWith([this.shipsCategory]);
+        laser.setOnCollide(collision => {
+            const body = getBodyFromCollision(laser.body.id, collision);
+            console.log("killed player: ", body.parent.gameObject.localId);
+        });
         this.matter.body.setMass(laser.body, Infinity);
         this.players[data.localId].ship.setToSleep();
         setTimeout(()=>{
