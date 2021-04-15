@@ -235,10 +235,10 @@ export default class GameScene extends Phaser.Scene {
         laser.setAngle(data.angle);
         laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
         laser.setCollidesWith([]);
-        this.players[data.localId].ship.setActive(false);
+        this.players[data.localId].ship.setToSleep();
         setTimeout(()=>{
             laser.destroy();
-            this.players[data.localId].ship.setActive(true);
+            this.players[data.localId].ship.setAwake();
         }, 200);
     }
 
