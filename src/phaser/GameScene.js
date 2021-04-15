@@ -239,7 +239,7 @@ export default class GameScene extends Phaser.Scene {
         setTimeout(()=>{
             laser.destroy();
             this.players[data.localId].ship.setAwake();
-        }, 200);
+        }, 500);
     }
 
     generatePowerUp({x, y}, n=1){
