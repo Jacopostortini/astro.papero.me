@@ -349,8 +349,8 @@ export default class GameScene extends Phaser.Scene {
         const angle = ship.angle;
         const data = {
             position: {
-                x: ship.x + ship.width*Math.cos(angle * Math.PI / 180),
-                y: ship.y + ship.height*Math.sin(angle * Math.PI / 180)
+                x: ship.x + ship.width*5/4*Math.cos(angle * Math.PI / 180),
+                y: ship.y + ship.height*5/4*Math.sin(angle * Math.PI / 180)
             },
             angle: angle,
             localId: this.currentPlayer
