@@ -16,13 +16,14 @@ export default (ctx) => {
         if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
         if(obj.bounce) o.setBounce(obj.bounce);
         o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory]);
+        o.setStatic(true);
         ctx.matter.body.setInertia(o.body, Infinity);
-        ctx.matter.body.setMass(o.body, Infinity);
+        //ctx.matter.body.setMass(o.body, Infinity);
         o.setOnCollide(collision => {
             const body = getBodyFromCollision(o.body.id, collision);
             if(body.gameObject) {
                 if(obj.killable && body.collisionFilter.category === ctx.bulletsCategory){
-                    console.log("destroying:", body, "after collision:", collision);
+                    console.log("destroying:", o, "after collision:", collision);
                     o.destroy();
                 }
             }
