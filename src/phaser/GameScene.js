@@ -200,10 +200,16 @@ export default class GameScene extends Phaser.Scene {
         );
         bullet.setCollisionCategory(this.bulletsCategory);
         bullet.setCollidesWith([1, this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
-        bullet.setOnCollide(collision => {
-            if(collision.bodyA.collisionFilter.category === 1) {
+        bullet.setOnCollideEnd(collision => {
+            if(
+                collision.bodyA.collisionFilter.category === 1 ||
+                collision.bodyA.collisionFilter.category === this.killableMapObjectCategory ||
+                collision.bodyA.collisionFilter.category === this.notKillableMapObjectCategory ||
+                collision.bodyB.collisionFilter.category === 1 ||
+                collision.bodyB.collisionFilter.category === this.killableMapObjectCategory ||
+                collision.bodyB.collisionFilter.category === this.notKillableMapObjectCategory
+            ) {
                 bullet.destroy();
-                console.log("bullet destroyed")
             }
         });
         bullet.setAngle(data.angle);
@@ -231,7 +237,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createLaser(){
-        //const maxLength = Math.sqrt( Math.pow(gameDimensions.width, 2) + Math.pow(gameDimensions.height, 2) );
+        //const maxLength = Phaser.Math.Distance.Between(0, 0, gameDimensions.width, gameDimensions.height);
 
 
     }
