@@ -407,7 +407,7 @@ export default class GameScene extends Phaser.Scene {
 
     onCurrentShipCollision(collision) {
         const player = this.players[this.currentPlayer];
-        const body = getBodyFromCollision(player.ship, collision);
+        const body = getBodyFromCollision(this.currentPlayer, collision);
         console.log("collision:", collision);
         console.log("body found:", body);
         if(body.collisionFilter.category === this.bulletsCategory){
