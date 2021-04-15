@@ -20,7 +20,7 @@ export default (ctx) => {
         ctx.matter.body.setMass(o.body, Infinity);
         o.setOnCollide(collision => {
             const body = getBodyFromCollision(o.body.id, collision);
-            body.gameObject.destroy();
+            if(body.gameObject) body.gameObject.destroy();
         });
     });
 };
