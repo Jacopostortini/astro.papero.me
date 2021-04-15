@@ -184,7 +184,7 @@ export default class GameScene extends Phaser.Scene {
             player.bulletsLoaded = createBulletsLoadedObject(this);
 
             if(player.localId===this.currentPlayer){
-                player.ship.shapedSetOnCollide((bodyA, bodyB, collision) => {
+                player.ship.shapedSetOnCollide((collision) => {
                    this.onCurrentShipCollision(collision);
                 });
             }
@@ -408,7 +408,7 @@ export default class GameScene extends Phaser.Scene {
     onCurrentShipCollision(collision) {
         const player = this.players[this.currentPlayer];
         const body = getBodyFromCollision(player.ship, collision);
-        console.log("collision:", body);
+        console.log("collision:", collision);
         console.log("body found:", body);
         if(body.collisionFilter.category === this.bulletsCategory){
             //collision with a bullet
