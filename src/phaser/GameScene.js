@@ -200,18 +200,6 @@ export default class GameScene extends Phaser.Scene {
         );
         bullet.setCollisionCategory(this.bulletsCategory);
         bullet.setCollidesWith([1, this.shipsCategory, this.killableMapObjectCategory, this.notKillableMapObjectCategory]);
-        bullet.setOnCollide(collision => {
-            if(
-                collision.bodyA.collisionFilter.category === 1 ||
-                collision.bodyA.collisionFilter.category === this.killableMapObjectCategory ||
-                collision.bodyA.collisionFilter.category === this.notKillableMapObjectCategory ||
-                collision.bodyB.collisionFilter.category === 1 ||
-                collision.bodyB.collisionFilter.category === this.killableMapObjectCategory ||
-                collision.bodyB.collisionFilter.category === this.notKillableMapObjectCategory
-            ) {
-                bullet.destroy();
-            }
-        });
         bullet.setAngle(data.angle);
         bullet.setVelocity(x, y);
         bullet.shotBy = data.localId;
@@ -231,6 +219,7 @@ export default class GameScene extends Phaser.Scene {
         newPowerUp.setAngularVelocity(this.settings.powerUpAngularVelocity);
         newPowerUp.powerUp = data.powerUp;
         newPowerUp.setCollisionCategory(this.powerUpsCategory);
+        newPowerUp.setCollidesWith([1, this.shipsCategory]);
         newPowerUp.id = data.id;
         this.matter.body.setInertia(newPowerUp.body, Infinity);
         this.powerUpsObjects.push(newPowerUp);
@@ -414,7 +403,7 @@ export default class GameScene extends Phaser.Scene {
 
     onCurrentShipCollision(collision) {
         const player = this.players[this.currentPlayer];
-        const body = getBodyFromCollision(this.currentPlayer, collision);
+        const body = getBodyFromCollision(player.ship.body.id, collision);
         if(body.parent.collisionFilter.category === this.bulletsCategory){
             //collision with a bullet
             this.onBulletCollision(player.ship, body.gameObject);

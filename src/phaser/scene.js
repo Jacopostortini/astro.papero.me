@@ -126,9 +126,8 @@ const createBulletsLoadedObject = (ctx) => {
     return obj;
 }
 
-const getBodyFromCollision = (localId, collision) => {
-    if(!collision.bodyA.gameObject) return collision.bodyA;
-    if(collision.bodyA.gameObject.localId === localId) return collision.bodyB;
+const getBodyFromCollision = (bodyId, collision) => {
+    if(collision.bodyA.id === bodyId) return collision.bodyB;
     else return collision.bodyA;
 }
 

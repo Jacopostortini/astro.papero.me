@@ -1,4 +1,5 @@
 import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons, getMovingVertical, getMixedOrizontalLine} from "../constants/mapConstants";
+import {getBodyFromCollision} from "./scene";
 
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
@@ -16,5 +17,10 @@ export default (ctx) => {
         if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
         if(obj.bounce) o.setBounce(obj.bounce);
         ctx.matter.body.setInertia(o.body, Infinity);
+        ctx.matter.body.setMass(o.body, Infinity);
+        o.setOnCollide(collision => {
+            const body = getBodyFromCollision(o.body.id, collision);
+            body.gameObject.destroy();
+        });
     });
 };
