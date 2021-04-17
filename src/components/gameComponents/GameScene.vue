@@ -25,8 +25,7 @@ export default {
               parent,
               gameDimensions.width,
               gameDimensions.height,
-              Phaser.Scale.FIT,
-              "matter"
+              Phaser.Scale.FIT
           ));
     });
     this.socket.emit(websocketEvents.GAME_MODIFIED);

@@ -6,7 +6,12 @@ import _ from "lodash";
 export default class RankingScene extends Phaser.Scene {
 
     constructor(socket, pointsToWin) {
-        super({key: sceneKeys.ranking});
+        super({
+            key: sceneKeys.ranking,
+            physics: {
+                default: "arcade"
+            }
+        });
 
         this.socket = socket;
         this.pointsToWin = pointsToWin;

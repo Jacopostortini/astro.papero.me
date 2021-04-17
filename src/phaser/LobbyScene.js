@@ -7,7 +7,12 @@ import {loadImages, setInputHandlers, velocityFromAngle} from "./scene";
 export default class LobbyScene extends Phaser.Scene {
 
     constructor(socket) {
-        super({key: sceneKeys.lobby});
+        super({
+            key: sceneKeys.lobby,
+            physics: {
+                default: "arcade"
+            }
+        });
         this.socket = socket;
         this.lobby = {
             players: [],

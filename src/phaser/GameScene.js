@@ -38,7 +38,16 @@ export default class GameScene extends Phaser.Scene {
     }
 
     constructor(socket, game) {
-        super({key: sceneKeys.game});
+        super({
+            key: sceneKeys.game,
+            physics: {
+                default: "matter",
+                matter: {
+                    debug: true,
+                    setBounds: true
+                }
+            }
+        });
 
         this.socket = socket;
 
