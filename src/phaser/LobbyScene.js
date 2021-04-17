@@ -10,7 +10,11 @@ export default class LobbyScene extends Phaser.Scene {
         super({
             key: sceneKeys.lobby,
             physics: {
-                default: "arcade"
+                default: "arcade",
+                arcade: {
+                    debug: true,
+                    gravity: {x: 0, y: 0}
+                }
             }
         });
         this.socket = socket;
