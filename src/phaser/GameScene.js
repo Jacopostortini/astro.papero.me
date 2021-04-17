@@ -118,6 +118,7 @@ export default class GameScene extends Phaser.Scene {
         }
 
         Object.values(this.players).forEach(player => {
+            if(!player.ship.body) return;
             const topLeft = player.ship.getTopLeft();
             const bottomLeft = player.ship.getBottomLeft();
             const centerLeft = {
