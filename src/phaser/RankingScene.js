@@ -9,7 +9,11 @@ export default class RankingScene extends Phaser.Scene {
         super({
             key: sceneKeys.ranking,
             physics: {
-                default: "arcade"
+                default: "arcade",
+                arcade: {
+                    debug: false,
+                    gravity: {x: 0, y: 0}
+                }
             }
         });
 
