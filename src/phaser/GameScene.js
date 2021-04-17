@@ -43,7 +43,7 @@ export default class GameScene extends Phaser.Scene {
             physics: {
                 default: "matter",
                 matter: {
-                    debug: true,
+                    debug: false,
                     setBounds: true
                 }
             }
