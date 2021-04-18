@@ -103,7 +103,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.createCategories();
         this.createShips();
-        createMap(this); //TODO: REDO MAPS
+        createMap(this);
 
         setInputHandlers(this, sceneKeys.game);
 
@@ -157,10 +157,12 @@ export default class GameScene extends Phaser.Scene {
     createCategories(){
         this.shipsCategory = this.matter.world.nextCategory();
         this.bulletsCategory = this.matter.world.nextCategory();
-
         this.powerUpsCategory = this.matter.world.nextCategory();
-
         this.mapObjectCategory = this.matter.world.nextCategory();
+        console.log(this.shipsCategory,
+        this.bulletsCategory,
+        this.powerUpsCategory,
+        this.mapObjectCategory);
     }
 
     createShips(){
@@ -193,8 +195,8 @@ export default class GameScene extends Phaser.Scene {
                 player.ship.shapedSetOnCollide((collision) => {
                    this.onCurrentShipCollision(collision);
                 });
+                console.log(player.ship.body.collisionFilter)
             }
-
             index++;
         });
     }
@@ -242,6 +244,7 @@ export default class GameScene extends Phaser.Scene {
         const maxLength = Phaser.Math.Distance.Between(0, 0, gameDimensions.width, gameDimensions.height);
         const laser = this.matter.add.image(data.position.x, data.position.y, "bullet", null, this.defaultImageOptions);
         laser.setScale(maxLength/laser.width, 1);
+        laser.setSensor(true);
         laser.setAngle(data.angle);
         laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
         laser.setCollidesWith([this.shipsCategory]);
