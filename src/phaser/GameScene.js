@@ -155,14 +155,10 @@ export default class GameScene extends Phaser.Scene {
     //=============================================================================
     //Creating things
     createCategories(){
-        this.shipsCategory = this.matter.world.nextCategory();
-        this.bulletsCategory = this.matter.world.nextCategory();
-        this.powerUpsCategory = this.matter.world.nextCategory();
-        this.mapObjectCategory = this.matter.world.nextCategory();
-        console.log(this.shipsCategory,
-        this.bulletsCategory,
-        this.powerUpsCategory,
-        this.mapObjectCategory);
+        this.shipsCategory = 2;
+        this.bulletsCategory = 4;
+        this.powerUpsCategory = 8;
+        this.mapObjectCategory = 16;
     }
 
     createShips(){
