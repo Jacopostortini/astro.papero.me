@@ -12,6 +12,7 @@ export default (ctx) => {
     const map = maps[ctx.map];
     map.forEach(obj => {
         const o = ctx.matter.add.image(obj.position.x, obj.position.y, obj.texture, null, {...ctx.defaultImageOptions});
+        o.killable = obj.killable;
         o.setCollisionCategory(ctx.mapObjectCategory);
         /*if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
         if(obj.bounce) o.setBounce(obj.bounce);*/
