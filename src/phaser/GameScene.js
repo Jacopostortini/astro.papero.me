@@ -247,14 +247,14 @@ export default class GameScene extends Phaser.Scene {
         laser.setOnCollide(collision => {
             const body = getBodyFromCollision(laser.body.id, collision);
             if(body.parent.collisionFilter.category === this.shipsCategory){
-                const data = {
+                const dataToSend = {
                     localId: body.parent.gameObject.localId,
                     state: 0,
                     killedBy: data.localId
                 };
                 this.clearIntervals(false);
-                this.socket.emit(websocketEvents.CHANGE_STATE, data);
-                this.updateState(data);
+                this.socket.emit(websocketEvents.CHANGE_STATE, dataToSend);
+                this.updateState(dataToSend);
             }
         });
         this.matter.body.setMass(laser.body, Infinity);
