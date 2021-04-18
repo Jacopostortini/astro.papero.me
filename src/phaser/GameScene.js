@@ -118,7 +118,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
-        if(this.currentPlayer !== null) {
+        if(this.currentPlayer !== null && this.players[this.currentPlayer].ship.body) {
             if (this.rotationKey.isDown || this.rotating) this.rotate(delta);
             if (this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
 
@@ -527,6 +527,7 @@ export default class GameScene extends Phaser.Scene {
 
         const currentPlayer = this.players[this.currentPlayer];
         this.updateShipInterval = setInterval(()=>{
+            if(!currentPlayer.ship.body) return;
             this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
                 Math.floor(currentPlayer.ship.angle),
