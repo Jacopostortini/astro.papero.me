@@ -255,8 +255,8 @@ export default class GameScene extends Phaser.Scene {
                 this.clearIntervals(false);
                 this.socket.emit(websocketEvents.CHANGE_STATE, dataToSend);
                 this.updateState(dataToSend);
-            } else if(body.parent.collisionFilter.category === this.mapObjectCategory){
-                if(body.parent.gameObject.killable) body.parent.gameObject.destroy();
+            } else if(body.collisionFilter.category === this.mapObjectCategory){
+                if(body.gameObject.killable) body.gameObject.destroy();
             }
         });
         this.matter.body.setMass(laser.body, Infinity);
