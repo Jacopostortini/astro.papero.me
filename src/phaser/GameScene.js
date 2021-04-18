@@ -243,10 +243,19 @@ export default class GameScene extends Phaser.Scene {
         laser.setSensor(true);
         laser.setAngle(data.angle);
         laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
-        laser.setCollidesWith([this.shipsCategory]);
+        laser.setCollidesWith([this.shipsCategory, this.mapObjectCategory]);
         laser.setOnCollide(collision => {
             const body = getBodyFromCollision(laser.body.id, collision);
-            console.log("killed player: ", body.parent.gameObject.localId);
+            if(body.parent.collisionFilter.category === this.shipsCategory){
+                const data = {
+                    localId: body.parent.gameObject.localId,
+                    state: 0,
+                    killedBy: data.localId
+                };
+                this.clearIntervals(false);
+                this.socket.emit(websocketEvents.CHANGE_STATE, data);
+                this.updateState(data);
+            }
         });
         this.matter.body.setMass(laser.body, Infinity);
         this.players[data.localId].ship.setToSleep();
@@ -572,6 +581,6 @@ export default class GameScene extends Phaser.Scene {
     clearIntervals(powerUp){
         clearInterval(this.updateShipInterval);
         clearInterval(this.reloadInterval);
-        if(powerUp) clearInterval(this.powerUpInterval);
+        if(powerUp && this.currentPlayer===this.admin) clearInterval(this.powerUpInterval);
     }
 }
