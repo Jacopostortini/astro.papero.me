@@ -246,6 +246,7 @@ export default class GameScene extends Phaser.Scene {
         laser.setCollidesWith([this.shipsCategory, this.mapObjectCategory]);
         laser.setOnCollide(collision => {
             const body = getBodyFromCollision(laser.body.id, collision);
+            console.log(body)
             if(body.parent.collisionFilter.category === this.shipsCategory){
                 const dataToSend = {
                     localId: body.parent.gameObject.localId,
@@ -256,6 +257,7 @@ export default class GameScene extends Phaser.Scene {
                 this.socket.emit(websocketEvents.CHANGE_STATE, dataToSend);
                 this.updateState(dataToSend);
             } else if(body.collisionFilter.category === this.mapObjectCategory){
+                console.log("mapobj detected")
                 if(body.gameObject.killable) body.gameObject.destroy();
             }
         });
