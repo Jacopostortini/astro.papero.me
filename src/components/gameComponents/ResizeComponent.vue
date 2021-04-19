@@ -69,6 +69,10 @@ export default {
 .resize__main-panel{
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
 
   p{
     margin: 0;
