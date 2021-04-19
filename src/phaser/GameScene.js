@@ -24,9 +24,9 @@ export default class GameScene extends Phaser.Scene {
         this.admin = game.admin;
         this.map = game.map;
         this.settings.maxVelocityLittle = game.settings.velocity+0.2;
-        this.settings.accelerationLittle = 0.4;
+        this.settings.accelerationLittle = 0.1;
         this.settings.respawnTime = 8000;
-        this.settings.frictionAir = 0.1;
+        this.settings.frictionAir = 0.005;
         this.settings.powerUpVelocity = 3;
         this.settings.powerUpAngularVelocity = 0.1;
         this.players = {};
@@ -170,6 +170,7 @@ export default class GameScene extends Phaser.Scene {
         this.bulletsCategory = 4;
         this.powerUpsCategory = 8;
         this.mapObjectCategory = 16;
+        this.laserCategory = 32;
     }
 
     createShips(){
@@ -249,26 +250,12 @@ export default class GameScene extends Phaser.Scene {
     createLaser(data){
         const maxLength = Phaser.Math.Distance.Between(0, 0, gameDimensions.width, gameDimensions.height);
         const laser = this.matter.add.image(data.position.x, data.position.y, "bullet", null, this.defaultImageOptions);
+        laser.shotBy = data.localId;
         laser.setScale(maxLength/laser.width, 1);
         laser.setSensor(true);
         laser.setAngle(data.angle);
         laser.setPosition(laser.x+maxLength/2*Math.cos(data.angle*Math.PI/180), laser.y+maxLength/2*Math.sin(data.angle*Math.PI/180));
         laser.setCollidesWith([this.shipsCategory, this.mapObjectCategory]);
-        laser.setOnCollide(collision => {
-            const body = getBodyFromCollision(laser.body.id, collision);
-            if(body.parent.collisionFilter.category === this.shipsCategory){
-                const dataToSend = {
-                    localId: body.parent.gameObject.localId,
-                    state: 0,
-                    killedBy: data.localId
-                };
-                this.clearIntervals(false);
-                this.socket.emit(websocketEvents.CHANGE_STATE, dataToSend);
-                this.updateState(dataToSend);
-            } else if(body.collisionFilter.category === this.mapObjectCategory){
-                if(body.gameObject.killable) body.gameObject.destroy();
-            }
-        });
         this.matter.body.setMass(laser.body, Infinity);
         this.players[data.localId].ship.setToSleep();
         setTimeout(()=>{
@@ -468,6 +455,19 @@ export default class GameScene extends Phaser.Scene {
                 this.socket.emit(websocketEvents.CHANGE_STATE, data);
                 this.updateState(data);
             }
+        } else if(body.parent.collisionFilter.category === this.laserCategory){
+            //Collision with laser
+            const state = this.players[this.currentPlayer].state-2;
+            const data = {
+                localId: this.currentPlayer,
+                state
+            };
+            if(state===0) data.killedBy= body.parent.gameObject.shotBy;
+            this.clearIntervals(false);
+            this.socket.emit(websocketEvents.CHANGE_STATE, data);
+            this.updateState(data);
+        } else if(body.collisionFilter.category === this.mapObjectCategory){
+            if(body.gameObject.killable) body.gameObject.destroy();
         }
     }
 
@@ -600,10 +600,8 @@ export default class GameScene extends Phaser.Scene {
         window.addEventListener("visibilitychange", () => {
             if(this.status-Math.floor(this.status)===0){
                 if(document.visibilityState === "hidden"){
-                    console.log("Disconnecting");
                     this.socket.close();
                 } else {
-                    console.log("Connecting");
                     this.socket.open();
                 }
             }
