@@ -546,7 +546,7 @@ export default class GameScene extends Phaser.Scene {
 
         const currentPlayer = this.players[this.currentPlayer];
         this.updateShipInterval = setInterval(()=>{
-            if(!currentPlayer.ship.body) return;
+            if(!currentPlayer.ship || !currentPlayer.ship.body) return;
             this.socket.emit(websocketEvents.UPDATE_SHIP, [
                 this.currentPlayer,
                 Math.floor(currentPlayer.ship.angle),
