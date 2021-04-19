@@ -17,6 +17,7 @@ export default (ctx) => {
         o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory, ctx.powerUpsCategory]);
         o.setStatic(true);
         o.setOnCollide(collision => {
+            if(!o.body) return;
             const body = getBodyFromCollision(o.body.id, collision);
             if(body.gameObject) {
                 if(obj.killable && (body.collisionFilter.category === ctx.bulletsCategory || body.collisionFilter.category === ctx.laserCategory)){
