@@ -58,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
         this.powerUpIds = 0;
         this.powerUpGenerationTime = 10000;
 
-        this.game = game;
+        this.setUpGame(game);
 
         this.socket.on(websocketEvents.UPDATE_SHIP, data => this.updateShip(data));
         this.socket.on(websocketEvents.SHOOT, data => this.createBullet(data));
@@ -74,11 +74,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init(game){
-        //if(Object.entries(game).length>0) this.setUpGame(game);
-        if(Object.entries(game).length<=0) {
+        if(Object.entries(game).length>0) this.setUpGame(game);
+        else {
             if(this.timer > Date.now()){
                 this.scene.start(sceneKeys.ranking, _.cloneDeep({
-                    players: _.cloneDeep(this.players),
+                    players: _.cloneDeep(Object.values(this.players)),
                     timer: this.timer
                 }));
             }
@@ -90,7 +90,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create(){
-        this.setUpGame(this.game);
         Phaser.Physics.Matter.Image.prototype.shapedSetOnCollide = function (callback) {
             if (this.body && this.body.parts && this.body.parts.length) {
                 for (let part of this.body.parts) {
