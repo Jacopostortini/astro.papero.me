@@ -66,6 +66,7 @@ export default class RankingScene extends Phaser.Scene {
         if(this.timer<Date.now()) {
             console.log("timeout");
             this.socket.emit(websocketEvents.START_TURN);
+            this.scene.pause();
         }
         this.players.forEach(player => {
             const target = this.bandWidth * (player.to+0.5);
