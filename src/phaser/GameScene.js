@@ -76,18 +76,16 @@ export default class GameScene extends Phaser.Scene {
     init(game){
         console.log("Game scene init", _.cloneDeep(game));
         if(Object.entries(game).length>0) this.setUpGame(game);
-        else {
-            if(this.timer > Date.now()){
-                this.scene.start(sceneKeys.ranking, _.cloneDeep({
-                    players: _.cloneDeep(Object.values(this.players)),
-                    timer: this.timer
-                }));
-            }
-        }
     }
 
     preload(){
         console.log("Game scene preload")
+        if(this.timer > Date.now()){
+            this.scene.start(sceneKeys.ranking, _.cloneDeep({
+                players: _.cloneDeep(Object.values(this.players)),
+                timer: this.timer
+            }));
+        }
         loadImages(this, sceneKeys.game);
     }
 
