@@ -80,17 +80,19 @@ export default class GameScene extends Phaser.Scene {
 
     preload(){
         console.log("Game scene preload")
+        if(this.timer <= Date.now()){
+            loadImages(this, sceneKeys.game);
+        }
+    }
+
+    create(){
+        console.log("Game scene create")
         if(this.timer > Date.now()){
             this.scene.start(sceneKeys.ranking, _.cloneDeep({
                 players: _.cloneDeep(Object.values(this.players)),
                 timer: this.timer
             }));
         }
-        loadImages(this, sceneKeys.game);
-    }
-
-    create(){
-        console.log("Game scene create")
         Phaser.Physics.Matter.Image.prototype.shapedSetOnCollide = function (callback) {
             if (this.body && this.body.parts && this.body.parts.length) {
                 for (let part of this.body.parts) {
