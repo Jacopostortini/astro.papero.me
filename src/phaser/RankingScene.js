@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import {gameDimensions, sceneKeys} from "../constants/gameSettings";
 import websocketEvents from "../constants/websocketEvents";
 import _ from "lodash";
+import {loadImages} from "./scene";
 
 export default class RankingScene extends Phaser.Scene {
 
@@ -28,7 +29,7 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     init(data){
-        console.log(_.cloneDeep(data))
+        console.log("Ranking scene init", _.cloneDeep(data))
         this.players = _.cloneDeep(data.players);
         this.timer = data.timer ? data.timer : Infinity;
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
@@ -37,14 +38,12 @@ export default class RankingScene extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image("ship0", "./ships/ship0.png");
-        this.load.image("ship1", "./ships/ship1.png");
-        this.load.image("ship2", "./ships/ship2.png");
-        this.load.image("ship3", "./ships/ship3.png");
+        console.log("Ranking scene preload")
+        loadImages(this, sceneKeys.ranking);
     }
 
     create(){
-
+        console.log("Ranking scene create")
         this.drawFinishLine();
 
         this.createShips();

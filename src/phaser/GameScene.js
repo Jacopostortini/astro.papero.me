@@ -74,6 +74,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     init(game){
+        console.log("Game scene init", _.cloneDeep(game));
         if(Object.entries(game).length>0) this.setUpGame(game);
         else {
             if(this.timer > Date.now()){
@@ -86,10 +87,12 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload(){
+        console.log("Game scene preload")
         loadImages(this, sceneKeys.game);
     }
 
     create(){
+        console.log("Game scene create")
         Phaser.Physics.Matter.Image.prototype.shapedSetOnCollide = function (callback) {
             if (this.body && this.body.parts && this.body.parts.length) {
                 for (let part of this.body.parts) {
