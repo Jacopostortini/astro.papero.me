@@ -36,6 +36,7 @@ export default class RankingScene extends Phaser.Scene {
         this.bandWidth = gameDimensions.width / (this.pointsToWin+1);
         this.lineHeight = gameDimensions.height / this.players.length;
         this.playersStopped = 0;
+        this.ready = false;
     }
 
     preload(){
@@ -79,8 +80,10 @@ export default class RankingScene extends Phaser.Scene {
                 this.playersStopped++;
             }
         });
-        if(this.playersStopped >= this.players.length) {
+        if(this.playersStopped >= this.players.length && !this.ready) {
+            this.ready = true;
             setTimeout(()=>{
+                console.log("Ready turn")
                 this.socket.emit(websocketEvents.READY_TURN);
             }, 1000);
         }
