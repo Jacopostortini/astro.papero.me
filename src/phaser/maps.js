@@ -14,7 +14,7 @@ export default (ctx) => {
         const o = ctx.matter.add.image(obj.position.x, obj.position.y, obj.texture, null, {...ctx.defaultImageOptions});
         o.killable = obj.killable;
         o.setCollisionCategory(ctx.mapObjectCategory);
-        o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory, ctx.powerUpsCategory]);
+        o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory, ctx.powerUpsCategory, ctx.laserCategory]);
         o.setStatic(true);
         o.setOnCollide(collision => {
             if(!o.body) return;
