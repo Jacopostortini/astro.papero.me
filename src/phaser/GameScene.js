@@ -80,9 +80,7 @@ export default class GameScene extends Phaser.Scene {
 
     preload(){
         console.log("Game scene preload")
-        if(this.timer <= Date.now()){
-            loadImages(this, sceneKeys.game);
-        }
+        loadImages(this, sceneKeys.game);
     }
 
     create(){
@@ -194,7 +192,6 @@ export default class GameScene extends Phaser.Scene {
                 player.ship.shapedSetOnCollide((collision) => {
                    this.onCurrentShipCollision(collision);
                 });
-                console.log(player.ship.body.collisionFilter)
             }
             index++;
         });
