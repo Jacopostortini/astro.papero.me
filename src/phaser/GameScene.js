@@ -86,11 +86,13 @@ export default class GameScene extends Phaser.Scene {
     create(){
         console.log("Game scene create")
         if(this.timer > Date.now()){
+            this.scene.stop();
             this.scene.start(sceneKeys.ranking, _.cloneDeep({
                 players: _.cloneDeep(Object.values(this.players)),
                 timer: this.timer
             }));
         }
+        console.log("continuing create");
         Phaser.Physics.Matter.Image.prototype.shapedSetOnCollide = function (callback) {
             if (this.body && this.body.parts && this.body.parts.length) {
                 for (let part of this.body.parts) {
