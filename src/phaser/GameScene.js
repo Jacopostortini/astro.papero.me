@@ -72,6 +72,8 @@ export default class GameScene extends Phaser.Scene {
                 this.scene.start(sceneKeys.ranking, _.cloneDeep(data));
             }, 2000);
         });
+
+        this.setVisibilityChangeEvent();
     }
 
     init(game){
@@ -592,5 +594,18 @@ export default class GameScene extends Phaser.Scene {
         clearInterval(this.updateShipInterval);
         clearInterval(this.reloadInterval);
         if(powerUp && this.currentPlayer===this.admin) clearInterval(this.powerUpInterval);
+    }
+
+    setVisibilityChangeEvent() {
+        window.addEventListener("visibilitychange", () => {
+            console.log("visibilitychange event");
+            if(this.status-Math.floor(this.status)===0){
+                if(document.visibilityState === "hidden"){
+                    this.socket.close();
+                } else {
+                    this.socket.open();
+                }
+            }
+        });
     }
 }

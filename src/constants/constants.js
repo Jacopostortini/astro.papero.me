@@ -26,7 +26,8 @@ const strings = {
         },
         resize: {
             disclaimer: "In order for you to enjoy the game you should change the orientation of the device or enlarge your window",
-            readyUpButton: "Ignore and get ready",
+            disclaimer2: "Attention! If you switch tab during the game, you will be excluded from the current turn!",
+            readyUpButton: "Ready up",
             playerReady: "Waiting for other players to be ready",
         }
     }

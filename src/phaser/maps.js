@@ -5,7 +5,7 @@ const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
     [...getMovingSlalom(4)],
     [...getCenteredCross(500, 100), ...getCenteredSquare(3)],
-    [/*...getMovingVertical(3), */...getMixedOrizontalLine()]
+    [...getMixedOrizontalLine()]
 ];
 
 export default (ctx) => {
@@ -14,8 +14,6 @@ export default (ctx) => {
         const o = ctx.matter.add.image(obj.position.x, obj.position.y, obj.texture, null, {...ctx.defaultImageOptions});
         o.killable = obj.killable;
         o.setCollisionCategory(ctx.mapObjectCategory);
-        /*if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
-        if(obj.bounce) o.setBounce(obj.bounce);*/
         o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory, ctx.powerUpsCategory]);
         o.setStatic(true);
         o.setOnCollide(collision => {

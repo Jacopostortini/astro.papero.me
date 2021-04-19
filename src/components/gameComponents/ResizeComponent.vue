@@ -1,9 +1,10 @@
 <template>
   <div class="resize__main-panel">
-    <div v-if="!ready">
+    <p style="color: #ff0000">{{strings.gameView.resize.disclaimer2}}</p>
+    <div v-if="!dimensions">
       <p>{{strings.gameView.resize.disclaimer}}</p>
-      <button @click="readyUp">{{strings.gameView.resize.readyUpButton}}</button>
     </div>
+    <button v-if="!ready" @click="readyUp">{{strings.gameView.resize.readyUpButton}}</button>
     <div v-else-if="ready">
       <p>{{strings.gameView.resize.playerReady}}{{points}}</p>
     </div>
@@ -23,6 +24,7 @@ export default {
     return {
       strings: strings,
       ready: false,
+      dimensions: false,
       width: 0,
       height: 0,
       points: ""
@@ -40,7 +42,6 @@ export default {
     }
   },
   mounted() {
-
     setInterval(()=>{
       if(this.points.length >= 3) {
         this.points = "";
@@ -52,12 +53,12 @@ export default {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
 
-    if(this.checkDimensions) this.readyUp();
+    this.dimensions = this.checkDimensions;
 
     window.addEventListener("resize", () => {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
-      if(this.checkDimensions) this.readyUp();
+      this.dimensions = this.checkDimensions;
     });
   }
 }
