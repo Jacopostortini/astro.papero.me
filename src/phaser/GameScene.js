@@ -17,6 +17,7 @@ import {
 export default class GameScene extends Phaser.Scene {
 
     setUpGame(game){
+        this.status = game.status;
         this.timer = game.timer;
         this.settings = game.settings;
         this.currentPlayer = game.currentPlayer;
@@ -85,7 +86,7 @@ export default class GameScene extends Phaser.Scene {
 
     create(){
         console.log("Game scene create")
-        if(this.timer > Date.now()) {
+        if(this.status-Math.floor(this.status)===0.5) {
             setTimeout(()=>{
                 if(this.timer > Date.now()){
                     this.scene.stop();
