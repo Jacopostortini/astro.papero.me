@@ -19,10 +19,10 @@ export default (ctx) => {
         o.setOnCollide(collision => {
             if(!o.body) return;
             const body = getBodyFromCollision(o.body.id, collision);
-            console.log(body);
-            console.log(ctx)
             if(body.gameObject) {
                 if(obj.killable && (body.collisionFilter.category === ctx.bulletsCategory || body.collisionFilter.category === ctx.laserCategory)){
+                    console.log(body);
+                    console.log(ctx);
                     o.destroy();
                 }
             }
