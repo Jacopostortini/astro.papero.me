@@ -598,11 +598,12 @@ export default class GameScene extends Phaser.Scene {
 
     setVisibilityChangeEvent() {
         window.addEventListener("visibilitychange", () => {
-            console.log("visibilitychange event");
             if(this.status-Math.floor(this.status)===0){
                 if(document.visibilityState === "hidden"){
+                    console.log("Disconnecting");
                     this.socket.close();
                 } else {
+                    console.log("Connecting");
                     this.socket.open();
                 }
             }
