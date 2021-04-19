@@ -70,6 +70,12 @@ export default {
   width: 100%;
   height: 100%;
 
+  p{
+    margin: 0;
+    font-size: 150%;
+    padding-top: 30px;
+  }
+
   div{
     height: 100%;
     display: flex;
@@ -83,10 +89,10 @@ export default {
       color: white;
       font-size: 150%;
     }
+  }
 
-    button{
-      font-size: 150%;
-    }
+  button{
+    font-size: 150%;
   }
 }
 </style>
