@@ -126,7 +126,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time, delta){
-        if(this.currentPlayer !== null && this.players[this.currentPlayer].ship.body) {
+        if(this.currentPlayer !== null && this.players[this.currentPlayer].ship && this.players[this.currentPlayer].ship.body) {
             if (this.rotationKey.isDown || this.rotating) this.rotate(delta);
             if (this.accelerateLittleKey.isDown || this.accelerating) this.moveLittle(delta);
 
