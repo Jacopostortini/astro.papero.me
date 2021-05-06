@@ -26,7 +26,8 @@ const strings = {
         },
         resize: {
             disclaimer: "In order for you to enjoy the game you should change the orientation of the device or enlarge your window",
-            readyUpButton: "Ignore and get ready",
+            disclaimer2: "Attention! If you switch tab during the game, you will be excluded from the current turn!",
+            readyUpButton: "Ready up",
             playerReady: "Waiting for other players to be ready",
         }
     }
@@ -34,18 +35,9 @@ const strings = {
 
 const colors = ["green", "red", "white", "orange"];
 
-const config = (scene, parent, width, height, scaleMode=0, defaultPhysics = "arcade") => {
+const config = (scene, parent, width, height, scaleMode=0) => {
     return {
         type: Phaser.AUTO,
-        physics: {
-            default: defaultPhysics,
-            arcade: {
-                debug: true
-            },
-            matter: {
-                debug: true
-            }
-        },
         canvasStyle:
             "border: 2px solid white;" +
             "max-width: 98vw;" +
@@ -68,6 +60,12 @@ const detectTouchScreen = ()=>{
     }
 }
 
+const removeFromArray = (array, index) => {
+    const a = array.slice(0, index);
+    const b = array.slice(index+1, array.length);
+    return a.concat(b);
+}
+
 let baseUrl = "https://papero.me";
 const urls = {
     baseUrl: "https://papero.me",
@@ -78,4 +76,4 @@ const urls = {
     getGameStatusUrl: baseUrl+"/server/cosmos/games/status_by_id"
 }
 
-export { strings, colors, config, detectTouchScreen, urls }
+export { strings, colors, config, detectTouchScreen, removeFromArray, urls }

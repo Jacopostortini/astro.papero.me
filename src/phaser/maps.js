@@ -1,31 +1,29 @@
-import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons, getMovingVertical, getMixedOrizontalLine} from "../constants/mapConstants";
+import {getCenteredCross, getCenteredSquare, getMovingSlalom, getStartingPrisons, /*getMovingVertical,*/ getMixedOrizontalLine} from "../constants/mapConstants";
+import {getBodyFromCollision} from "./scene";
 
 const maps = [
     [...getStartingPrisons(), ...getCenteredSquare(5)],
     [...getMovingSlalom(4)],
     [...getCenteredCross(500, 100), ...getCenteredSquare(3)],
-    [...getMovingVertical(3), ...getMixedOrizontalLine()]
+    [...getMixedOrizontalLine()]
 ];
 
 export default (ctx) => {
     const map = maps[ctx.map];
     map.forEach(obj => {
-        let o;
-       if(obj.killable){
-           o = ctx.killableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
-       } else {
-           o = ctx.notKillableMapObjects.create(obj.position.x, obj.position.y, obj.texture);
-       }
-       if(obj.velocity) o.setVelocity(obj.velocity.x, obj.velocity.y);
-       if(obj.bounce) o.setBounce(obj.bounce);
-    });
-    ctx.physics.add.collider(ctx.killableMapObjects, ctx.ships);
-    ctx.physics.add.collider(ctx.notKillableMapObjects, ctx.ships);
-    ctx.physics.add.overlap(ctx.killableMapObjects, ctx.bullets, (obj, bullet) => {
-        obj.destroy();
-        bullet.destroy();
-    });
-    ctx.physics.add.overlap(ctx.notKillableMapObjects, ctx.bullets, (obj, bullet) => {
-        bullet.destroy();
+        const o = ctx.matter.add.image(obj.position.x, obj.position.y, obj.texture, null, {...ctx.defaultImageOptions});
+        o.killable = obj.killable;
+        o.setCollisionCategory(ctx.mapObjectCategory);
+        o.setCollidesWith([1, ctx.shipsCategory, ctx.bulletsCategory, ctx.powerUpsCategory, ctx.laserCategory]);
+        o.setStatic(true);
+        o.setOnCollide(collision => {
+            if(!o.body) return;
+            const body = getBodyFromCollision(o.body.id, collision);
+            if(body.gameObject) {
+                if(obj.killable && (body.collisionFilter.category === ctx.bulletsCategory || body.collisionFilter.category === ctx.laserCategory)){
+                    o.destroy();
+                }
+            }
+        });
     });
 };

@@ -63,7 +63,7 @@ const getMovingSlalom = (number) => {
             bounce: 1,
             velocity: {
                 x: 0,
-                y: 30
+                y: 1.8
             }
         });
     }
@@ -155,7 +155,7 @@ const getMovingVertical = (n) => {
             },
             velocity: {
                 x: 0,
-                y: 30
+                y: 1.8
             },
             bounce: 1
         });
